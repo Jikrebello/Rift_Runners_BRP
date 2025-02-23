@@ -1,16 +1,56 @@
 ﻿using System;
+using Assets.Scripts.Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static PlayerInputs;
 
 namespace Assets.Scripts
 {
-	[CreateAssetMenu(menuName = "Input Reader")]
-	public class PlayerInputReader : ScriptableObject, IPlayerInputActionMapActions
+	[CreateAssetMenu(menuName = "Player Input Reader")]
+	public class PlayerInputReader
+		: ScriptableObject,
+			IPlayerInputActionMapActions,
+			IPlayerInputEvents
 	{
 		PlayerInputs _playerInput;
 
 		public bool IsDebug = false;
+
+		public event Action<Vector2> MoveEvent;
+		public event Action JumpEvent;
+		public event Action JumpCancelledEvent;
+		public event Action AimEvent;
+		public event Action AimCancelledEvent;
+		public event Action ContextualGrabEvent;
+		public event Action ContextualGrabCancelledEvent;
+		public event Action ContextualInteractEvent;
+		public event Action ContextualInteractCancelledEvent;
+		public event Action DodgeEvent;
+		public event Action DodgeCancelledEvent;
+		public event Action FireEvent;
+		public event Action FireCancelledEvent;
+		public event Action HeavyAttackEvent;
+		public event Action HeavyAttackCancelledEvent;
+		public event Action ManualReloadEvent;
+		public event Action ManualReloadCancelledEvent;
+		public event Action PistolWhipEvent;
+		public event Action PistolWhipCancelledEvent;
+		public event Action PrimaryAttackEvent;
+		public event Action PrimaryAttackCancelledEvent;
+		public event Action PrimaryModifierEvent;
+		public event Action PrimaryModifierCancelledEvent;
+		public event Action SpecialAttack1Event;
+		public event Action SpecialAttack1CancelledEvent;
+		public event Action SpecialAttack2Event;
+		public event Action SpecialAttack2CancelledEvent;
+		public event Action SpecialAttack3Event;
+		public event Action SpecialAttack3CancelledEvent;
+		public event Action ToggleCrouchEvent;
+		public event Action ToggleCrouchCancelledEvent;
+		public event Action ToggleSprintEvent;
+		public event Action ToggleSprintCancelledEvent;
+		public event Action ToggleWeaponStanceEvent;
+		public event Action ToggleWeaponStanceCancelledEvent;
 
 		private void OnEnable()
 		{
@@ -29,12 +69,10 @@ namespace Assets.Scripts
 			_playerInput?.Disable();
 		}
 
-		public void SetPlayerInputMap()
+		private void SetPlayerInputMap()
 		{
 			_playerInput.PlayerInputActionMap.Enable();
 		}
-
-		public event Action<Vector2> MoveEvent;
 
 		public void OnMovement(InputAction.CallbackContext context)
 		{
@@ -46,9 +84,6 @@ namespace Assets.Scripts
 			}
 			MoveEvent?.Invoke(context.ReadValue<Vector2>());
 		}
-
-		public event Action JumpEvent;
-		public event Action JumpCancelledEvent;
 
 		public void OnJump(InputAction.CallbackContext context)
 		{
@@ -70,9 +105,6 @@ namespace Assets.Scripts
 			}
 		}
 
-		public event Action AimEvent;
-		public event Action AimCancelledEvent;
-
 		public void OnAiming(InputAction.CallbackContext context)
 		{
 			if (IsDebug)
@@ -92,9 +124,6 @@ namespace Assets.Scripts
 				AimCancelledEvent?.Invoke();
 			}
 		}
-
-		public event Action ContextualGrabEvent;
-		public event Action ContextualGrabCancelledEvent;
 
 		public void OnContextualGrab(InputAction.CallbackContext context)
 		{
@@ -117,9 +146,6 @@ namespace Assets.Scripts
 			}
 		}
 
-		public event Action ContextualInteractEvent;
-		public event Action ContextualInteractCancelledEvent;
-
 		public void OnContextualInteract(InputAction.CallbackContext context)
 		{
 			if (IsDebug)
@@ -141,9 +167,6 @@ namespace Assets.Scripts
 			}
 		}
 
-		public event Action DodgeEvent;
-		public event Action DodgeCancelledEvent;
-
 		public void OnDodge(InputAction.CallbackContext context)
 		{
 			if (IsDebug)
@@ -164,9 +187,6 @@ namespace Assets.Scripts
 			}
 		}
 
-		public event Action FireEvent;
-		public event Action FireCancelledEvent;
-
 		public void OnFire(InputAction.CallbackContext context)
 		{
 			if (IsDebug)
@@ -186,9 +206,6 @@ namespace Assets.Scripts
 				FireCancelledEvent?.Invoke();
 			}
 		}
-
-		public event Action HeavyAttackEvent;
-		public event Action HeavyAttackCancelledEvent;
 
 		public void OnHeavyAttack(InputAction.CallbackContext context)
 		{
@@ -211,9 +228,6 @@ namespace Assets.Scripts
 			}
 		}
 
-		public event Action ManualReloadEvent;
-		public event Action ManualReloadCancelledEvent;
-
 		public void OnManualReload(InputAction.CallbackContext context)
 		{
 			if (IsDebug)
@@ -234,9 +248,6 @@ namespace Assets.Scripts
 				ManualReloadCancelledEvent?.Invoke();
 			}
 		}
-
-		public event Action PistolWhipEvent;
-		public event Action PistolWhipCancelledEvent;
 
 		public void OnPistolWhip(InputAction.CallbackContext context)
 		{
@@ -259,9 +270,6 @@ namespace Assets.Scripts
 			}
 		}
 
-		public event Action PrimaryAttackEvent;
-		public event Action PrimaryAttackCancelledEvent;
-
 		public void OnPrimaryAttack(InputAction.CallbackContext context)
 		{
 			if (IsDebug)
@@ -282,9 +290,6 @@ namespace Assets.Scripts
 				PrimaryAttackCancelledEvent?.Invoke();
 			}
 		}
-
-		public event Action PrimaryModifierEvent;
-		public event Action PrimaryModifierCancelledEvent;
 
 		public void OnPrimaryModifier(InputAction.CallbackContext context)
 		{
@@ -307,9 +312,6 @@ namespace Assets.Scripts
 			}
 		}
 
-		public event Action SpecialAttack1Event;
-		public event Action SpecialAttack1CancelledEvent;
-
 		public void OnSpecialAttack1(InputAction.CallbackContext context)
 		{
 			if (IsDebug)
@@ -330,9 +332,6 @@ namespace Assets.Scripts
 				SpecialAttack1CancelledEvent?.Invoke();
 			}
 		}
-
-		public event Action SpecialAttack2Event;
-		public event Action SpecialAttack2CancelledEvent;
 
 		public void OnSpecialAttack2(InputAction.CallbackContext context)
 		{
@@ -355,9 +354,6 @@ namespace Assets.Scripts
 			}
 		}
 
-		public event Action SpecialAttack3Event;
-		public event Action SpecialAttack3CancelledEvent;
-
 		public void OnSpecialAttack3(InputAction.CallbackContext context)
 		{
 			if (IsDebug)
@@ -378,9 +374,6 @@ namespace Assets.Scripts
 				SpecialAttack3CancelledEvent?.Invoke();
 			}
 		}
-
-		public event Action ToggleCrouchEvent;
-		public event Action ToggleCrouchCancelledEvent;
 
 		public void OnToggleCrouch(InputAction.CallbackContext context)
 		{
@@ -403,9 +396,6 @@ namespace Assets.Scripts
 			}
 		}
 
-		public event Action ToggleSprintEvent;
-		public event Action ToggleSprintCancelledEvent;
-
 		public void OnToggleSprint(InputAction.CallbackContext context)
 		{
 			if (IsDebug)
@@ -426,9 +416,6 @@ namespace Assets.Scripts
 				ToggleSprintCancelledEvent?.Invoke();
 			}
 		}
-
-		public event Action ToggleWeaponStanceEvent;
-		public event Action ToggleWeaponStanceCancelledEvent;
 
 		public void OnToggleWeaponStance(InputAction.CallbackContext context)
 		{
