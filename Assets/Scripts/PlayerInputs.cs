@@ -1,0 +1,1029 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Utilities;
+
+public partial class @PlayerInputs : IInputActionCollection2, IDisposable
+{
+	public InputActionAsset asset { get; }
+
+	public @PlayerInputs()
+	{
+		asset = InputActionAsset.FromJson(
+			@"{
+	""name"": ""PlayerInputs"",
+	""maps"": [
+		{
+			""name"": ""PlayerInputActionMap"",
+			""id"": ""cd8f9e64-1033-436d-acb1-46c227c2c809"",
+			""actions"": [
+				{
+					""name"": ""Jump"",
+					""type"": ""Button"",
+					""id"": ""271df8cf-83e8-4ce5-92a9-dbbc86d152d9"",
+					""expectedControlType"": """",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": false
+				},
+				{
+					""name"": ""Dodge"",
+					""type"": ""Button"",
+					""id"": ""cbb98100-3304-49dc-a016-6d27b901a4dc"",
+					""expectedControlType"": """",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": false
+				},
+				{
+					""name"": ""PrimaryAttack"",
+					""type"": ""Button"",
+					""id"": ""7b34d7cb-55fc-4d88-b99f-cd12cea71fb0"",
+					""expectedControlType"": """",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": false
+				},
+				{
+					""name"": ""SpecialAttack1"",
+					""type"": ""Button"",
+					""id"": ""5b4f76f9-f566-466d-a18d-360f9ebd1a7a"",
+					""expectedControlType"": """",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": false
+				},
+				{
+					""name"": ""HeavyAttack"",
+					""type"": ""Button"",
+					""id"": ""066b4d34-555f-48c8-81f2-ac671e8e89e6"",
+					""expectedControlType"": """",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": false
+				},
+				{
+					""name"": ""SpecialAttack2"",
+					""type"": ""Button"",
+					""id"": ""a1bbd6ee-c4fa-4d8e-975a-2625363f471c"",
+					""expectedControlType"": """",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": false
+				},
+				{
+					""name"": ""ContextualInteract"",
+					""type"": ""Button"",
+					""id"": ""9a674f91-1c21-4c36-81b4-40e5bad8d69e"",
+					""expectedControlType"": """",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": false
+				},
+				{
+					""name"": ""SpecialAttack3"",
+					""type"": ""Button"",
+					""id"": ""9836be8c-1911-4b8b-8f74-4e723246281e"",
+					""expectedControlType"": """",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": false
+				},
+				{
+					""name"": ""PrimaryModifier"",
+					""type"": ""Button"",
+					""id"": ""3e76eecb-48e1-4dde-8bd2-5f367c7bec9c"",
+					""expectedControlType"": """",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": false
+				},
+				{
+					""name"": ""Aiming"",
+					""type"": ""Button"",
+					""id"": ""b7aac058-c363-44c3-b206-fbc8e3e2d91e"",
+					""expectedControlType"": """",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": false
+				},
+				{
+					""name"": ""ManualReload"",
+					""type"": ""Button"",
+					""id"": ""bd6d4343-3ed2-4fc3-b2c7-10643f46cbd1"",
+					""expectedControlType"": """",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": false
+				},
+				{
+					""name"": ""PistolWhip"",
+					""type"": ""Button"",
+					""id"": ""2a445826-19fd-4cd9-b106-21a1d44f4447"",
+					""expectedControlType"": """",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": false
+				},
+				{
+					""name"": ""Fire"",
+					""type"": ""Button"",
+					""id"": ""e17697f5-cf35-47e3-a3ba-d8690f0c0e9f"",
+					""expectedControlType"": """",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": false
+				},
+				{
+					""name"": ""ToggleSprint"",
+					""type"": ""Button"",
+					""id"": ""928319c8-563c-47bc-ab11-6dfc647f8377"",
+					""expectedControlType"": """",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": false
+				},
+				{
+					""name"": ""ToggleCrouch"",
+					""type"": ""Button"",
+					""id"": ""40b0912a-36ce-4c5e-8de8-394a28424b48"",
+					""expectedControlType"": """",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": false
+				},
+				{
+					""name"": ""Movement"",
+					""type"": ""Value"",
+					""id"": ""50be02c0-1777-40b5-b0c1-951d5299d1be"",
+					""expectedControlType"": ""Vector2"",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": true
+				},
+				{
+					""name"": ""ContextualGrab"",
+					""type"": ""Button"",
+					""id"": ""63b8c129-2ecc-4f98-b129-7df7c842b360"",
+					""expectedControlType"": """",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": false
+				},
+				{
+					""name"": ""ToggleWeaponStance"",
+					""type"": ""Button"",
+					""id"": ""1d78b051-4faf-46aa-81a2-74947f650352"",
+					""expectedControlType"": """",
+					""processors"": """",
+					""interactions"": """",
+					""initialStateCheck"": false
+				}
+			],
+			""bindings"": [
+				{
+					""name"": """",
+					""id"": ""a24059ff-d7b2-4f6f-bc65-4ac73d6b3ad9"",
+					""path"": ""<Gamepad>/buttonSouth"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Jump"",
+					""isComposite"": false,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": """",
+					""id"": ""e3dae703-406a-4694-afdf-27a3e27568c5"",
+					""path"": ""<Keyboard>/space"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Jump"",
+					""isComposite"": false,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": ""One Modifier"",
+					""id"": ""6640a3ce-56e3-45fa-8dcc-cbee8aff814e"",
+					""path"": ""OneModifier"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Dodge"",
+					""isComposite"": true,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": ""modifier"",
+					""id"": ""2047a1e1-5b4f-48ab-bf28-eeb7cb9d0179"",
+					""path"": ""<Gamepad>/rightShoulder"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Dodge"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": ""binding"",
+					""id"": ""e39d4655-3920-4e34-b5bf-cc1a331003f8"",
+					""path"": ""<Gamepad>/buttonSouth"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Dodge"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": """",
+					""id"": ""c5a7b426-bb9b-4729-934a-173a22243942"",
+					""path"": ""<Gamepad>/buttonWest"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""PrimaryAttack"",
+					""isComposite"": false,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": ""One Modifier"",
+					""id"": ""9fdb3a68-d6e2-411d-8b9f-5a313b71c5b0"",
+					""path"": ""OneModifier"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""SpecialAttack1"",
+					""isComposite"": true,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": ""modifier"",
+					""id"": ""281ec4a0-c2de-4580-b107-4a458f003dea"",
+					""path"": ""<Gamepad>/rightShoulder"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""SpecialAttack1"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": ""binding"",
+					""id"": ""f52922a6-275f-466a-8b18-b9b377f74a14"",
+					""path"": ""<Gamepad>/buttonWest"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""SpecialAttack1"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": """",
+					""id"": ""ccf3ac4f-cc90-48ba-acce-33e37035c42c"",
+					""path"": ""<Gamepad>/buttonNorth"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""HeavyAttack"",
+					""isComposite"": false,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": ""One Modifier"",
+					""id"": ""f46f6b1d-c55a-4455-b89e-d402dabd2348"",
+					""path"": ""OneModifier"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""SpecialAttack2"",
+					""isComposite"": true,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": ""modifier"",
+					""id"": ""a1c14c47-79e3-4681-a684-a80d5e5b61eb"",
+					""path"": ""<Gamepad>/rightShoulder"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""SpecialAttack2"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": ""binding"",
+					""id"": ""73b574c4-49e4-4451-9444-621821126afa"",
+					""path"": ""<Gamepad>/buttonNorth"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""SpecialAttack2"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": """",
+					""id"": ""2f12b922-21c8-487e-ad90-55f59f06206d"",
+					""path"": ""<Gamepad>/buttonEast"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""ContextualInteract"",
+					""isComposite"": false,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": ""One Modifier"",
+					""id"": ""a9a068b6-9f1c-4ec9-8266-2d643fa9e9d1"",
+					""path"": ""OneModifier"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""SpecialAttack3"",
+					""isComposite"": true,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": ""modifier"",
+					""id"": ""7806f8be-006a-4cc2-82a0-a9b7c5f7594e"",
+					""path"": ""<Gamepad>/rightShoulder"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""SpecialAttack3"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": ""binding"",
+					""id"": ""a2e963bd-060f-41e5-9ff2-f09491087529"",
+					""path"": ""<Gamepad>/buttonEast"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""SpecialAttack3"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": """",
+					""id"": ""156278fd-ba23-41fa-97f2-87cf1b6092a0"",
+					""path"": ""<Gamepad>/rightShoulder"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""PrimaryModifier"",
+					""isComposite"": false,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": """",
+					""id"": ""317a2570-9e07-4b13-bc2c-3a21b894a056"",
+					""path"": ""<Gamepad>/leftShoulder"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Aiming"",
+					""isComposite"": false,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": ""One Modifier"",
+					""id"": ""8f0a051f-482d-4c0c-94fe-a3de992c2072"",
+					""path"": ""OneModifier"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""ManualReload"",
+					""isComposite"": true,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": ""modifier"",
+					""id"": ""b4de9414-1962-4cd1-a438-c1f6b569b93c"",
+					""path"": ""<Gamepad>/leftShoulder"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""ManualReload"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": ""binding"",
+					""id"": ""431d5d9d-d68f-4bfa-a5ba-8b01b07aa082"",
+					""path"": ""<Gamepad>/buttonWest"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""ManualReload"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": ""One Modifier"",
+					""id"": ""420e63c2-9e22-41b2-9d1c-4d44aba050f1"",
+					""path"": ""OneModifier"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""PistolWhip"",
+					""isComposite"": true,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": ""modifier"",
+					""id"": ""cb98fca6-18c7-479f-857d-07d9bacfa160"",
+					""path"": ""<Gamepad>/leftShoulder"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""PistolWhip"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": ""binding"",
+					""id"": ""e172b5b2-b7df-4007-8353-f75779cb6e78"",
+					""path"": ""<Gamepad>/buttonNorth"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""PistolWhip"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": ""One Modifier"",
+					""id"": ""88fe3927-6553-4159-89c8-90aaecb46d2c"",
+					""path"": ""OneModifier"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Fire"",
+					""isComposite"": true,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": ""modifier"",
+					""id"": ""fb2236aa-9e58-4f75-b598-d0847f09f626"",
+					""path"": ""<Gamepad>/leftShoulder"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Fire"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": ""binding"",
+					""id"": ""b18d935b-8e5d-41d8-9032-c275c1609a64"",
+					""path"": ""<Gamepad>/rightTrigger"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Fire"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": """",
+					""id"": ""3ecde155-902d-426d-a461-15fbcf01e4e5"",
+					""path"": ""<Gamepad>/leftStickPress"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""ToggleSprint"",
+					""isComposite"": false,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": """",
+					""id"": ""710c01d9-eb70-4f01-a213-603dfd495af5"",
+					""path"": ""<Gamepad>/rightStickPress"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""ToggleCrouch"",
+					""isComposite"": false,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": ""2D Vector"",
+					""id"": ""68f7ac91-e910-4139-aa8e-ee0ccb863861"",
+					""path"": ""2DVector(mode=2)"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Movement"",
+					""isComposite"": true,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": ""up"",
+					""id"": ""6e04ae26-357e-4065-9522-03df2ab20bbf"",
+					""path"": ""<Gamepad>/leftStick/up"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Movement"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": ""down"",
+					""id"": ""f818372a-a655-44e2-a056-82ffc198d661"",
+					""path"": ""<Gamepad>/leftStick/down"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Movement"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": ""left"",
+					""id"": ""0144854c-5670-444c-8003-3124d346dd29"",
+					""path"": ""<Gamepad>/leftStick/left"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Movement"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": ""right"",
+					""id"": ""bea69449-c759-4517-9c2e-4ab1c85007f9"",
+					""path"": ""<Gamepad>/leftStick/right"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Movement"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": ""2D Vector"",
+					""id"": ""dd0f23c9-8727-4d58-89dd-7d9ad00c4683"",
+					""path"": ""2DVector(mode=1)"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Movement"",
+					""isComposite"": true,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": ""up"",
+					""id"": ""ab3a579e-058f-4112-ad1f-d9240dccd022"",
+					""path"": ""<Keyboard>/w"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Movement"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": ""down"",
+					""id"": ""1d250568-3fa7-4a56-9a24-b119e4111b9f"",
+					""path"": ""<Keyboard>/s"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Movement"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": ""left"",
+					""id"": ""86e27bbe-7c37-4e87-bd18-c6ae6ab8f423"",
+					""path"": ""<Keyboard>/a"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Movement"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": ""right"",
+					""id"": ""73087f4c-a699-4bfb-b35f-b0b44b48411e"",
+					""path"": ""<Keyboard>/d"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""Movement"",
+					""isComposite"": false,
+					""isPartOfComposite"": true
+				},
+				{
+					""name"": """",
+					""id"": ""b4e5895d-3fb3-4ac1-8952-245c832a3d11"",
+					""path"": ""<Gamepad>/rightTrigger"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""ContextualGrab"",
+					""isComposite"": false,
+					""isPartOfComposite"": false
+				},
+				{
+					""name"": """",
+					""id"": ""63632a10-f525-4326-acee-277392b6618e"",
+					""path"": ""<Gamepad>/leftTrigger"",
+					""interactions"": """",
+					""processors"": """",
+					""groups"": """",
+					""action"": ""ToggleWeaponStance"",
+					""isComposite"": false,
+					""isPartOfComposite"": false
+				}
+			]
+		}
+	],
+	""controlSchemes"": []
+}"
+		);
+		// PlayerInputActionMap
+		m_PlayerInputActionMap = asset.FindActionMap("PlayerInputActionMap", throwIfNotFound: true);
+		m_PlayerInputActionMap_Jump = m_PlayerInputActionMap.FindAction(
+			"Jump",
+			throwIfNotFound: true
+		);
+		m_PlayerInputActionMap_Dodge = m_PlayerInputActionMap.FindAction(
+			"Dodge",
+			throwIfNotFound: true
+		);
+		m_PlayerInputActionMap_PrimaryAttack = m_PlayerInputActionMap.FindAction(
+			"PrimaryAttack",
+			throwIfNotFound: true
+		);
+		m_PlayerInputActionMap_SpecialAttack1 = m_PlayerInputActionMap.FindAction(
+			"SpecialAttack1",
+			throwIfNotFound: true
+		);
+		m_PlayerInputActionMap_HeavyAttack = m_PlayerInputActionMap.FindAction(
+			"HeavyAttack",
+			throwIfNotFound: true
+		);
+		m_PlayerInputActionMap_SpecialAttack2 = m_PlayerInputActionMap.FindAction(
+			"SpecialAttack2",
+			throwIfNotFound: true
+		);
+		m_PlayerInputActionMap_ContextualInteract = m_PlayerInputActionMap.FindAction(
+			"ContextualInteract",
+			throwIfNotFound: true
+		);
+		m_PlayerInputActionMap_SpecialAttack3 = m_PlayerInputActionMap.FindAction(
+			"SpecialAttack3",
+			throwIfNotFound: true
+		);
+		m_PlayerInputActionMap_PrimaryModifier = m_PlayerInputActionMap.FindAction(
+			"PrimaryModifier",
+			throwIfNotFound: true
+		);
+		m_PlayerInputActionMap_Aiming = m_PlayerInputActionMap.FindAction(
+			"Aiming",
+			throwIfNotFound: true
+		);
+		m_PlayerInputActionMap_ManualReload = m_PlayerInputActionMap.FindAction(
+			"ManualReload",
+			throwIfNotFound: true
+		);
+		m_PlayerInputActionMap_PistolWhip = m_PlayerInputActionMap.FindAction(
+			"PistolWhip",
+			throwIfNotFound: true
+		);
+		m_PlayerInputActionMap_Fire = m_PlayerInputActionMap.FindAction(
+			"Fire",
+			throwIfNotFound: true
+		);
+		m_PlayerInputActionMap_ToggleSprint = m_PlayerInputActionMap.FindAction(
+			"ToggleSprint",
+			throwIfNotFound: true
+		);
+		m_PlayerInputActionMap_ToggleCrouch = m_PlayerInputActionMap.FindAction(
+			"ToggleCrouch",
+			throwIfNotFound: true
+		);
+		m_PlayerInputActionMap_Movement = m_PlayerInputActionMap.FindAction(
+			"Movement",
+			throwIfNotFound: true
+		);
+		m_PlayerInputActionMap_ContextualGrab = m_PlayerInputActionMap.FindAction(
+			"ContextualGrab",
+			throwIfNotFound: true
+		);
+		m_PlayerInputActionMap_ToggleWeaponStance = m_PlayerInputActionMap.FindAction(
+			"ToggleWeaponStance",
+			throwIfNotFound: true
+		);
+	}
+
+	~@PlayerInputs()
+	{
+		UnityEngine.Debug.Assert(
+			!m_PlayerInputActionMap.enabled,
+			"This will cause a leak and performance issues, PlayerInputs.PlayerInputActionMap.Disable() has not been called."
+		);
+	}
+
+	public void Dispose()
+	{
+		UnityEngine.Object.Destroy(asset);
+	}
+
+	public InputBinding? bindingMask
+	{
+		get => asset.bindingMask;
+		set => asset.bindingMask = value;
+	}
+
+	public ReadOnlyArray<InputDevice>? devices
+	{
+		get => asset.devices;
+		set => asset.devices = value;
+	}
+
+	public ReadOnlyArray<InputControlScheme> controlSchemes => asset.controlSchemes;
+
+	public bool Contains(InputAction action)
+	{
+		return asset.Contains(action);
+	}
+
+	public IEnumerator<InputAction> GetEnumerator()
+	{
+		return asset.GetEnumerator();
+	}
+
+	IEnumerator IEnumerable.GetEnumerator()
+	{
+		return GetEnumerator();
+	}
+
+	public void Enable()
+	{
+		asset.Enable();
+	}
+
+	public void Disable()
+	{
+		asset.Disable();
+	}
+
+	public IEnumerable<InputBinding> bindings => asset.bindings;
+
+	public InputAction FindAction(string actionNameOrId, bool throwIfNotFound = false)
+	{
+		return asset.FindAction(actionNameOrId, throwIfNotFound);
+	}
+
+	public int FindBinding(InputBinding bindingMask, out InputAction action)
+	{
+		return asset.FindBinding(bindingMask, out action);
+	}
+
+	// PlayerInputActionMap
+	private readonly InputActionMap m_PlayerInputActionMap;
+	private List<IPlayerInputActionMapActions> m_PlayerInputActionMapActionsCallbackInterfaces =
+		new List<IPlayerInputActionMapActions>();
+	private readonly InputAction m_PlayerInputActionMap_Jump;
+	private readonly InputAction m_PlayerInputActionMap_Dodge;
+	private readonly InputAction m_PlayerInputActionMap_PrimaryAttack;
+	private readonly InputAction m_PlayerInputActionMap_SpecialAttack1;
+	private readonly InputAction m_PlayerInputActionMap_HeavyAttack;
+	private readonly InputAction m_PlayerInputActionMap_SpecialAttack2;
+	private readonly InputAction m_PlayerInputActionMap_ContextualInteract;
+	private readonly InputAction m_PlayerInputActionMap_SpecialAttack3;
+	private readonly InputAction m_PlayerInputActionMap_PrimaryModifier;
+	private readonly InputAction m_PlayerInputActionMap_Aiming;
+	private readonly InputAction m_PlayerInputActionMap_ManualReload;
+	private readonly InputAction m_PlayerInputActionMap_PistolWhip;
+	private readonly InputAction m_PlayerInputActionMap_Fire;
+	private readonly InputAction m_PlayerInputActionMap_ToggleSprint;
+	private readonly InputAction m_PlayerInputActionMap_ToggleCrouch;
+	private readonly InputAction m_PlayerInputActionMap_Movement;
+	private readonly InputAction m_PlayerInputActionMap_ContextualGrab;
+	private readonly InputAction m_PlayerInputActionMap_ToggleWeaponStance;
+
+	public struct PlayerInputActionMapActions
+	{
+		private @PlayerInputs m_Wrapper;
+
+		public PlayerInputActionMapActions(@PlayerInputs wrapper)
+		{
+			m_Wrapper = wrapper;
+		}
+
+		public InputAction @Jump => m_Wrapper.m_PlayerInputActionMap_Jump;
+		public InputAction @Dodge => m_Wrapper.m_PlayerInputActionMap_Dodge;
+		public InputAction @PrimaryAttack => m_Wrapper.m_PlayerInputActionMap_PrimaryAttack;
+		public InputAction @SpecialAttack1 => m_Wrapper.m_PlayerInputActionMap_SpecialAttack1;
+		public InputAction @HeavyAttack => m_Wrapper.m_PlayerInputActionMap_HeavyAttack;
+		public InputAction @SpecialAttack2 => m_Wrapper.m_PlayerInputActionMap_SpecialAttack2;
+		public InputAction @ContextualInteract =>
+			m_Wrapper.m_PlayerInputActionMap_ContextualInteract;
+		public InputAction @SpecialAttack3 => m_Wrapper.m_PlayerInputActionMap_SpecialAttack3;
+		public InputAction @PrimaryModifier => m_Wrapper.m_PlayerInputActionMap_PrimaryModifier;
+		public InputAction @Aiming => m_Wrapper.m_PlayerInputActionMap_Aiming;
+		public InputAction @ManualReload => m_Wrapper.m_PlayerInputActionMap_ManualReload;
+		public InputAction @PistolWhip => m_Wrapper.m_PlayerInputActionMap_PistolWhip;
+		public InputAction @Fire => m_Wrapper.m_PlayerInputActionMap_Fire;
+		public InputAction @ToggleSprint => m_Wrapper.m_PlayerInputActionMap_ToggleSprint;
+		public InputAction @ToggleCrouch => m_Wrapper.m_PlayerInputActionMap_ToggleCrouch;
+		public InputAction @Movement => m_Wrapper.m_PlayerInputActionMap_Movement;
+		public InputAction @ContextualGrab => m_Wrapper.m_PlayerInputActionMap_ContextualGrab;
+		public InputAction @ToggleWeaponStance =>
+			m_Wrapper.m_PlayerInputActionMap_ToggleWeaponStance;
+
+		public InputActionMap Get()
+		{
+			return m_Wrapper.m_PlayerInputActionMap;
+		}
+
+		public void Enable()
+		{
+			Get().Enable();
+		}
+
+		public void Disable()
+		{
+			Get().Disable();
+		}
+
+		public bool enabled => Get().enabled;
+
+		public static implicit operator InputActionMap(PlayerInputActionMapActions set)
+		{
+			return set.Get();
+		}
+
+		public void AddCallbacks(IPlayerInputActionMapActions instance)
+		{
+			if (
+				instance == null
+				|| m_Wrapper.m_PlayerInputActionMapActionsCallbackInterfaces.Contains(instance)
+			)
+				return;
+			m_Wrapper.m_PlayerInputActionMapActionsCallbackInterfaces.Add(instance);
+			@Jump.started += instance.OnJump;
+			@Jump.performed += instance.OnJump;
+			@Jump.canceled += instance.OnJump;
+			@Dodge.started += instance.OnDodge;
+			@Dodge.performed += instance.OnDodge;
+			@Dodge.canceled += instance.OnDodge;
+			@PrimaryAttack.started += instance.OnPrimaryAttack;
+			@PrimaryAttack.performed += instance.OnPrimaryAttack;
+			@PrimaryAttack.canceled += instance.OnPrimaryAttack;
+			@SpecialAttack1.started += instance.OnSpecialAttack1;
+			@SpecialAttack1.performed += instance.OnSpecialAttack1;
+			@SpecialAttack1.canceled += instance.OnSpecialAttack1;
+			@HeavyAttack.started += instance.OnHeavyAttack;
+			@HeavyAttack.performed += instance.OnHeavyAttack;
+			@HeavyAttack.canceled += instance.OnHeavyAttack;
+			@SpecialAttack2.started += instance.OnSpecialAttack2;
+			@SpecialAttack2.performed += instance.OnSpecialAttack2;
+			@SpecialAttack2.canceled += instance.OnSpecialAttack2;
+			@ContextualInteract.started += instance.OnContextualInteract;
+			@ContextualInteract.performed += instance.OnContextualInteract;
+			@ContextualInteract.canceled += instance.OnContextualInteract;
+			@SpecialAttack3.started += instance.OnSpecialAttack3;
+			@SpecialAttack3.performed += instance.OnSpecialAttack3;
+			@SpecialAttack3.canceled += instance.OnSpecialAttack3;
+			@PrimaryModifier.started += instance.OnPrimaryModifier;
+			@PrimaryModifier.performed += instance.OnPrimaryModifier;
+			@PrimaryModifier.canceled += instance.OnPrimaryModifier;
+			@Aiming.started += instance.OnAiming;
+			@Aiming.performed += instance.OnAiming;
+			@Aiming.canceled += instance.OnAiming;
+			@ManualReload.started += instance.OnManualReload;
+			@ManualReload.performed += instance.OnManualReload;
+			@ManualReload.canceled += instance.OnManualReload;
+			@PistolWhip.started += instance.OnPistolWhip;
+			@PistolWhip.performed += instance.OnPistolWhip;
+			@PistolWhip.canceled += instance.OnPistolWhip;
+			@Fire.started += instance.OnFire;
+			@Fire.performed += instance.OnFire;
+			@Fire.canceled += instance.OnFire;
+			@ToggleSprint.started += instance.OnToggleSprint;
+			@ToggleSprint.performed += instance.OnToggleSprint;
+			@ToggleSprint.canceled += instance.OnToggleSprint;
+			@ToggleCrouch.started += instance.OnToggleCrouch;
+			@ToggleCrouch.performed += instance.OnToggleCrouch;
+			@ToggleCrouch.canceled += instance.OnToggleCrouch;
+			@Movement.started += instance.OnMovement;
+			@Movement.performed += instance.OnMovement;
+			@Movement.canceled += instance.OnMovement;
+			@ContextualGrab.started += instance.OnContextualGrab;
+			@ContextualGrab.performed += instance.OnContextualGrab;
+			@ContextualGrab.canceled += instance.OnContextualGrab;
+			@ToggleWeaponStance.started += instance.OnToggleWeaponStance;
+			@ToggleWeaponStance.performed += instance.OnToggleWeaponStance;
+			@ToggleWeaponStance.canceled += instance.OnToggleWeaponStance;
+		}
+
+		private void UnregisterCallbacks(IPlayerInputActionMapActions instance)
+		{
+			@Jump.started -= instance.OnJump;
+			@Jump.performed -= instance.OnJump;
+			@Jump.canceled -= instance.OnJump;
+			@Dodge.started -= instance.OnDodge;
+			@Dodge.performed -= instance.OnDodge;
+			@Dodge.canceled -= instance.OnDodge;
+			@PrimaryAttack.started -= instance.OnPrimaryAttack;
+			@PrimaryAttack.performed -= instance.OnPrimaryAttack;
+			@PrimaryAttack.canceled -= instance.OnPrimaryAttack;
+			@SpecialAttack1.started -= instance.OnSpecialAttack1;
+			@SpecialAttack1.performed -= instance.OnSpecialAttack1;
+			@SpecialAttack1.canceled -= instance.OnSpecialAttack1;
+			@HeavyAttack.started -= instance.OnHeavyAttack;
+			@HeavyAttack.performed -= instance.OnHeavyAttack;
+			@HeavyAttack.canceled -= instance.OnHeavyAttack;
+			@SpecialAttack2.started -= instance.OnSpecialAttack2;
+			@SpecialAttack2.performed -= instance.OnSpecialAttack2;
+			@SpecialAttack2.canceled -= instance.OnSpecialAttack2;
+			@ContextualInteract.started -= instance.OnContextualInteract;
+			@ContextualInteract.performed -= instance.OnContextualInteract;
+			@ContextualInteract.canceled -= instance.OnContextualInteract;
+			@SpecialAttack3.started -= instance.OnSpecialAttack3;
+			@SpecialAttack3.performed -= instance.OnSpecialAttack3;
+			@SpecialAttack3.canceled -= instance.OnSpecialAttack3;
+			@PrimaryModifier.started -= instance.OnPrimaryModifier;
+			@PrimaryModifier.performed -= instance.OnPrimaryModifier;
+			@PrimaryModifier.canceled -= instance.OnPrimaryModifier;
+			@Aiming.started -= instance.OnAiming;
+			@Aiming.performed -= instance.OnAiming;
+			@Aiming.canceled -= instance.OnAiming;
+			@ManualReload.started -= instance.OnManualReload;
+			@ManualReload.performed -= instance.OnManualReload;
+			@ManualReload.canceled -= instance.OnManualReload;
+			@PistolWhip.started -= instance.OnPistolWhip;
+			@PistolWhip.performed -= instance.OnPistolWhip;
+			@PistolWhip.canceled -= instance.OnPistolWhip;
+			@Fire.started -= instance.OnFire;
+			@Fire.performed -= instance.OnFire;
+			@Fire.canceled -= instance.OnFire;
+			@ToggleSprint.started -= instance.OnToggleSprint;
+			@ToggleSprint.performed -= instance.OnToggleSprint;
+			@ToggleSprint.canceled -= instance.OnToggleSprint;
+			@ToggleCrouch.started -= instance.OnToggleCrouch;
+			@ToggleCrouch.performed -= instance.OnToggleCrouch;
+			@ToggleCrouch.canceled -= instance.OnToggleCrouch;
+			@Movement.started -= instance.OnMovement;
+			@Movement.performed -= instance.OnMovement;
+			@Movement.canceled -= instance.OnMovement;
+			@ContextualGrab.started -= instance.OnContextualGrab;
+			@ContextualGrab.performed -= instance.OnContextualGrab;
+			@ContextualGrab.canceled -= instance.OnContextualGrab;
+			@ToggleWeaponStance.started -= instance.OnToggleWeaponStance;
+			@ToggleWeaponStance.performed -= instance.OnToggleWeaponStance;
+			@ToggleWeaponStance.canceled -= instance.OnToggleWeaponStance;
+		}
+
+		public void RemoveCallbacks(IPlayerInputActionMapActions instance)
+		{
+			if (m_Wrapper.m_PlayerInputActionMapActionsCallbackInterfaces.Remove(instance))
+				UnregisterCallbacks(instance);
+		}
+
+		public void SetCallbacks(IPlayerInputActionMapActions instance)
+		{
+			foreach (var item in m_Wrapper.m_PlayerInputActionMapActionsCallbackInterfaces)
+				UnregisterCallbacks(item);
+			m_Wrapper.m_PlayerInputActionMapActionsCallbackInterfaces.Clear();
+			AddCallbacks(instance);
+		}
+	}
+
+	public PlayerInputActionMapActions @PlayerInputActionMap =>
+		new PlayerInputActionMapActions(this);
+
+	public interface IPlayerInputActionMapActions
+	{
+		void OnJump(InputAction.CallbackContext context);
+		void OnDodge(InputAction.CallbackContext context);
+		void OnPrimaryAttack(InputAction.CallbackContext context);
+		void OnSpecialAttack1(InputAction.CallbackContext context);
+		void OnHeavyAttack(InputAction.CallbackContext context);
+		void OnSpecialAttack2(InputAction.CallbackContext context);
+		void OnContextualInteract(InputAction.CallbackContext context);
+		void OnSpecialAttack3(InputAction.CallbackContext context);
+		void OnPrimaryModifier(InputAction.CallbackContext context);
+		void OnAiming(InputAction.CallbackContext context);
+		void OnManualReload(InputAction.CallbackContext context);
+		void OnPistolWhip(InputAction.CallbackContext context);
+		void OnFire(InputAction.CallbackContext context);
+		void OnToggleSprint(InputAction.CallbackContext context);
+		void OnToggleCrouch(InputAction.CallbackContext context);
+		void OnMovement(InputAction.CallbackContext context);
+		void OnContextualGrab(InputAction.CallbackContext context);
+		void OnToggleWeaponStance(InputAction.CallbackContext context);
+	}
+}
