@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Assets.Scripts.Player
+namespace Assets.Scripts.Player.Input
 {
 	public interface IPlayerInputEvents
 	{
@@ -35,10 +35,7 @@ namespace Assets.Scripts.Player
 		event Action SpecialAttack3Event;
 		event Action SpecialAttack3CancelledEvent;
 		event Action ToggleCrouchEvent;
-		event Action ToggleCrouchCancelledEvent;
 		event Action ToggleSprintEvent;
-		event Action ToggleSprintCancelledEvent;
 		event Action ToggleWeaponStanceEvent;
-		event Action ToggleWeaponStanceCancelledEvent;
 	}
 }

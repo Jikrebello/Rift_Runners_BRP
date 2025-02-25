@@ -1,5 +1,7 @@
-using Assets.Scripts;
 using Assets.Scripts.Player;
+using Assets.Scripts.Player.Input;
+using Assets.Scripts.Player.StateMachine;
+using Assets.Scripts.Player.StateMachine.States;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -12,12 +14,11 @@ public class PlayerController : MonoBehaviour
 	void Start()
 	{
 		SetupPlayerContext();
-		Debug.Log("In player controller");
 
 		_stateMachine = new PlayerStateMachine(_playerContext);
 		_playerContext.StateMachine = _stateMachine;
 
-		_stateMachine.TransitionTo(new GroundedState());
+		_stateMachine.TransitionTo(new IdleState());
 	}
 
 	void Update()
@@ -40,6 +41,7 @@ public class PlayerController : MonoBehaviour
 			PlayerInputEvents = _inputEvents,
 			StateMachine = _stateMachine,
 			CharacterController = GetComponent<CharacterController>(),
+			CurrentPhase = PlayerModifierPhase.Default,
 		};
 	}
 }

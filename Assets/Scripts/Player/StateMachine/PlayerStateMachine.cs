@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Assets.Scripts.Player.StateMachine.States;
 
-namespace Assets.Scripts.Player
+namespace Assets.Scripts.Player.StateMachine
 {
 	public class PlayerStateMachine
 	{
@@ -12,14 +13,14 @@ namespace Assets.Scripts.Player
 			_playerContext = playerContext;
 		}
 
-		public void FixedUpdate()
-		{
-			_currentState?.FixedUpdate();
-		}
-
 		public void Update()
 		{
 			_currentState?.Update();
+		}
+
+		public void FixedUpdate()
+		{
+			_currentState?.FixedUpdate();
 		}
 
 		public void TransitionTo(

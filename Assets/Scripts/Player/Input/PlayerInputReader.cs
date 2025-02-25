@@ -1,10 +1,9 @@
 ﻿using System;
-using Assets.Scripts.Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static PlayerInputs;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Player.Input
 {
 	[CreateAssetMenu(menuName = "Player Input Reader")]
 	public class PlayerInputReader
@@ -389,11 +388,6 @@ namespace Assets.Scripts
 			{
 				ToggleCrouchEvent?.Invoke();
 			}
-
-			if (context.phase == InputActionPhase.Canceled)
-			{
-				ToggleCrouchCancelledEvent?.Invoke();
-			}
 		}
 
 		public void OnToggleSprint(InputAction.CallbackContext context)
@@ -410,11 +404,6 @@ namespace Assets.Scripts
 			{
 				ToggleSprintEvent?.Invoke();
 			}
-
-			if (context.phase == InputActionPhase.Canceled)
-			{
-				ToggleSprintCancelledEvent?.Invoke();
-			}
 		}
 
 		public void OnToggleWeaponStance(InputAction.CallbackContext context)
@@ -430,11 +419,6 @@ namespace Assets.Scripts
 			if (context.phase == InputActionPhase.Performed)
 			{
 				ToggleWeaponStanceEvent?.Invoke();
-			}
-
-			if (context.phase == InputActionPhase.Canceled)
-			{
-				ToggleWeaponStanceCancelledEvent?.Invoke();
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Assets.Scripts.Player
+namespace Assets.Scripts.Player.StateMachine.States
 {
 	public interface IPlayerState
 	{

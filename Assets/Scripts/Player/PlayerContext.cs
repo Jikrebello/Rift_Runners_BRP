@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Player.Input;
+using Assets.Scripts.Player.StateMachine;
+using UnityEngine;
 
 namespace Assets.Scripts.Player
 {
@@ -8,5 +10,9 @@ namespace Assets.Scripts.Player
 		public IPlayerInputEvents PlayerInputEvents { get; set; }
 		public CharacterController CharacterController { get; set; }
 		public PlayerStateMachine StateMachine { get; set; }
+
+		public PlayerSuperStates CurrentSuperState { get; set; }
+		public PlayerModifierPhase CurrentPhase { get; set; }
+		public PlayerCombatStance CurrentCombatStance { get; set; }
 	}
 }
