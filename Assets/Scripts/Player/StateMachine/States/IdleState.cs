@@ -7,6 +7,8 @@ namespace Assets.Scripts.Player.StateMachine.States
 		public override void Enter(Dictionary<string, object> parameters)
 		{
 			base.Enter(parameters);
+
+			CurrentSubState = GroundedSubState.Standing;
 		}
 
 		public override void Update()
@@ -24,7 +26,7 @@ namespace Assets.Scripts.Player.StateMachine.States
 				);
 			}
 
-			if (InputMoveDirection.magnitude > 0 && CurrentSubState == GroundedSubStates.Sprinting)
+			if (InputMoveDirection.magnitude > 0 && CurrentSubState == GroundedSubState.Sprinting)
 			{
 				PlayerContext.StateMachine.TransitionTo(new SprintingState());
 			}

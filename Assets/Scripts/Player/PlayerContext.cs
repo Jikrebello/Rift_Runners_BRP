@@ -7,11 +7,12 @@ namespace Assets.Scripts.Player
 	public class PlayerContext
 	{
 		public GameObject GameObject { get; set; }
+		public Transform PlayerTransform { get; set; }
 		public IPlayerInputEvents PlayerInputEvents { get; set; }
 		public CharacterController CharacterController { get; set; }
 		public PlayerStateMachine StateMachine { get; set; }
 
-		public PlayerSuperStates CurrentSuperState { get; set; }
+		public PlayerSuperState CurrentSuperState { get; set; }
 		public PlayerModifierPhase CurrentPhase { get; set; }
 		public PlayerCombatStance CurrentCombatStance { get; set; }
 	}

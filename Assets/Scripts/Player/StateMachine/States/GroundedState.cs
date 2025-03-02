@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Player.StateMachine.States
@@ -7,7 +6,7 @@ namespace Assets.Scripts.Player.StateMachine.States
 	public abstract class GroundedState : IPlayerState
 	{
 		public PlayerContext PlayerContext { get; set; }
-		protected GroundedSubStates CurrentSubState { get; set; }
+		protected GroundedSubState CurrentSubState { get; set; }
 
 		protected Vector2 InputMoveDirection;
 
@@ -23,6 +22,8 @@ namespace Assets.Scripts.Player.StateMachine.States
 
 		public virtual void Enter(Dictionary<string, object> parameters)
 		{
+			PlayerContext.CurrentSuperState = PlayerSuperState.Grounded;
+
 			PlayerContext.PlayerInputEvents.MoveEvent += HandleMove;
 			PlayerContext.PlayerInputEvents.ToggleCrouchEvent += HandleToggleCrouch;
 			PlayerContext.PlayerInputEvents.ToggleSprintEvent += HandleToggleSprint;
@@ -66,9 +67,9 @@ namespace Assets.Scripts.Player.StateMachine.States
 
 		private void HandleToggleCrouch()
 		{
-			if (CurrentSubState == GroundedSubStates.Sprinting)
+			if (CurrentSubState == GroundedSubState.Sprinting)
 			{
-				CurrentSubState = GroundedSubStates.Standing;
+				CurrentSubState = GroundedSubState.Standing;
 				return;
 			}
 
@@ -80,26 +81,26 @@ namespace Assets.Scripts.Player.StateMachine.States
 			}
 
 			CurrentSubState =
-				(CurrentSubState == GroundedSubStates.Crouching)
-					? GroundedSubStates.Standing
-					: GroundedSubStates.Crouching;
+				(CurrentSubState == GroundedSubState.Crouching)
+					? GroundedSubState.Standing
+					: GroundedSubState.Crouching;
 		}
 
 		private void HandleToggleSprint()
 		{
-			if (CurrentSubState == GroundedSubStates.Sprinting)
+			if (CurrentSubState == GroundedSubState.Sprinting)
 			{
-				CurrentSubState = GroundedSubStates.Standing;
+				CurrentSubState = GroundedSubState.Standing;
 				return;
 			}
 
-			CurrentSubState = GroundedSubStates.Sprinting;
+			CurrentSubState = GroundedSubState.Sprinting;
 			PlayerContext.CurrentCombatStance = PlayerCombatStance.Passive;
 		}
 
 		private void HandleToggleWeaponStance()
 		{
-			if (CurrentSubState == GroundedSubStates.Sprinting)
+			if (CurrentSubState == GroundedSubState.Sprinting)
 				return;
 
 			PlayerContext.CurrentCombatStance =
@@ -110,7 +111,7 @@ namespace Assets.Scripts.Player.StateMachine.States
 
 		private void HandleJump()
 		{
-			if (CurrentSubState == GroundedSubStates.Crouching)
+			if (CurrentSubState == GroundedSubState.Crouching)
 			{
 				_isChargingJump = true;
 				_currentChargeTime = 0f;
@@ -118,20 +119,20 @@ namespace Assets.Scripts.Player.StateMachine.States
 				return;
 			}
 
-			if (InputMoveDirection.magnitude > 0 && CurrentSubState == GroundedSubStates.Sprinting)
+			if (InputMoveDirection.magnitude > 0 && CurrentSubState == GroundedSubState.Sprinting)
 			{
 				PlayerContext.StateMachine.TransitionTo(
 					new AirborneState(),
-					new Dictionary<string, object> { { "leap", _leapMagnitude } }
+					new Dictionary<string, object> { { PlayerConstants.LEAP, _leapMagnitude } }
 				);
 				return;
 			}
 
-			if (CurrentSubState == GroundedSubStates.Standing)
+			if (CurrentSubState == GroundedSubState.Standing)
 			{
 				PlayerContext.StateMachine.TransitionTo(
 					new AirborneState(),
-					new Dictionary<string, object> { { "jump", _jumpMagnitude } }
+					new Dictionary<string, object> { { PlayerConstants.JUMP, _jumpMagnitude } }
 				);
 				return;
 			}
@@ -140,7 +141,13 @@ namespace Assets.Scripts.Player.StateMachine.States
 		private void HandleJumpCancelled()
 		{
 			if (!_isChargingJump)
+			{
+				if (CurrentSubState == GroundedSubState.Crouching)
+				{
+					CurrentSubState = GroundedSubState.Standing;
+				}
 				return;
+			}
 
 			_isChargingJump = false;
 			Debug.Log("Jump Released!");
@@ -151,7 +158,10 @@ namespace Assets.Scripts.Player.StateMachine.States
 				{
 					PlayerContext.StateMachine.TransitionTo(
 						new AirborneState(),
-						new Dictionary<string, object> { { "superJump", _superJumpMagnitude } }
+						new Dictionary<string, object>
+						{
+							{ PlayerConstants.SUPER_JUMP, _superJumpMagnitude },
+						}
 					);
 				}
 				else
@@ -160,7 +170,7 @@ namespace Assets.Scripts.Player.StateMachine.States
 						new AirborneState(),
 						new Dictionary<string, object>
 						{
-							{ "longJump", _longJumpMagnitude },
+							{ PlayerConstants.LONG_JUMP, _longJumpMagnitude },
 							{ "jumpDirection", _storedJumpDirection },
 						}
 					);
@@ -168,10 +178,7 @@ namespace Assets.Scripts.Player.StateMachine.States
 			}
 			else
 			{
-				PlayerContext.StateMachine.TransitionTo(
-					new AirborneState(),
-					new Dictionary<string, object> { { "jump", _jumpMagnitude } }
-				);
+				CurrentSubState = GroundedSubState.Standing;
 			}
 
 			_currentChargeTime = 0f;

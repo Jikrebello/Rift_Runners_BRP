@@ -9,13 +9,14 @@ namespace Assets.Scripts.Player.StateMachine.States
 		public override void Enter(Dictionary<string, object> parameters)
 		{
 			base.Enter(parameters);
+			CurrentSubState = GroundedSubState.Crouching;
 		}
 
 		public override void Update()
 		{
 			base.Update();
 
-			CurrentSubState = GroundedSubStates.Crouching;
+			CurrentSubState = GroundedSubState.Crouching;
 			Debug.Log($"IdleState: Player Input Direction {CurrentSubState}");
 			Debug.Log($"IdleState: Player Input Direction {InputMoveDirection}");
 		}

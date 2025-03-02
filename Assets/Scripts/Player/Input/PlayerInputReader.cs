@@ -17,6 +17,7 @@ namespace Assets.Scripts.Player.Input
 
 		public event Action<Vector2> MoveEvent;
 		public event Action JumpEvent;
+		public event Action JumpHeldEvent;
 		public event Action JumpCancelledEvent;
 		public event Action AimEvent;
 		public event Action AimCancelledEvent;
@@ -45,11 +46,8 @@ namespace Assets.Scripts.Player.Input
 		public event Action SpecialAttack3Event;
 		public event Action SpecialAttack3CancelledEvent;
 		public event Action ToggleCrouchEvent;
-		public event Action ToggleCrouchCancelledEvent;
 		public event Action ToggleSprintEvent;
-		public event Action ToggleSprintCancelledEvent;
 		public event Action ToggleWeaponStanceEvent;
-		public event Action ToggleWeaponStanceCancelledEvent;
 
 		private void OnEnable()
 		{
@@ -93,9 +91,14 @@ namespace Assets.Scripts.Player.Input
 				);
 			}
 
-			if (context.phase == InputActionPhase.Performed)
+			if (context.phase == InputActionPhase.Started)
 			{
 				JumpEvent?.Invoke();
+			}
+
+			if (context.phase == InputActionPhase.Performed)
+			{
+				JumpHeldEvent?.Invoke();
 			}
 
 			if (context.phase == InputActionPhase.Canceled)

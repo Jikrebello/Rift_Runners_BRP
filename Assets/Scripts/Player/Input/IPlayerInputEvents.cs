@@ -7,6 +7,7 @@ namespace Assets.Scripts.Player.Input
 	{
 		event Action<Vector2> MoveEvent;
 		event Action JumpEvent;
+		event Action JumpHeldEvent;
 		event Action JumpCancelledEvent;
 		event Action AimEvent;
 		event Action AimCancelledEvent;

@@ -9,6 +9,7 @@ namespace Assets.Scripts.Player.StateMachine.States
 		public override void Enter(Dictionary<string, object> parameters)
 		{
 			base.Enter(parameters);
+			CurrentSubState = GroundedSubState.Sprinting;
 		}
 
 		public override void Update()

@@ -1,6 +1,6 @@
 ﻿namespace Assets.Scripts.Player.StateMachine
 {
-	public enum PlayerSuperStates
+	public enum PlayerSuperState
 	{
 		Grounded,
 		Airborne,
@@ -21,16 +21,17 @@
 		Engaged,
 	}
 
-	public enum GroundedSubStates
+	public enum GroundedSubState
 	{
 		Standing,
 		Crouching,
 		Sprinting,
 	}
 
-	public enum AirborneSubStates
+	public enum AirborneSubState
 	{
 		Ascending,
 		Falling,
+		Gliding,
 	}
 }

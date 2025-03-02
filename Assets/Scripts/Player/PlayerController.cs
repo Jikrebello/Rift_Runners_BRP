@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviour
 		_playerContext = new PlayerContext
 		{
 			GameObject = gameObject,
+			PlayerTransform = gameObject.transform,
 			PlayerInputEvents = _inputEvents,
 			StateMachine = _stateMachine,
 			CharacterController = GetComponent<CharacterController>(),
