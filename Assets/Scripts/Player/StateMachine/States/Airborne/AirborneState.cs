@@ -14,6 +14,11 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 		protected Vector2 InputMoveDirection;
 		protected Vector3 PlayerVelocity;
 
+		private readonly float _jumpMagnitude = 5;
+		private readonly float _leapMagnitude = 10;
+		private readonly float _superJumpMagnitude = 10;
+		private readonly float _longJumpMagnitude = 10;
+
 		private Vector2 _jumpDirection = Vector2.zero;
 		private float _jumpForce = 0f;
 
@@ -48,17 +53,20 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 
 			if (parameters.TryGetValue(PlayerConstants.JUMP, out object jumpMagnitude))
 			{
-				HandleNormalJumpEntry((float)jumpMagnitude);
+				if ((bool)jumpMagnitude == true)
+					HandleNormalJumpEntry();
 			}
 			else if (parameters.TryGetValue(PlayerConstants.LEAP, out object leapMagnitude))
 			{
-				HandleSprintLeapEntry((float)leapMagnitude);
+				if ((bool)leapMagnitude == true)
+					HandleSprintLeapEntry();
 			}
 			else if (
 				parameters.TryGetValue(PlayerConstants.SUPER_JUMP, out object superJumpMagnitude)
 			)
 			{
-				HandleSuperJumpEntry((float)superJumpMagnitude);
+				if ((bool)superJumpMagnitude == true)
+					HandleSuperJumpEntry();
 			}
 			else if (
 				parameters.TryGetValue(PlayerConstants.LONG_JUMP, out object longJumpMagnitude)
@@ -68,7 +76,8 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 					? (Vector2)parameters["jumpDirection"]
 					: (Vector2)PlayerContext.GameObject.transform.forward; // TODO: Make this the direction of the player model
 
-				HandleLongJumpEntry((float)longJumpMagnitude, direction);
+				if ((bool)longJumpMagnitude == true)
+					HandleLongJumpEntry(direction);
 			}
 		}
 
@@ -153,32 +162,32 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 			PlayerContext.PlayerInputEvents.JumpCancelledEvent -= HandleJumpCancelledEvent;
 		}
 
-		private void HandleNormalJumpEntry(float jumpMagnitude)
+		private void HandleNormalJumpEntry()
 		{
-			_jumpForce = jumpMagnitude;
+			_jumpForce = _jumpMagnitude;
 			PlayerVelocity.y = _jumpForce;
 			CurrentSubState = AirborneSubState.Ascending;
 		}
 
-		private void HandleSprintLeapEntry(float leapMagnitude)
+		private void HandleSprintLeapEntry()
 		{
-			_jumpForce = leapMagnitude;
+			_jumpForce = _leapMagnitude;
 			_isLeap = true;
 			_jumpDirection = PlayerContext.PlayerTransform.forward;
 			CurrentSubState = AirborneSubState.Ascending;
 			Debug.Log($"Sprint Leap - Force: {_jumpForce}, Direction: {_jumpDirection}");
 		}
 
-		private void HandleSuperJumpEntry(float superJumpMagnitude)
+		private void HandleSuperJumpEntry()
 		{
-			_jumpForce = superJumpMagnitude;
+			_jumpForce = _superJumpMagnitude;
 			CurrentSubState = AirborneSubState.Ascending;
 			Debug.Log($"Super Jump - Force: {_jumpForce}");
 		}
 
-		private void HandleLongJumpEntry(float longJumpMagnitude, Vector2 direction)
+		private void HandleLongJumpEntry(Vector2 direction)
 		{
-			_jumpForce = longJumpMagnitude;
+			_jumpForce = _longJumpMagnitude;
 			_jumpDirection = direction.normalized;
 			CurrentSubState = AirborneSubState.Ascending;
 			Debug.Log($"Long Jump - Force: {_jumpForce}, Direction: {_jumpDirection}");
@@ -186,7 +195,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 
 		private void HandleMoveEvent(Vector2 direction)
 		{
-			InputMoveDirection = direction.normalized;
+			InputMoveDirection = direction;
 		}
 
 		private void HandleJumpEvent()

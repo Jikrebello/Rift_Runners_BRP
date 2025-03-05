@@ -12,10 +12,6 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 
 		protected Vector2 InputMoveDirection;
 
-		private readonly float _jumpMagnitude = 5;
-		private readonly float _leapMagnitude = 7;
-		private readonly float _superJumpMagnitude = 10;
-		private readonly float _longJumpMagnitude = 10;
 		private readonly float _superJumpChargeTime = 1.0f;
 
 		private float _currentChargeTime = 0f;
@@ -128,7 +124,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 			{
 				PlayerContext.StateMachine.TransitionTo(
 					new AirborneState(),
-					new Dictionary<string, object> { { PlayerConstants.LEAP, _leapMagnitude } }
+					new Dictionary<string, object> { { PlayerConstants.LEAP, true } }
 				);
 				return;
 			}
@@ -137,7 +133,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 			{
 				PlayerContext.StateMachine.TransitionTo(
 					new AirborneState(),
-					new Dictionary<string, object> { { PlayerConstants.JUMP, _jumpMagnitude } }
+					new Dictionary<string, object> { { PlayerConstants.JUMP, true } }
 				);
 				return;
 			}
@@ -163,10 +159,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 				{
 					PlayerContext.StateMachine.TransitionTo(
 						new AirborneState(),
-						new Dictionary<string, object>
-						{
-							{ PlayerConstants.SUPER_JUMP, _superJumpMagnitude },
-						}
+						new Dictionary<string, object> { { PlayerConstants.SUPER_JUMP, true } }
 					);
 				}
 				else
@@ -175,7 +168,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 						new AirborneState(),
 						new Dictionary<string, object>
 						{
-							{ PlayerConstants.LONG_JUMP, _longJumpMagnitude },
+							{ PlayerConstants.LONG_JUMP, true },
 							{ "jumpDirection", _storedJumpDirection },
 						}
 					);
