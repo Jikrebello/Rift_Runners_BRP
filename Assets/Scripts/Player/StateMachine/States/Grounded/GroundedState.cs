@@ -12,12 +12,6 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 
 		protected Vector2 InputMoveDirection;
 
-		private readonly float _superJumpChargeTime = 1.0f;
-
-		private float _currentChargeTime = 0f;
-		private bool _isChargingJump = false;
-		private Vector2 _storedJumpDirection = Vector2.zero;
-
 		public virtual void Enter(Dictionary<string, object> parameters)
 		{
 			PlayerContext.CurrentSuperState = PlayerSuperState.Grounded;
@@ -33,21 +27,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 			PlayerContext.PlayerInputEvents.JumpCancelledEvent += HandleJumpCancelledEvent;
 		}
 
-		public virtual void Update()
-		{
-			if (_isChargingJump)
-			{
-				_currentChargeTime += Time.deltaTime;
-
-				if (
-					_currentChargeTime >= _superJumpChargeTime
-					&& _currentChargeTime - Time.deltaTime < _superJumpChargeTime
-				)
-				{
-					Debug.Log("Super Jump Fully Charged!");
-				}
-			}
-		}
+		public virtual void Update() { }
 
 		public abstract void FixedUpdate();
 
@@ -67,19 +47,12 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 			InputMoveDirection = direction;
 		}
 
-		private void HandleToggleCrouchEvent()
+		protected virtual void HandleToggleCrouchEvent()
 		{
 			if (CurrentGroundedSubState == GroundedSubState.Sprinting)
 			{
 				CurrentGroundedSubState = GroundedSubState.Standing;
 				return;
-			}
-
-			if (_isChargingJump)
-			{
-				_isChargingJump = false;
-				_currentChargeTime = 0f;
-				Debug.Log("Super Jump Cancelled (Crouch Released)");
 			}
 
 			CurrentGroundedSubState =
@@ -111,16 +84,8 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 					: PlayerCombatStance.Engaged;
 		}
 
-		private void HandleJumpEvent()
+		protected virtual void HandleJumpEvent()
 		{
-			if (CurrentGroundedSubState == GroundedSubState.Crouching)
-			{
-				_isChargingJump = true;
-				_currentChargeTime = 0f;
-				_storedJumpDirection = InputMoveDirection;
-				return;
-			}
-
 			if (
 				InputMoveDirection.magnitude > 0
 				&& CurrentGroundedSubState == GroundedSubState.Sprinting
@@ -147,52 +112,6 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 			}
 		}
 
-		private void HandleJumpCancelledEvent()
-		{
-			if (!_isChargingJump)
-			{
-				if (CurrentGroundedSubState == GroundedSubState.Crouching)
-				{
-					CurrentGroundedSubState = GroundedSubState.Standing;
-				}
-				return;
-			}
-
-			_isChargingJump = false;
-			Debug.Log("Jump Released!");
-
-			if (_currentChargeTime >= _superJumpChargeTime)
-			{
-				if (_storedJumpDirection.magnitude == 0)
-				{
-					PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.IsGrounded, false);
-
-					PlayerContext.StateMachine.TransitionTo(
-						new AirborneState(),
-						new Dictionary<string, object> { { PlayerConstants.SUPER_JUMP, true } }
-					);
-				}
-				else
-				{
-					PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.IsGrounded, false);
-
-					PlayerContext.StateMachine.TransitionTo(
-						new AirborneState(),
-						new Dictionary<string, object>
-						{
-							{ PlayerConstants.LONG_JUMP, true },
-							{ "jumpDirection", _storedJumpDirection },
-						}
-					);
-				}
-			}
-			else
-			{
-				CurrentGroundedSubState = GroundedSubState.Standing;
-			}
-
-			_currentChargeTime = 0f;
-			_storedJumpDirection = Vector2.zero;
-		}
+		protected virtual void HandleJumpCancelledEvent() { }
 	}
 }

@@ -25,28 +25,16 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 
 		private void HandleEntryParameters(Dictionary<string, object> parameters)
 		{
-			if (
-				parameters != null
-				&& parameters.ContainsKey(PlayerConstants.STANDING_IDLE)
-				&& (bool)parameters[PlayerConstants.STANDING_IDLE]
-			)
+			if (parameters.GetBool(PlayerConstants.STANDING_IDLE))
 			{
 				_currentStandingSubState = StandingSubState.Idle;
 			}
-			else if (
-				parameters != null
-				&& parameters.ContainsKey(PlayerConstants.JOGGING)
-				&& (bool)parameters[PlayerConstants.JOGGING]
-			)
+			else if (parameters.GetBool(PlayerConstants.JOGGING))
 			{
 				_currentStandingSubState = StandingSubState.Jogging;
 			}
 
-			if (
-				parameters != null
-				&& parameters.ContainsKey(PlayerConstants.FROM_LEAP)
-				&& (bool)parameters[PlayerConstants.FROM_LEAP]
-			)
+			if (parameters.GetBool(PlayerConstants.FROM_LEAP))
 			{
 				_isRolling = true;
 				Debug.Log("Entering Walking State with a Roll!");

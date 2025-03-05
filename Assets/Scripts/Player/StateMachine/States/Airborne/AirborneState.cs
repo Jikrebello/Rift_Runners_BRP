@@ -34,6 +34,8 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 		private readonly float _gravityMultiplier = 1f;
 		private readonly float _glideSpeedMultiplier = 1.1f;
 
+		private bool _fromCrouching = false;
+
 		public void Enter(Dictionary<string, object> parameters)
 		{
 			PlayerContext.CurrentSuperState = PlayerSuperState.Airborne;
@@ -55,6 +57,19 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 		{
 			if (parameters == null)
 				return;
+
+			// Can only be crouching and airborne if falling
+			if (parameters.GetBool(PlayerConstants.FROM_CROUCHING))
+			{
+				_fromCrouching = true;
+
+				CurrentSubState = AirborneSubState.Falling;
+
+				PlayerContext.PlayerAnimator.SetInteger(
+					PlayerAnimationHashes.AirborneSubState,
+					(int)AirborneSubState.Falling
+				);
+			}
 
 			var jumpMappings = new Dictionary<string, (float magnitude, bool setDirection)>
 			{
@@ -83,9 +98,13 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 						}
 						else if (key == PlayerConstants.LONG_JUMP)
 						{
-							_jumpDirection = parameters.ContainsKey("jumpDirection")
-								? ((Vector2)parameters["jumpDirection"]).normalized
-								: (Vector2)PlayerContext.GameObject.transform.forward; // TODO: Make this the direction of the player model
+							_jumpDirection = parameters
+								.GetVector2(
+									PlayerConstants.JUMP_DIRECTION,
+									(Vector2)PlayerContext.GameObject.transform.forward
+								)
+								.normalized;
+
 							Debug.Log(
 								$"Long Jump - Force: {_jumpForce}, Direction: {_jumpDirection}"
 							);
@@ -127,58 +146,94 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 		{
 			if (PlayerContext.CharacterController.isGrounded)
 			{
-				Debug.Log("Landed! Transitioning to Grounded State.");
-
-				PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.IsGrounded, true);
-
-				if (_isLeap)
-				{
-					PlayerContext.StateMachine.TransitionTo(
-						new StandingState(),
-						new Dictionary<string, object> { { PlayerConstants.FROM_LEAP, true } }
-					);
-					return;
-				}
-
-				switch (InputMoveDirection.magnitude)
-				{
-					case > 0:
-						PlayerContext.StateMachine.TransitionTo(
-							new StandingState(),
-							new Dictionary<string, object> { { PlayerConstants.JOGGING, true } }
-						);
-						break;
-					default:
-						PlayerContext.StateMachine.TransitionTo(
-							new StandingState(),
-							new Dictionary<string, object>
-							{
-								{ PlayerConstants.STANDING_IDLE, true },
-							}
-						);
-						break;
-				}
-
+				HandleLanding();
 				return;
 			}
 
-			if (!PlayerContext.CharacterController.isGrounded)
+			HandleFalling();
+			PlayerContext.CharacterController.Move(PlayerVelocity * Time.deltaTime);
+		}
+
+		private void HandleLanding()
+		{
+			Debug.Log("Landed! Transitioning to Grounded State.");
+			PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.IsGrounded, true);
+
+			// 🚀 If gliding, always land standing, but determine if it's jogging or idle
+			if (_isGliding)
 			{
-				if (_isGliding)
-				{
-					PlayerVelocity.y = Mathf.Lerp(
-						PlayerVelocity.y,
-						_glideFallSpeedLimit,
-						Time.deltaTime * _glideSmoothFactor
-					);
-				}
-				else
-				{
-					PlayerVelocity.y += Physics.gravity.y * _gravityMultiplier * Time.deltaTime;
-				}
+				TransitionToStandingBasedOnMovement();
+				return;
 			}
 
-			PlayerContext.CharacterController.Move(PlayerVelocity * Time.deltaTime);
+			// 🚀 If leaping, transition to StandingState with special flag
+			if (_isLeap)
+			{
+				PlayerContext.StateMachine.TransitionTo(
+					new StandingState(),
+					new Dictionary<string, object> { { PlayerConstants.FROM_LEAP, true } }
+				);
+				return;
+			}
+
+			// 🚀 If falling from a crouched state, land in CrouchingState
+			if (_fromCrouching)
+			{
+				PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.Crouching, true);
+				_fromCrouching = false;
+
+				PlayerContext.StateMachine.TransitionTo(
+					new CrouchingState(),
+					new Dictionary<string, object>
+					{
+						{
+							InputMoveDirection.magnitude > 0
+								? PlayerConstants.SNEAKING
+								: PlayerConstants.CROUCHING_IDLE,
+							true
+						},
+					}
+				);
+				return;
+			}
+
+			// 🚀 Default transition to StandingState based on movement
+			TransitionToStandingBasedOnMovement();
+		}
+
+		/// <summary>
+		/// Transitions to StandingState and determines if it's jogging or idle.
+		/// </summary>
+		private void TransitionToStandingBasedOnMovement()
+		{
+			PlayerContext.StateMachine.TransitionTo(
+				new StandingState(),
+				new Dictionary<string, object>
+				{
+					{
+						InputMoveDirection.magnitude > 0
+							? PlayerConstants.JOGGING
+							: PlayerConstants.STANDING_IDLE,
+						true
+					},
+				}
+			);
+		}
+
+		private void HandleFalling()
+		{
+			if (_isGliding)
+			{
+				PlayerVelocity.y = Mathf.Lerp(
+					PlayerVelocity.y,
+					_glideFallSpeedLimit,
+					Time.deltaTime * _glideSmoothFactor
+				);
+			}
+			else
+			{
+				PlayerVelocity.y += Physics.gravity.y * _gravityMultiplier * Time.deltaTime;
+			}
 		}
 
 		public virtual void Exit()
