@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using Assets.Scripts.Player.Data;
+using Assets.Scripts.Player.StateMachine.States.Grounded;
 using UnityEngine;
 
-namespace Assets.Scripts.Player.StateMachine.States
+namespace Assets.Scripts.Player.StateMachine.States.Airborne
 {
 	public class AirborneState : IPlayerState
 	{
@@ -30,11 +32,13 @@ namespace Assets.Scripts.Player.StateMachine.States
 		public void Enter(Dictionary<string, object> parameters)
 		{
 			PlayerContext.CurrentSuperState = PlayerSuperState.Airborne;
-			HandleEntryParameters(parameters);
+
 			PlayerContext.PlayerInputEvents.MoveEvent += HandleMoveEvent;
 			PlayerContext.PlayerInputEvents.JumpEvent += HandleJumpEvent;
 			PlayerContext.PlayerInputEvents.JumpHeldEvent += HandleJumpHeldEvent;
 			PlayerContext.PlayerInputEvents.JumpCancelledEvent += HandleJumpCancelledEvent;
+
+			HandleEntryParameters(parameters);
 		}
 
 		private void HandleEntryParameters(Dictionary<string, object> parameters)
@@ -94,8 +98,8 @@ namespace Assets.Scripts.Player.StateMachine.States
 				if (_isLeap)
 				{
 					PlayerContext.StateMachine.TransitionTo(
-						new WalkingState(),
-						new Dictionary<string, object> { { "fromLeap", true } }
+						new StandingState(),
+						new Dictionary<string, object> { { PlayerConstants.FROM_LEAP, true } }
 					);
 					return;
 				}
@@ -103,10 +107,19 @@ namespace Assets.Scripts.Player.StateMachine.States
 				switch (InputMoveDirection.magnitude)
 				{
 					case > 0:
-						PlayerContext.StateMachine.TransitionTo(new WalkingState());
+						PlayerContext.StateMachine.TransitionTo(
+							new StandingState(),
+							new Dictionary<string, object> { { PlayerConstants.JOGGING, true } }
+						);
 						break;
 					default:
-						PlayerContext.StateMachine.TransitionTo(new IdleState());
+						PlayerContext.StateMachine.TransitionTo(
+							new StandingState(),
+							new Dictionary<string, object>
+							{
+								{ PlayerConstants.STANDING_IDLE, true },
+							}
+						);
 						break;
 				}
 

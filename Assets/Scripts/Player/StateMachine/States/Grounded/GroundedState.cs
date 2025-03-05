@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
+using Assets.Scripts.Player.Data;
+using Assets.Scripts.Player.StateMachine.States.Airborne;
 using UnityEngine;
 
-namespace Assets.Scripts.Player.StateMachine.States
+namespace Assets.Scripts.Player.StateMachine.States.Grounded
 {
 	public abstract class GroundedState : IPlayerState
 	{
 		public PlayerContext PlayerContext { get; set; }
-		protected GroundedSubState CurrentSubState { get; set; }
+		protected GroundedSubState CurrentGroundedSubState { get; set; }
 
 		protected Vector2 InputMoveDirection;
 
@@ -67,9 +69,9 @@ namespace Assets.Scripts.Player.StateMachine.States
 
 		private void HandleToggleCrouch()
 		{
-			if (CurrentSubState == GroundedSubState.Sprinting)
+			if (CurrentGroundedSubState == GroundedSubState.Sprinting)
 			{
-				CurrentSubState = GroundedSubState.Standing;
+				CurrentGroundedSubState = GroundedSubState.Standing;
 				return;
 			}
 
@@ -80,38 +82,38 @@ namespace Assets.Scripts.Player.StateMachine.States
 				Debug.Log("Super Jump Cancelled (Crouch Released)");
 			}
 
-			CurrentSubState =
-				(CurrentSubState == GroundedSubState.Crouching)
+			CurrentGroundedSubState =
+				CurrentGroundedSubState == GroundedSubState.Crouching
 					? GroundedSubState.Standing
 					: GroundedSubState.Crouching;
 		}
 
 		private void HandleToggleSprint()
 		{
-			if (CurrentSubState == GroundedSubState.Sprinting)
+			if (CurrentGroundedSubState == GroundedSubState.Sprinting)
 			{
-				CurrentSubState = GroundedSubState.Standing;
+				CurrentGroundedSubState = GroundedSubState.Standing;
 				return;
 			}
 
-			CurrentSubState = GroundedSubState.Sprinting;
+			CurrentGroundedSubState = GroundedSubState.Sprinting;
 			PlayerContext.CurrentCombatStance = PlayerCombatStance.Passive;
 		}
 
 		private void HandleToggleWeaponStance()
 		{
-			if (CurrentSubState == GroundedSubState.Sprinting)
+			if (CurrentGroundedSubState == GroundedSubState.Sprinting)
 				return;
 
 			PlayerContext.CurrentCombatStance =
-				(PlayerContext.CurrentCombatStance == PlayerCombatStance.Engaged)
+				PlayerContext.CurrentCombatStance == PlayerCombatStance.Engaged
 					? PlayerCombatStance.Passive
 					: PlayerCombatStance.Engaged;
 		}
 
 		private void HandleJump()
 		{
-			if (CurrentSubState == GroundedSubState.Crouching)
+			if (CurrentGroundedSubState == GroundedSubState.Crouching)
 			{
 				_isChargingJump = true;
 				_currentChargeTime = 0f;
@@ -119,7 +121,10 @@ namespace Assets.Scripts.Player.StateMachine.States
 				return;
 			}
 
-			if (InputMoveDirection.magnitude > 0 && CurrentSubState == GroundedSubState.Sprinting)
+			if (
+				InputMoveDirection.magnitude > 0
+				&& CurrentGroundedSubState == GroundedSubState.Sprinting
+			)
 			{
 				PlayerContext.StateMachine.TransitionTo(
 					new AirborneState(),
@@ -128,7 +133,7 @@ namespace Assets.Scripts.Player.StateMachine.States
 				return;
 			}
 
-			if (CurrentSubState == GroundedSubState.Standing)
+			if (CurrentGroundedSubState == GroundedSubState.Standing)
 			{
 				PlayerContext.StateMachine.TransitionTo(
 					new AirborneState(),
@@ -142,9 +147,9 @@ namespace Assets.Scripts.Player.StateMachine.States
 		{
 			if (!_isChargingJump)
 			{
-				if (CurrentSubState == GroundedSubState.Crouching)
+				if (CurrentGroundedSubState == GroundedSubState.Crouching)
 				{
-					CurrentSubState = GroundedSubState.Standing;
+					CurrentGroundedSubState = GroundedSubState.Standing;
 				}
 				return;
 			}
@@ -178,7 +183,7 @@ namespace Assets.Scripts.Player.StateMachine.States
 			}
 			else
 			{
-				CurrentSubState = GroundedSubState.Standing;
+				CurrentGroundedSubState = GroundedSubState.Standing;
 			}
 
 			_currentChargeTime = 0f;

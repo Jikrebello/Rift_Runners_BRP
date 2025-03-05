@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Player.Input;
+﻿using Assets.Scripts.Player.Data;
+using Assets.Scripts.Player.Input;
 using Assets.Scripts.Player.StateMachine;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ namespace Assets.Scripts.Player
 	{
 		public GameObject GameObject { get; set; }
 		public Transform PlayerTransform { get; set; }
+		public Animator PlayerAnimator { get; set; }
 		public IPlayerInputEvents PlayerInputEvents { get; set; }
 		public CharacterController CharacterController { get; set; }
 		public PlayerStateMachine StateMachine { get; set; }

@@ -1,37 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using Assets.Scripts.Player.Data;
 using UnityEngine;
 
-namespace Assets.Scripts.Player.StateMachine.States
+namespace Assets.Scripts.Player.StateMachine.States.Grounded
 {
 	public class SprintingState : GroundedState
 	{
 		public override void Enter(Dictionary<string, object> parameters)
 		{
 			base.Enter(parameters);
-			CurrentSubState = GroundedSubState.Sprinting;
+			CurrentGroundedSubState = GroundedSubState.Sprinting;
 		}
 
 		public override void Update()
 		{
 			base.Update();
 
+			// TODO: Needs further fleshing out when airborne is sorted out, fine as is for now
+
 			if (InputMoveDirection.magnitude == 0)
 			{
-				PlayerContext.StateMachine.TransitionTo(
-					new IdleState(),
-					new Dictionary<string, object> { { "previousSpeed", 0 } }
-				);
+				PlayerContext.StateMachine.TransitionTo(new StandingState());
 			}
 			else if (InputMoveDirection.magnitude > 0)
 			{
-				PlayerContext.StateMachine.TransitionTo(
-					new WalkingState(),
-					new Dictionary<string, object>
-					{
-						{ "previousSpeed", InputMoveDirection.magnitude },
-					}
-				);
+				PlayerContext.StateMachine.TransitionTo(new StandingState());
 			}
 		}
 

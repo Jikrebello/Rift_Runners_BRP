@@ -1,4 +1,4 @@
-﻿namespace Assets.Scripts.Player.StateMachine
+﻿namespace Assets.Scripts.Player.Data
 {
 	public enum PlayerSuperState
 	{
@@ -26,6 +26,19 @@
 		Standing,
 		Crouching,
 		Sprinting,
+	}
+
+	public enum StandingSubState
+	{
+		Idle,
+		Walking,
+		Jogging,
+	}
+
+	public enum CrouchingSubState
+	{
+		Idle,
+		Sneaking,
 	}
 
 	public enum AirborneSubState

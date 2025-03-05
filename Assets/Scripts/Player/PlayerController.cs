@@ -1,7 +1,8 @@
 using Assets.Scripts.Player;
+using Assets.Scripts.Player.Data;
 using Assets.Scripts.Player.Input;
 using Assets.Scripts.Player.StateMachine;
-using Assets.Scripts.Player.StateMachine.States;
+using Assets.Scripts.Player.StateMachine.States.Grounded;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -18,7 +19,7 @@ public class PlayerController : MonoBehaviour
 		_stateMachine = new PlayerStateMachine(_playerContext);
 		_playerContext.StateMachine = _stateMachine;
 
-		_stateMachine.TransitionTo(new IdleState());
+		_stateMachine.TransitionTo(new StandingState());
 	}
 
 	void Update()
@@ -39,6 +40,7 @@ public class PlayerController : MonoBehaviour
 		{
 			GameObject = gameObject,
 			PlayerTransform = gameObject.transform,
+			PlayerAnimator = GetComponent<Animator>(),
 			PlayerInputEvents = _inputEvents,
 			StateMachine = _stateMachine,
 			CharacterController = GetComponent<CharacterController>(),
