@@ -22,12 +22,15 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 		{
 			PlayerContext.CurrentSuperState = PlayerSuperState.Grounded;
 
-			PlayerContext.PlayerInputEvents.MoveEvent += HandleMove;
-			PlayerContext.PlayerInputEvents.ToggleCrouchEvent += HandleToggleCrouch;
-			PlayerContext.PlayerInputEvents.ToggleSprintEvent += HandleToggleSprint;
-			PlayerContext.PlayerInputEvents.ToggleWeaponStanceEvent += HandleToggleWeaponStance;
-			PlayerContext.PlayerInputEvents.JumpEvent += HandleJump;
-			PlayerContext.PlayerInputEvents.JumpCancelledEvent += HandleJumpCancelled;
+			PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.IsGrounded, true);
+
+			PlayerContext.PlayerInputEvents.MoveEvent += HandleMoveEvent;
+			PlayerContext.PlayerInputEvents.ToggleCrouchEvent += HandleToggleCrouchEvent;
+			PlayerContext.PlayerInputEvents.ToggleSprintEvent += HandleToggleSprintEvent;
+			PlayerContext.PlayerInputEvents.ToggleWeaponStanceEvent +=
+				HandleToggleWeaponStanceEvent;
+			PlayerContext.PlayerInputEvents.JumpEvent += HandleJumpEvent;
+			PlayerContext.PlayerInputEvents.JumpCancelledEvent += HandleJumpCancelledEvent;
 		}
 
 		public virtual void Update()
@@ -50,20 +53,21 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 
 		public virtual void Exit()
 		{
-			PlayerContext.PlayerInputEvents.MoveEvent -= HandleMove;
-			PlayerContext.PlayerInputEvents.ToggleCrouchEvent -= HandleToggleCrouch;
-			PlayerContext.PlayerInputEvents.ToggleSprintEvent -= HandleToggleSprint;
-			PlayerContext.PlayerInputEvents.ToggleWeaponStanceEvent -= HandleToggleWeaponStance;
-			PlayerContext.PlayerInputEvents.JumpEvent -= HandleJump;
-			PlayerContext.PlayerInputEvents.JumpCancelledEvent -= HandleJumpCancelled;
+			PlayerContext.PlayerInputEvents.MoveEvent -= HandleMoveEvent;
+			PlayerContext.PlayerInputEvents.ToggleCrouchEvent -= HandleToggleCrouchEvent;
+			PlayerContext.PlayerInputEvents.ToggleSprintEvent -= HandleToggleSprintEvent;
+			PlayerContext.PlayerInputEvents.ToggleWeaponStanceEvent -=
+				HandleToggleWeaponStanceEvent;
+			PlayerContext.PlayerInputEvents.JumpEvent -= HandleJumpEvent;
+			PlayerContext.PlayerInputEvents.JumpCancelledEvent -= HandleJumpCancelledEvent;
 		}
 
-		private void HandleMove(Vector2 direction)
+		private void HandleMoveEvent(Vector2 direction)
 		{
 			InputMoveDirection = direction;
 		}
 
-		private void HandleToggleCrouch()
+		private void HandleToggleCrouchEvent()
 		{
 			if (CurrentGroundedSubState == GroundedSubState.Sprinting)
 			{
@@ -84,7 +88,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 					: GroundedSubState.Crouching;
 		}
 
-		private void HandleToggleSprint()
+		private void HandleToggleSprintEvent()
 		{
 			if (CurrentGroundedSubState == GroundedSubState.Sprinting)
 			{
@@ -96,7 +100,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 			PlayerContext.CurrentCombatStance = PlayerCombatStance.Passive;
 		}
 
-		private void HandleToggleWeaponStance()
+		private void HandleToggleWeaponStanceEvent()
 		{
 			if (CurrentGroundedSubState == GroundedSubState.Sprinting)
 				return;
@@ -107,7 +111,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 					: PlayerCombatStance.Engaged;
 		}
 
-		private void HandleJump()
+		private void HandleJumpEvent()
 		{
 			if (CurrentGroundedSubState == GroundedSubState.Crouching)
 			{
@@ -122,6 +126,8 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 				&& CurrentGroundedSubState == GroundedSubState.Sprinting
 			)
 			{
+				PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.IsGrounded, false);
+
 				PlayerContext.StateMachine.TransitionTo(
 					new AirborneState(),
 					new Dictionary<string, object> { { PlayerConstants.LEAP, true } }
@@ -131,6 +137,8 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 
 			if (CurrentGroundedSubState == GroundedSubState.Standing)
 			{
+				PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.IsGrounded, false);
+
 				PlayerContext.StateMachine.TransitionTo(
 					new AirborneState(),
 					new Dictionary<string, object> { { PlayerConstants.JUMP, true } }
@@ -139,7 +147,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 			}
 		}
 
-		private void HandleJumpCancelled()
+		private void HandleJumpCancelledEvent()
 		{
 			if (!_isChargingJump)
 			{
@@ -157,6 +165,8 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 			{
 				if (_storedJumpDirection.magnitude == 0)
 				{
+					PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.IsGrounded, false);
+
 					PlayerContext.StateMachine.TransitionTo(
 						new AirborneState(),
 						new Dictionary<string, object> { { PlayerConstants.SUPER_JUMP, true } }
@@ -164,6 +174,8 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 				}
 				else
 				{
+					PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.IsGrounded, false);
+
 					PlayerContext.StateMachine.TransitionTo(
 						new AirborneState(),
 						new Dictionary<string, object>

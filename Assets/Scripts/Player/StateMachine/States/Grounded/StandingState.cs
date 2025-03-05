@@ -17,6 +17,9 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 
 			CurrentGroundedSubState = GroundedSubState.Standing;
 
+			PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.Sprinting, false);
+			PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.Crouching, false);
+
 			HandleEntryParameters(parameters);
 		}
 
@@ -77,7 +80,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 		{
 			_blendValue = InputMoveDirection.magnitude;
 
-			PlayerContext.PlayerAnimator.SetFloat("Speed", _blendValue);
+			PlayerContext.PlayerAnimator.SetFloat(PlayerAnimationHashes.Speed, _blendValue);
 
 			switch (_blendValue)
 			{
@@ -99,7 +102,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 			if (_isRolling)
 			{
 				_isRolling = false;
-				PlayerContext.PlayerAnimator.SetTrigger("Roll");
+				PlayerContext.PlayerAnimator.SetTrigger(PlayerAnimationHashes.Roll);
 				Debug.Log("Roll Complete, now walking normally.");
 				return;
 			}
@@ -112,11 +115,13 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 				&& CurrentGroundedSubState == GroundedSubState.Sprinting
 			)
 			{
+				PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.Sprinting, true);
 				PlayerContext.StateMachine.TransitionTo(new SprintingState());
 			}
 
 			if (CurrentGroundedSubState == GroundedSubState.Crouching)
 			{
+				PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.Crouching, true);
 				PlayerContext.StateMachine.TransitionTo(new CrouchingState());
 			}
 		}

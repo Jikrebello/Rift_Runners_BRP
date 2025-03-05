@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Assets.Scripts.Player.Data;
 
 namespace Assets.Scripts.Player.StateMachine.States.Grounded
@@ -15,7 +14,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 
 			CurrentGroundedSubState = GroundedSubState.Crouching;
 
-			PlayerContext.PlayerAnimator.SetBool("Crouching", true);
+			PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.Crouching, true);
 		}
 
 		public override void Update()
@@ -38,7 +37,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 		{
 			_blendValue = InputMoveDirection.magnitude;
 
-			PlayerContext.PlayerAnimator.SetFloat("Speed", _blendValue);
+			PlayerContext.PlayerAnimator.SetFloat(PlayerAnimationHashes.Speed, _blendValue);
 
 			switch (_blendValue)
 			{
@@ -56,7 +55,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 		{
 			if (CurrentGroundedSubState == GroundedSubState.Standing)
 			{
-				PlayerContext.PlayerAnimator.SetBool("Crouching", false);
+				PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.Crouching, false);
 				PlayerContext.StateMachine.TransitionTo(new StandingState());
 			}
 		}

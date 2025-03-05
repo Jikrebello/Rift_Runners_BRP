@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Assets.Scripts.Player.Data;
-using UnityEngine;
 
 namespace Assets.Scripts.Player.StateMachine.States.Grounded
 {
@@ -10,7 +8,10 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 		public override void Enter(Dictionary<string, object> parameters)
 		{
 			base.Enter(parameters);
+
 			CurrentGroundedSubState = GroundedSubState.Sprinting;
+
+			PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.Sprinting, true);
 		}
 
 		public override void Update()
@@ -21,11 +22,24 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 
 			if (InputMoveDirection.magnitude == 0)
 			{
-				PlayerContext.StateMachine.TransitionTo(new StandingState());
+				PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.Sprinting, false);
+
+				PlayerContext.StateMachine.TransitionTo(
+					new StandingState(),
+					new Dictionary<string, object> { { PlayerConstants.STANDING_IDLE, true } }
+				);
 			}
-			else if (InputMoveDirection.magnitude > 0)
+			else if (
+				InputMoveDirection.magnitude > 0
+				&& CurrentGroundedSubState == GroundedSubState.Standing
+			)
 			{
-				PlayerContext.StateMachine.TransitionTo(new StandingState());
+				PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.Sprinting, false);
+
+				PlayerContext.StateMachine.TransitionTo(
+					new StandingState(),
+					new Dictionary<string, object> { { PlayerConstants.JOGGING, true } }
+				);
 			}
 		}
 

@@ -38,6 +38,11 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 		{
 			PlayerContext.CurrentSuperState = PlayerSuperState.Airborne;
 
+			PlayerContext.PlayerAnimator.SetInteger(
+				PlayerAnimationHashes.AirborneSubState,
+				(int)AirborneSubState.Ascending
+			);
+
 			PlayerContext.PlayerInputEvents.MoveEvent += HandleMoveEvent;
 			PlayerContext.PlayerInputEvents.JumpEvent += HandleJumpEvent;
 			PlayerContext.PlayerInputEvents.JumpHeldEvent += HandleJumpHeldEvent;
@@ -51,33 +56,49 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 			if (parameters == null)
 				return;
 
-			if (parameters.TryGetValue(PlayerConstants.JUMP, out object jumpMagnitude))
+			var jumpMappings = new Dictionary<string, (float magnitude, bool setDirection)>
 			{
-				if ((bool)jumpMagnitude == true)
-					HandleNormalJumpEntry();
-			}
-			else if (parameters.TryGetValue(PlayerConstants.LEAP, out object leapMagnitude))
-			{
-				if ((bool)leapMagnitude == true)
-					HandleSprintLeapEntry();
-			}
-			else if (
-				parameters.TryGetValue(PlayerConstants.SUPER_JUMP, out object superJumpMagnitude)
-			)
-			{
-				if ((bool)superJumpMagnitude == true)
-					HandleSuperJumpEntry();
-			}
-			else if (
-				parameters.TryGetValue(PlayerConstants.LONG_JUMP, out object longJumpMagnitude)
-			)
-			{
-				Vector2 direction = parameters.ContainsKey("jumpDirection")
-					? (Vector2)parameters["jumpDirection"]
-					: (Vector2)PlayerContext.GameObject.transform.forward; // TODO: Make this the direction of the player model
+				{ PlayerConstants.JUMP, (_jumpMagnitude, false) },
+				{ PlayerConstants.LEAP, (_leapMagnitude, true) },
+				{ PlayerConstants.SUPER_JUMP, (_superJumpMagnitude, false) },
+				{ PlayerConstants.LONG_JUMP, (_longJumpMagnitude, true) },
+			};
 
-				if ((bool)longJumpMagnitude == true)
-					HandleLongJumpEntry(direction);
+			foreach (var (key, (magnitude, setDirection)) in jumpMappings)
+			{
+				if (parameters.TryGetValue(key, out object value) && value is bool isJump && isJump)
+				{
+					_jumpForce = magnitude;
+					CurrentSubState = AirborneSubState.Ascending;
+
+					if (setDirection)
+					{
+						if (key == PlayerConstants.LEAP)
+						{
+							_isLeap = true;
+							_jumpDirection = PlayerContext.PlayerTransform.forward;
+							Debug.Log(
+								$"Sprint Leap - Force: {_jumpForce}, Direction: {_jumpDirection}"
+							);
+						}
+						else if (key == PlayerConstants.LONG_JUMP)
+						{
+							_jumpDirection = parameters.ContainsKey("jumpDirection")
+								? ((Vector2)parameters["jumpDirection"]).normalized
+								: (Vector2)PlayerContext.GameObject.transform.forward; // TODO: Make this the direction of the player model
+							Debug.Log(
+								$"Long Jump - Force: {_jumpForce}, Direction: {_jumpDirection}"
+							);
+						}
+					}
+					else if (key == PlayerConstants.SUPER_JUMP)
+					{
+						Debug.Log($"Super Jump - Force: {_jumpForce}");
+					}
+
+					PlayerVelocity.y = _jumpForce;
+					break;
+				}
 			}
 		}
 
@@ -90,6 +111,10 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 			{
 				CurrentSubState = AirborneSubState.Falling;
 				Debug.Log("Transitioning to Falling");
+				PlayerContext.PlayerAnimator.SetInteger(
+					PlayerAnimationHashes.AirborneSubState,
+					(int)AirborneSubState.Falling
+				);
 			}
 
 			if (_isHoldingJump && CurrentSubState == AirborneSubState.Falling && !_isGliding)
@@ -103,6 +128,8 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 			if (PlayerContext.CharacterController.isGrounded)
 			{
 				Debug.Log("Landed! Transitioning to Grounded State.");
+
+				PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.IsGrounded, true);
 
 				if (_isLeap)
 				{
@@ -162,37 +189,6 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 			PlayerContext.PlayerInputEvents.JumpCancelledEvent -= HandleJumpCancelledEvent;
 		}
 
-		private void HandleNormalJumpEntry()
-		{
-			_jumpForce = _jumpMagnitude;
-			PlayerVelocity.y = _jumpForce;
-			CurrentSubState = AirborneSubState.Ascending;
-		}
-
-		private void HandleSprintLeapEntry()
-		{
-			_jumpForce = _leapMagnitude;
-			_isLeap = true;
-			_jumpDirection = PlayerContext.PlayerTransform.forward;
-			CurrentSubState = AirborneSubState.Ascending;
-			Debug.Log($"Sprint Leap - Force: {_jumpForce}, Direction: {_jumpDirection}");
-		}
-
-		private void HandleSuperJumpEntry()
-		{
-			_jumpForce = _superJumpMagnitude;
-			CurrentSubState = AirborneSubState.Ascending;
-			Debug.Log($"Super Jump - Force: {_jumpForce}");
-		}
-
-		private void HandleLongJumpEntry(Vector2 direction)
-		{
-			_jumpForce = _longJumpMagnitude;
-			_jumpDirection = direction.normalized;
-			CurrentSubState = AirborneSubState.Ascending;
-			Debug.Log($"Long Jump - Force: {_jumpForce}, Direction: {_jumpDirection}");
-		}
-
 		private void HandleMoveEvent(Vector2 direction)
 		{
 			InputMoveDirection = direction;
@@ -238,6 +234,11 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 			_isGliding = true;
 			_isLeap = false;
 			CurrentSubState = AirborneSubState.Gliding;
+
+			PlayerContext.PlayerAnimator.SetInteger(
+				PlayerAnimationHashes.AirborneSubState,
+				(int)AirborneSubState.Gliding
+			);
 
 			PlayerVelocity.y = Mathf.Max(PlayerVelocity.y, _glideFallSpeedLimit);
 			PlayerVelocity.x *= _glideSpeedMultiplier;
