@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Assets.Scripts.Player.Data;
+using UnityEngine;
 
 namespace Assets.Scripts.Player.StateMachine.States.Grounded
 {
@@ -10,15 +12,14 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 			base.Enter(parameters);
 
 			CurrentGroundedSubState = GroundedSubState.Sprinting;
-
 			PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.Sprinting, true);
+
+			PlayerContext.PlayerInputEvents.SlideEvent += HandleSlideEvent;
 		}
 
 		public override void Update()
 		{
 			base.Update();
-
-			// TODO: Needs further fleshing out when airborne is sorted out, fine as is for now
 
 			if (InputMoveDirection.magnitude == 0)
 			{
@@ -48,6 +49,18 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 		public override void Exit()
 		{
 			base.Exit();
+		}
+
+		private void HandleSlideEvent()
+		{
+			if (InputMoveDirection.magnitude > 0)
+			{
+				Debug.Log("Transitioning to Slide!");
+				PlayerContext.StateMachine.TransitionTo(
+					new SlidingState(),
+					new Dictionary<string, object> { { PlayerConstants.INITIAL_MOMENTUM, 5.0f } }
+				);
+			}
 		}
 	}
 }

@@ -150,6 +150,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "Look",
+                    "type": "Value",
+                    "id": "8592c01d-4c2e-4c11-89cf-fb694ef6009d",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "ContextualGrab",
                     "type": "Button",
                     "id": "63b8c129-2ecc-4f98-b129-7df7c842b360",
@@ -162,6 +171,24 @@
                     "name": "ToggleWeaponStance",
                     "type": "Button",
                     "id": "1d78b051-4faf-46aa-81a2-74947f650352",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Slide",
+                    "type": "Button",
+                    "id": "b47fdc23-15b3-484c-a4ac-6ed670a0c619",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "KickOffJump",
+                    "type": "Button",
+                    "id": "62fa22a8-9886-480c-a764-61d5890878ca",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -610,6 +637,72 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "2D Vector",
+                    "id": "74ae1826-ed46-4569-80c3-a30c9ea594a6",
+                    "path": "2DVector(mode=2)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "7028e098-1e63-40b8-99cb-f6dcdbdd02db",
+                    "path": "<Gamepad>/rightStick/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "7871277e-34d6-4e55-ad23-2be337647b7f",
+                    "path": "<Gamepad>/rightStick/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "560fc984-7748-42e5-beee-a5285c8f852d",
+                    "path": "<Gamepad>/rightStick/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "677cfcf7-3952-4c55-8a14-536db550d78a",
+                    "path": "<Gamepad>/rightStick/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "e67cf59c-82ed-42a7-8b79-4d89c8a87279",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
                     "name": "",
                     "id": "b4e5895d-3fb3-4ac1-8952-245c832a3d11",
                     "path": "<Gamepad>/rightTrigger",
@@ -628,6 +721,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "ToggleWeaponStance",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "504477cc-3fd2-45a5-a5af-b576ee30d58f",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Slide",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8f1cf79a-6bd4-4c5d-908c-e6c4dbdb4490",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "KickOffJump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

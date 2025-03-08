@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Assets.Scripts.Player.Data;
 using Assets.Scripts.Player.StateMachine.States.Grounded;
 using UnityEngine;
@@ -36,6 +37,10 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 
 		private bool _fromCrouching = false;
 
+		private bool _isSliding = false;
+		private float _fallVelocity;
+		private float _slideGravityMultiplier;
+
 		public void Enter(Dictionary<string, object> parameters)
 		{
 			PlayerContext.CurrentSuperState = PlayerSuperState.Airborne;
@@ -49,6 +54,8 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 			PlayerContext.PlayerInputEvents.JumpEvent += HandleJumpEvent;
 			PlayerContext.PlayerInputEvents.JumpHeldEvent += HandleJumpHeldEvent;
 			PlayerContext.PlayerInputEvents.JumpCancelledEvent += HandleJumpCancelledEvent;
+
+			PlayerContext.PlayerInputEvents.SlideEvent += HandleSlideEvent;
 
 			HandleEntryParameters(parameters);
 		}
@@ -166,6 +173,14 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 				return;
 			}
 
+			if (_isSliding)
+			{
+				PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.Sliding, true);
+
+				PlayerContext.StateMachine.TransitionTo(new SlidingState());
+				return;
+			}
+
 			// 🚀 If leaping, transition to StandingState with special flag
 			if (_isLeap)
 			{
@@ -230,6 +245,11 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 					Time.deltaTime * _glideSmoothFactor
 				);
 			}
+			else if (_isSliding)
+			{
+				// do maths to accelerate gravity downwards to "pull the character down into the ground"
+				// maybe update an internal value that upon landing, can be passed through to the sliding state for momentum calculations?
+			}
 			else
 			{
 				PlayerVelocity.y += Physics.gravity.y * _gravityMultiplier * Time.deltaTime;
@@ -242,6 +262,8 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 			PlayerContext.PlayerInputEvents.JumpEvent -= HandleJumpEvent;
 			PlayerContext.PlayerInputEvents.JumpHeldEvent -= HandleJumpHeldEvent;
 			PlayerContext.PlayerInputEvents.JumpCancelledEvent -= HandleJumpCancelledEvent;
+
+			PlayerContext.PlayerInputEvents.SlideEvent -= HandleSlideEvent;
 		}
 
 		private void HandleMoveEvent(Vector2 direction)
@@ -256,6 +278,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 				PlayerVelocity.y = _doubleJumpMagnitude;
 				_canDoubleJump = false;
 				_isLeap = false;
+				_isSliding = false;
 				CurrentSubState = AirborneSubState.Ascending;
 
 				Debug.Log("Double Jump Triggered");
@@ -284,10 +307,36 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 			}
 		}
 
+		private void HandleSlideEvent()
+		{
+			// 🚀 Prevent Slide if the player has already double jumped or started gliding
+			if (!_canDoubleJump || _isGliding)
+				return;
+
+			Debug.Log("Bumslide Activated in Air! Cancelling Leap & Accelerating Fall.");
+
+			// 🚀 If the player is currently leaping, cancel the leap
+			if (_isLeap)
+			{
+				_isLeap = false; // Cancel the leap state
+				_isSliding = true; // Flag that we're transitioning to bumslide
+			}
+
+			// 🚀 Accelerate fall speed so they hit the ground faster
+			_fallVelocity += _slideGravityMultiplier * Time.deltaTime;
+
+			// 🚀 Transition to SlidingState upon landing
+			PlayerContext.PlayerAnimator.SetInteger(
+				PlayerAnimationHashes.AirborneSubState,
+				(int)AirborneSubState.Falling
+			);
+		}
+
 		private void EnterGlideMode()
 		{
 			_isGliding = true;
 			_isLeap = false;
+			_isSliding = false;
 			CurrentSubState = AirborneSubState.Gliding;
 
 			PlayerContext.PlayerAnimator.SetInteger(

@@ -66,11 +66,12 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 			if (CurrentGroundedSubState == GroundedSubState.Sprinting)
 			{
 				CurrentGroundedSubState = GroundedSubState.Standing;
+				PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.Sprinting, false);
 				return;
 			}
 
 			CurrentGroundedSubState = GroundedSubState.Sprinting;
-			PlayerContext.CurrentCombatStance = PlayerCombatStance.Passive;
+			PlayerContext.CurrentCombatStance = PlayerCombatStance.Holstered;
 		}
 
 		private void HandleToggleWeaponStanceEvent()
@@ -78,10 +79,17 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 			if (CurrentGroundedSubState == GroundedSubState.Sprinting)
 				return;
 
-			PlayerContext.CurrentCombatStance =
-				PlayerContext.CurrentCombatStance == PlayerCombatStance.Engaged
-					? PlayerCombatStance.Passive
-					: PlayerCombatStance.Engaged;
+			bool isCurrentlyHolstered =
+				PlayerContext.CurrentCombatStance == PlayerCombatStance.Holstered;
+
+			PlayerContext.CurrentCombatStance = isCurrentlyHolstered
+				? PlayerCombatStance.Unholstered
+				: PlayerCombatStance.Holstered;
+
+			PlayerContext.PlayerAnimator.SetBool(
+				PlayerAnimationHashes.Holstered,
+				isCurrentlyHolstered
+			);
 		}
 
 		protected virtual void HandleJumpEvent()

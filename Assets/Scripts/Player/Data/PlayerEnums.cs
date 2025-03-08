@@ -17,8 +17,8 @@
 
 	public enum PlayerCombatStance
 	{
-		Passive,
-		Engaged,
+		Holstered,
+		Unholstered,
 	}
 
 	public enum GroundedSubState
@@ -26,6 +26,7 @@
 		Standing,
 		Crouching,
 		Sprinting,
+		Sliding,
 	}
 
 	public enum StandingSubState

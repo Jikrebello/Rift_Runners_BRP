@@ -10,5 +10,7 @@ namespace Assets.Scripts.Player.Data
 		public static readonly int Sprinting = Animator.StringToHash("Sprinting");
 		public static readonly int IsGrounded = Animator.StringToHash("IsGrounded");
 		public static readonly int AirborneSubState = Animator.StringToHash("AirborneSubState");
+		public static readonly int Sliding = Animator.StringToHash("Sliding");
+		public static readonly int Holstered = Animator.StringToHash("Holstered");
 	}
 }

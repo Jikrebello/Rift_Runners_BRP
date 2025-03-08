@@ -16,6 +16,7 @@ namespace Assets.Scripts.Player.Input
 		public bool IsDebug = false;
 
 		public event Action<Vector2> MoveEvent;
+		public event Action<Vector2> LookEvent;
 		public event Action JumpEvent;
 		public event Action JumpHeldEvent;
 		public event Action JumpCancelledEvent;
@@ -48,6 +49,10 @@ namespace Assets.Scripts.Player.Input
 		public event Action ToggleCrouchEvent;
 		public event Action ToggleSprintEvent;
 		public event Action ToggleWeaponStanceEvent;
+		public event Action SlideEvent;
+		public event Action KickJumpEvent;
+		public event Action SlideCancelledEvent;
+		public event Action KickJumpCancelledEvent;
 
 		private void OnEnable()
 		{
@@ -80,6 +85,17 @@ namespace Assets.Scripts.Player.Input
 				);
 			}
 			MoveEvent?.Invoke(context.ReadValue<Vector2>());
+		}
+
+		public void OnLook(InputAction.CallbackContext context)
+		{
+			if (IsDebug)
+			{
+				Debug.Log(
+					$"Look\n" + $"Phase: {context.phase}, Value: {context.ReadValue<Vector2>()}"
+				);
+			}
+			LookEvent?.Invoke(context.ReadValue<Vector2>());
 		}
 
 		public void OnJump(InputAction.CallbackContext context)
@@ -422,6 +438,47 @@ namespace Assets.Scripts.Player.Input
 			if (context.phase == InputActionPhase.Performed)
 			{
 				ToggleWeaponStanceEvent?.Invoke();
+			}
+		}
+
+		public void OnSlide(InputAction.CallbackContext context)
+		{
+			if (IsDebug)
+			{
+				Debug.Log(
+					$"Slide 3\n" + $"Phase: {context.phase}, Value: {context.ReadValue<float>()}"
+				);
+			}
+
+			if (context.phase == InputActionPhase.Performed)
+			{
+				SlideEvent?.Invoke();
+			}
+
+			if (context.phase == InputActionPhase.Canceled)
+			{
+				SlideCancelledEvent?.Invoke();
+			}
+		}
+
+		public void OnKickOffJump(InputAction.CallbackContext context)
+		{
+			if (IsDebug)
+			{
+				Debug.Log(
+					$"Kick Off Jump 3\n"
+						+ $"Phase: {context.phase}, Value: {context.ReadValue<float>()}"
+				);
+			}
+
+			if (context.phase == InputActionPhase.Performed)
+			{
+				KickJumpEvent?.Invoke();
+			}
+
+			if (context.phase == InputActionPhase.Canceled)
+			{
+				KickJumpCancelledEvent?.Invoke();
 			}
 		}
 	}

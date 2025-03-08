@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public static class DictionaryExtensions
@@ -35,5 +36,31 @@ public static class DictionaryExtensions
 		return dictionary.TryGetValue(key, out object value) && value is Vector2 vector
 			? vector
 			: defaultValue;
+	}
+
+	/// <summary>
+	/// Attempts to retrieve a float value from a dictionary.
+	/// </summary>
+	/// <param name="dictionary">The dictionary containing parameters.</param>
+	/// <param name="key">The key to look up.</param>
+	/// <param name="defaultValue">The default value if the key is not found or is not a float.</param>
+	/// <returns>The float value if found and valid; otherwise, the default value.</returns>
+	public static float GetFloat(
+		this Dictionary<string, object> dictionary,
+		string key,
+		float defaultValue = 0f
+	)
+	{
+		if (dictionary != null && dictionary.TryGetValue(key, out object value))
+		{
+			if (value is float floatValue)
+				return floatValue;
+			if (value is int intValue)
+				return (float)intValue;
+			if (value is double doubleValue)
+				return (float)doubleValue;
+		}
+
+		return defaultValue;
 	}
 }

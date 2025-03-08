@@ -13,5 +13,6 @@
 		public const string CROUCHING_IDLE = "CROUCHING_IDLE";
 		public const string SNEAKING = "SNEAKING";
 		public const string JUMP_DIRECTION = "JUMP_DIRECTION";
+		public const string INITIAL_MOMENTUM = "INITIAL_MOMENTUM";
 	}
 }

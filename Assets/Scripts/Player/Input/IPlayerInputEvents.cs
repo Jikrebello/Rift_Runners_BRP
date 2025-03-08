@@ -6,6 +6,7 @@ namespace Assets.Scripts.Player.Input
 	public interface IPlayerInputEvents
 	{
 		event Action<Vector2> MoveEvent;
+		event Action<Vector2> LookEvent;
 		event Action JumpEvent;
 		event Action JumpHeldEvent;
 		event Action JumpCancelledEvent;
@@ -38,5 +39,9 @@ namespace Assets.Scripts.Player.Input
 		event Action ToggleCrouchEvent;
 		event Action ToggleSprintEvent;
 		event Action ToggleWeaponStanceEvent;
+		event Action SlideEvent;
+		event Action SlideCancelledEvent;
+		event Action KickJumpEvent;
+		event Action KickJumpCancelledEvent;
 	}
 }
