@@ -6,10 +6,9 @@ using UnityEngine;
 
 namespace Assets.Scripts.Player.StateMachine.States.Airborne
 {
-	public class AirborneState : IPlayerState
+	public partial class AirborneState : IPlayerState
 	{
 		public PlayerContext PlayerContext { get; set; }
-
 		protected AirborneSubState CurrentSubState { get; set; }
 
 		protected Vector2 InputMoveDirection;
@@ -36,10 +35,9 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 		private readonly float _glideSpeedMultiplier = 1.1f;
 
 		private bool _fromCrouching = false;
-
 		private bool _isSliding = false;
 		private float _fallVelocity;
-		private float _slideGravityMultiplier;
+		private readonly float _slideGravityMultiplier;
 
 		public void Enter(Dictionary<string, object> parameters)
 		{
@@ -50,13 +48,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 				(int)AirborneSubState.Ascending
 			);
 
-			PlayerContext.PlayerInputEvents.MoveEvent += HandleMoveEvent;
-			PlayerContext.PlayerInputEvents.JumpEvent += HandleJumpEvent;
-			PlayerContext.PlayerInputEvents.JumpHeldEvent += HandleJumpHeldEvent;
-			PlayerContext.PlayerInputEvents.JumpCancelledEvent += HandleJumpCancelledEvent;
-
-			PlayerContext.PlayerInputEvents.SlideEvent += HandleSlideEvent;
-
+			SubscribeToEvents();
 			HandleEntryParameters(parameters);
 		}
 
@@ -65,11 +57,9 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 			if (parameters == null)
 				return;
 
-			// Can only be crouching and airborne if falling
 			if (parameters.GetBool(PlayerConstants.FROM_CROUCHING))
 			{
 				_fromCrouching = true;
-
 				CurrentSubState = AirborneSubState.Falling;
 
 				PlayerContext.PlayerAnimator.SetInteger(
@@ -161,6 +151,30 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 			PlayerContext.CharacterController.Move(PlayerVelocity * Time.deltaTime);
 		}
 
+		public virtual void Exit()
+		{
+			UnsubscribeFromEvents();
+		}
+
+		private void EnterGlideMode()
+		{
+			_isGliding = true;
+			_isLeap = false;
+			_isSliding = false;
+			CurrentSubState = AirborneSubState.Gliding;
+
+			PlayerContext.PlayerAnimator.SetInteger(
+				PlayerAnimationHashes.AirborneSubState,
+				(int)AirborneSubState.Gliding
+			);
+
+			PlayerVelocity.y = Mathf.Max(PlayerVelocity.y, _glideFallSpeedLimit);
+			PlayerVelocity.x *= _glideSpeedMultiplier;
+			PlayerVelocity.z *= _glideSpeedMultiplier;
+
+			Debug.Log("Entering Glide Mode");
+		}
+
 		private void HandleLanding()
 		{
 			Debug.Log("Landed! Transitioning to Grounded State.");
@@ -175,9 +189,16 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 
 			if (_isSliding)
 			{
-				PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.Sliding, true);
+				float surfaceFactor = IsOnSlope() ? 0.75f : 0.4f; // Faster on slopes, slower on flat ground
+				float slideMomentum = Mathf.Abs(PlayerVelocity.y) * surfaceFactor;
 
-				PlayerContext.StateMachine.TransitionTo(new SlidingState());
+				PlayerContext.StateMachine.TransitionTo(
+					new SlidingState(),
+					new Dictionary<string, object>
+					{
+						{ PlayerConstants.INITIAL_MOMENTUM, slideMomentum },
+					}
+				);
 				return;
 			}
 
@@ -235,6 +256,11 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 			);
 		}
 
+		private bool IsOnSlope()
+		{
+			throw new NotImplementedException();
+		}
+
 		private void HandleFalling()
 		{
 			if (_isGliding)
@@ -247,108 +273,12 @@ namespace Assets.Scripts.Player.StateMachine.States.Airborne
 			}
 			else if (_isSliding)
 			{
-				// do maths to accelerate gravity downwards to "pull the character down into the ground"
-				// maybe update an internal value that upon landing, can be passed through to the sliding state for momentum calculations?
+				_fallVelocity += _slideGravityMultiplier * Time.deltaTime;
 			}
 			else
 			{
 				PlayerVelocity.y += Physics.gravity.y * _gravityMultiplier * Time.deltaTime;
 			}
-		}
-
-		public virtual void Exit()
-		{
-			PlayerContext.PlayerInputEvents.MoveEvent -= HandleMoveEvent;
-			PlayerContext.PlayerInputEvents.JumpEvent -= HandleJumpEvent;
-			PlayerContext.PlayerInputEvents.JumpHeldEvent -= HandleJumpHeldEvent;
-			PlayerContext.PlayerInputEvents.JumpCancelledEvent -= HandleJumpCancelledEvent;
-
-			PlayerContext.PlayerInputEvents.SlideEvent -= HandleSlideEvent;
-		}
-
-		private void HandleMoveEvent(Vector2 direction)
-		{
-			InputMoveDirection = direction;
-		}
-
-		private void HandleJumpEvent()
-		{
-			if (_canDoubleJump)
-			{
-				PlayerVelocity.y = _doubleJumpMagnitude;
-				_canDoubleJump = false;
-				_isLeap = false;
-				_isSliding = false;
-				CurrentSubState = AirborneSubState.Ascending;
-
-				Debug.Log("Double Jump Triggered");
-			}
-		}
-
-		private void HandleJumpHeldEvent()
-		{
-			_isHoldingJump = true;
-
-			if (CurrentSubState == AirborneSubState.Falling && !_isGliding)
-			{
-				EnterGlideMode();
-			}
-		}
-
-		private void HandleJumpCancelledEvent()
-		{
-			_isHoldingJump = false;
-
-			if (_isGliding)
-			{
-				_isGliding = false;
-				CurrentSubState = AirborneSubState.Falling;
-				Debug.Log("Stopped Gliding");
-			}
-		}
-
-		private void HandleSlideEvent()
-		{
-			// 🚀 Prevent Slide if the player has already double jumped or started gliding
-			if (!_canDoubleJump || _isGliding)
-				return;
-
-			Debug.Log("Bumslide Activated in Air! Cancelling Leap & Accelerating Fall.");
-
-			// 🚀 If the player is currently leaping, cancel the leap
-			if (_isLeap)
-			{
-				_isLeap = false; // Cancel the leap state
-				_isSliding = true; // Flag that we're transitioning to bumslide
-			}
-
-			// 🚀 Accelerate fall speed so they hit the ground faster
-			_fallVelocity += _slideGravityMultiplier * Time.deltaTime;
-
-			// 🚀 Transition to SlidingState upon landing
-			PlayerContext.PlayerAnimator.SetInteger(
-				PlayerAnimationHashes.AirborneSubState,
-				(int)AirborneSubState.Falling
-			);
-		}
-
-		private void EnterGlideMode()
-		{
-			_isGliding = true;
-			_isLeap = false;
-			_isSliding = false;
-			CurrentSubState = AirborneSubState.Gliding;
-
-			PlayerContext.PlayerAnimator.SetInteger(
-				PlayerAnimationHashes.AirborneSubState,
-				(int)AirborneSubState.Gliding
-			);
-
-			PlayerVelocity.y = Mathf.Max(PlayerVelocity.y, _glideFallSpeedLimit);
-			PlayerVelocity.x *= _glideSpeedMultiplier;
-			PlayerVelocity.z *= _glideSpeedMultiplier;
-
-			Debug.Log("Entering Glide Mode");
 		}
 	}
 }

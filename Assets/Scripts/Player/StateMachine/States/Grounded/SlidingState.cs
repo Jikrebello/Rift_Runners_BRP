@@ -9,6 +9,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 	public class SlidingState : GroundedState
 	{
 		private readonly float _momentumDecayRate = 3.0f;
+		private readonly float _maxMomentumCap = 10.0f;
 		private readonly float _minimumMomentumThreshold = 0.1f;
 		private readonly float _kickoffMomentumThreshold = 2.0f;
 		private readonly float _kickoffJumpForce = 5.0f;
@@ -23,7 +24,9 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 			CurrentGroundedSubState = GroundedSubState.Sliding;
 
 			// Get initial momentum from sprinting or airborne transition
-			_momentum = parameters.GetFloat(PlayerConstants.INITIAL_MOMENTUM, 0.0f);
+			_momentum = parameters.GetFloat(PlayerConstants.INITIAL_MOMENTUM, _maxMomentumCap);
+
+			PlayerContext.PlayerInputEvents.KickJumpEvent += HandleJumpKickEvent;
 
 			PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.Sliding, true);
 		}
@@ -75,7 +78,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 
 		private void HandleMoveEvent(Vector2 vector)
 		{
-			throw new NotImplementedException();
+			InputMoveDirection = vector;
 		}
 
 		private void HandleJumpKickEvent()
@@ -91,6 +94,7 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 		{
 			Debug.Log("Kickoff Jump! Returning to Sprint");
 			PlayerContext.PlayerAnimator.SetBool(PlayerAnimationHashes.Sliding, false);
+			PlayerContext.PlayerAnimator.SetTrigger(PlayerAnimationHashes.KickOffJump);
 
 			PlayerContext.StateMachine.TransitionTo(new SprintingState());
 		}

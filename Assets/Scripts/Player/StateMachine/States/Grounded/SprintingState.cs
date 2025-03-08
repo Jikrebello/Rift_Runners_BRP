@@ -7,6 +7,8 @@ namespace Assets.Scripts.Player.StateMachine.States.Grounded
 {
 	public class SprintingState : GroundedState
 	{
+		private float _sprintSpeed;
+
 		public override void Enter(Dictionary<string, object> parameters)
 		{
 			base.Enter(parameters);
