@@ -1,0 +1,19 @@
+@startuml name Circle Mapping
+title Circle Mapping - ContextInteractIntent Resolution
+
+participant IntentResolver as IR
+participant InteractionResolver as IX
+participant ActionSystem as AS
+participant TraversalFSM as TR
+participant WorldSnapshot as WS
+
+IR -> IX : ContextInteractIntent + InteractionContextSnapshot
+IX -> WS : read candidates (door, npc, loot, hostile)
+IX --> IR : specific intent (Lockpick/Assassinate/Reason/Talk/Loot)
+
+IR -> AS : submit intents (incl resolved)
+AS -> AS : check locks/cancel windows/buffer rules
+AS -> TR : (optional) if intent requires traversal transition (e.g., climb enter)
+AS --> IR : accepted/rejected/buffered
+
+@enduml

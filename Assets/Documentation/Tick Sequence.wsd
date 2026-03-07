@@ -1,0 +1,46 @@
+@startuml Tick Sequence
+title Tick Sequence - Input to Outputs
+
+actor Engine as E
+participant UnityHost as UH
+participant InputAdapter as IA
+participant WorldSnapshotBuilder as WSB
+participant PlayerPiece as PP
+participant IntentResolver as IR
+participant InteractionResolver as IX
+participant IntentArbiter as ARB
+participant Traversal as TR
+participant Posture as PO
+participant CombatMode as CM
+participant ActionSystem as AS
+participant OutputBuilder as OB
+participant MotorAdapter as MA
+participant AnimatorAdapter as AA
+
+E -> UH : Update()
+UH -> IA : BuildInputSnapshot()
+IA --> UH : InputSnapshot
+UH -> WSB : BuildWorldSnapshot()
+WSB --> UH : WorldSnapshot
+
+UH -> PP : Tick(InputSnapshot, WorldSnapshot, dt)
+PP -> IR : Resolve(raw input + model + world)
+IR --> PP : intents (candidates)
+PP -> IX : Resolve context intents (Circle etc.)
+IX --> PP : refined intents
+PP -> ARB : Select/consume/buffer intents
+ARB --> PP : intents to execute
+
+PP -> TR : HandleIntents + Tick
+PP -> PO : HandleIntents + Tick
+PP -> CM : HandleIntents + Tick
+PP -> AS : HandleIntents + Tick (may lock others)
+
+PP -> OB : BuildOutputs()
+OB --> PP : CharacterOutputs
+PP --> UH : TickResult(outputs, events)
+
+UH -> MA : Apply(MotorCommands)
+UH -> AA : Apply(AnimationCommands)
+
+@enduml

@@ -1,0 +1,21 @@
+@startuml name GameMaster
+title GameMaster - Event Driven Scheduling
+
+participant WorldEventBus as WEB
+participant GameMasterDirector as GM
+participant GMRuleEngine as RE
+participant GMTaskQueue as Q
+participant WorldQuery as WQ
+participant WorldCommand as WC
+
+WEB -> GM : DrainEvents()
+GM -> WQ : Read metrics (phase/time/region security)
+GM -> RE : Evaluate(events + metrics)
+RE --> GM : tasks to schedule + commands to apply
+GM -> Q : Enqueue(tasks)
+GM -> Q : DueTasks(time/conditions)
+Q --> GM : due tasks
+GM -> WC : Apply world changes (spawn squads, set flags, rumors)
+GM --> WEB : Emit GM events (optional)
+
+@enduml

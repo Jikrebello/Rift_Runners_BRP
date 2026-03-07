@@ -1,0 +1,8 @@
+{
+    "MoveSpeed": 5.0,
+    "JumpSpeed": 6.0,
+    "Gravity": -18.0,
+    "GlideGravityMultiplier": 0.25,
+    "GlideMaxFallSpeed": -3.5,
+    "DropVelocity": -20.0
+}

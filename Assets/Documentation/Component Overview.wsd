@@ -1,0 +1,58 @@
+@startuml name Component Overview
+skinparam componentStyle rectangle
+title Component Overview - Core vs Adapters
+
+package "Engine Host (Unity/Stride)" {
+  [UnityHost] as UH
+  [Engine Input System] as EIS
+  [Engine Physics/Queries] as EPQ
+  [Engine Animation] as EA
+  [Engine Motor] as EM
+}
+
+package "Adapters" {
+  [InputAdapter] as IA
+  [WorldSnapshotBuilder] as WSB
+  [MotorAdapter] as MA
+  [AnimatorAdapter] as AA
+  [CameraAdapter] as CA
+}
+
+package "Gameplay Core" {
+  [PlayerPiece] as PP
+  [NpcPiece] as NP
+  [World.Core] as WC
+  [Quests.Core] as QC
+  [GameMaster] as GM
+  [Persistence] as PS
+  [Content] as CT
+}
+
+EIS --> IA
+EPQ --> WSB
+
+UH --> IA
+UH --> WSB
+UH --> PP
+UH --> MA
+UH --> AA
+UH --> CA
+
+PP --> WC : IWorldQuery/IWorldCommand
+PP --> QC : Quest read/write ports (policy)
+GM --> WC : IWorldQuery/IWorldCommand
+QC --> WC : flags/events (optional)
+PS --> WC : load/apply deltas
+PS --> PP : load player model
+CT --> PP : skill/weapon defs
+CT --> QC : quest defs
+WC --> GM : WorldEventStream
+
+PP --> MA : MotorCommands
+PP --> AA : AnimationCommands
+PP --> CA : CameraCommands
+MA --> EM
+AA --> EA
+CA --> EA
+
+@enduml

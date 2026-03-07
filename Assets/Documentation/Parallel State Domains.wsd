@@ -1,0 +1,43 @@
+@startuml name Parallel State Domains (Conceptual)
+title Parallel State Domains (Conceptual)
+
+state "TraversalFSM" as T {
+  [*] --> Grounded
+  Grounded --> Airborne : Jump / Fall
+  Airborne --> Grounded : Land
+  Grounded --> Climbing : Grab
+  Climbing --> Grounded : Drop
+  Grounded --> Swimming : EnterWater
+  Swimming --> Grounded : ExitWater
+}
+
+state "PostureFSM" as P {
+  [*] --> Standing
+  Standing --> Crouched : ToggleCrouch
+  Crouched --> Standing : ToggleCrouch
+  Crouched --> Prone : (optional)
+}
+
+state "CombatModeFSM" as C {
+  [*] --> Sheathed
+  Sheathed --> MeleeReady : Attack/Skill
+  Sheathed --> RangedReady : AimHeld
+  MeleeReady --> Sheathed : Sheathe
+  RangedReady --> Sheathed : Sheathe
+  RangedReady --> Aiming : AimHeld
+  Aiming --> RangedReady : AimReleased
+}
+
+state "ActionSystem" as A {
+  [*] --> Ready
+  Ready --> Attacking : Light/Heavy
+  Ready --> SkillCasting : SkillSlot
+  Ready --> Dodging : DodgeIntent
+  Ready --> Reasoning : ReasonIntent
+  Attacking --> Ready : End/Cancel
+  SkillCasting --> Ready : End/Cancel
+  Dodging --> Ready : End
+  Reasoning --> Ready : End
+}
+
+@enduml

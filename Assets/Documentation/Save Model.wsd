@@ -1,0 +1,48 @@
+@startuml name Save Model
+title Save Model - Global + Phase Partition
+
+class SaveGame {
+  SaveVersion
+  GlobalSaveData global
+  PhaseSaveData autumn
+  PhaseSaveData winter
+  PhaseSaveData spring
+}
+
+class GlobalSaveData {
+  WorldPhase currentPhase
+  PlayerSaveData player
+  QuestJournalSaveData quests
+  WorldObjectSaveData worldObjects
+  GameMasterSaveData gm
+  Flags globalFlags
+}
+
+class PhaseSaveData {
+  PhaseTime time
+  Map<CellId, CellDeltaSaveData> cellDeltas
+}
+
+class CellDeltaSaveData {
+  CellId id
+  Map<PhaseEntityId, EntityDeltaBlob> entityDeltas
+}
+
+class WorldObjectSaveData {
+  Map<WorldObjectId, WorldObjectState> states
+}
+
+SaveGame --> GlobalSaveData
+SaveGame --> PhaseSaveData : autumn
+SaveGame --> PhaseSaveData : winter
+SaveGame --> PhaseSaveData : spring
+
+GlobalSaveData --> WorldObjectSaveData
+PhaseSaveData --> CellDeltaSaveData
+
+note right of WorldObjectSaveData
+Selective continuity only:
+Bridges, key doors, major props, major NPC fates
+end note
+
+@enduml

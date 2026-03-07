@@ -1,0 +1,40 @@
+@startuml name PlayerPiece Composition
+title PlayerPiece Composition (Core)
+
+class PlayerPiece {
+  +Tick(input: InputSnapshot, world: WorldSnapshot, dt: float): TickResult
+  +ReadModel: ICharacterReadModel
+  +Commands: ICharacterCommandPort
+}
+
+class CharacterModel
+class IntentResolver
+class InteractionResolver
+class IntentArbiter
+class StealthTelemetry
+class StealthOpportunityDetector
+
+class TraversalStateMachine
+class PostureStateMachine
+class CombatModeStateMachine
+class ActionSystem
+
+class OutputBuilder
+class EventBuffer
+
+PlayerPiece --> CharacterModel
+PlayerPiece --> IntentResolver
+PlayerPiece --> InteractionResolver
+PlayerPiece --> IntentArbiter
+PlayerPiece --> StealthTelemetry
+PlayerPiece --> StealthOpportunityDetector
+
+PlayerPiece --> TraversalStateMachine
+PlayerPiece --> PostureStateMachine
+PlayerPiece --> CombatModeStateMachine
+PlayerPiece --> ActionSystem
+
+PlayerPiece --> OutputBuilder
+PlayerPiece --> EventBuffer
+
+@enduml

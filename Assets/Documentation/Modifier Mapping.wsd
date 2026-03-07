@@ -1,0 +1,22 @@
+@startuml name Modifier Mapping
+title Modifier Mapping - Primary Button Meaning
+
+actor Player
+participant InputSnapshot as IN
+participant CombatMode as CM
+participant IntentResolver as IR
+
+Player -> IN : PrimaryPressed
+IN -> IR : snapshot
+IR -> CM : read IsAiming / weapon equipped / stance
+CM --> IR : mode context
+
+alt AimModifierHeld
+  IR --> IR : emit UseSkill(slot=1, kind=Ranged)
+else SkillModifierHeld and melee equipped
+  IR --> IR : emit UseSkill(slot=1, kind=Melee)
+else no modifiers
+  IR --> IR : emit LightAttackIntent
+end
+
+@enduml

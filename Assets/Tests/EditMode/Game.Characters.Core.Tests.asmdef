@@ -1,0 +1,16 @@
+{
+  "name": "Game.Characters.Core.Tests",
+  "references": [
+    "Game.Characters.Core",
+    "Game.SharedKernel"
+  ],
+  "includePlatforms": [ "Editor" ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": true
+}
