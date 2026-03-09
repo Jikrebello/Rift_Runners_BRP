@@ -17,7 +17,6 @@ namespace Assets.Tests.EditMode
 			{
 				TraversalMode = PlayerTraversalMode.Grounded,
 				GroundedSubMode = PlayerGroundedSubMode.Sprinting,
-				IsSliding = false,
 			};
 
 			var world = new PlayerWorldSnapshot { IsGrounded = true };
@@ -43,7 +42,6 @@ namespace Assets.Tests.EditMode
 			{
 				TraversalMode = PlayerTraversalMode.Airborne,
 				GroundedSubMode = PlayerGroundedSubMode.Standing,
-				IsSliding = false,
 			};
 
 			var world = new PlayerWorldSnapshot { IsGrounded = false };
@@ -69,7 +67,6 @@ namespace Assets.Tests.EditMode
 			{
 				TraversalMode = PlayerTraversalMode.Grounded,
 				GroundedSubMode = PlayerGroundedSubMode.Sprinting,
-				IsSliding = false,
 			};
 
 			var world = new PlayerWorldSnapshot { IsGrounded = true };
@@ -86,7 +83,6 @@ namespace Assets.Tests.EditMode
 
 			result.ShouldContain(x => x is MoveIntent);
 			result.ShouldContain(x => x is UseSkillIntent);
-
 			result.ShouldNotContain(x => x is TertiaryPressedIntent);
 			result.ShouldNotContain(x => x is ContextInteractIntent);
 		}

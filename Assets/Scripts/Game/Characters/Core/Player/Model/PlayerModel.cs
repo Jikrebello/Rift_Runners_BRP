@@ -12,7 +12,6 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Model
 		public bool HasDoubleJumped { get; set; }
 		public bool IsGliding { get; set; }
 		public bool IsSecondaryModifierActive => SecondaryMode == SecondaryModifierMode.Active;
-		public bool IsSliding { get; set; }
 		public float JumpHoldTime { get; set; }
 		public bool JumpIsHeld { get; set; }
 		public Vector2 MoveInput { get; set; } = Vector2.Zero;
@@ -24,5 +23,6 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Model
 		public bool WantsKickOffThisFrame { get; set; }
 		public bool WantsLeapThisFrame { get; set; }
 		public bool WantsSlideThisFrame { get; set; }
+		public bool WantsExitSlideThisFrame { get; set; }
 	}
 }

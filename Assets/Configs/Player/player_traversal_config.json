@@ -1,0 +1,5 @@
+{
+  "KickOffTapMaxSeconds": 0.18,
+  "LeapHoldMinSeconds": 0.22,
+  "SlideStopSpeed": 0.35
+}

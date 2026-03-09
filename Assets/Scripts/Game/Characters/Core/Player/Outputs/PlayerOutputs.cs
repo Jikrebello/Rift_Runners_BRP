@@ -5,10 +5,13 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Outputs
 		public AnimationCommands Animation { get; } = new();
 		public MotorCommands Motor { get; } = new();
 
+		public DebugLogCommands Debug { get; } = new();
+
 		public void Clear()
 		{
 			Animation.Clear();
 			Motor.Clear();
+			Debug.Clear();
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Game.Characters.Core.Player.Traversal;
+using Assets.Scripts.Game.Characters.Core.Player.Traversal.DTO_s;
 
 namespace Assets.Tests.EditMode
 {
@@ -6,12 +7,20 @@ namespace Assets.Tests.EditMode
 	{
 		public readonly TraversalStateMachine Traversal = new();
 		public readonly GroundedState Grounded = new();
-		public readonly SlidingState Sliding = new();
+		public readonly SlidingState Sliding;
 		public readonly AirborneState Airborne = new();
 		public readonly TraversalCoordinator Coordinator;
 
 		public TraversalFixture()
 		{
+			var slidingCfg = new SlidingStateConfig(
+				kickOffTapMaxSeconds: 0.18f,
+				leapHoldMinSeconds: 0.22f,
+				slideStopSpeed: 0.35f
+			);
+
+			Sliding = new SlidingState(slidingCfg);
+
 			Coordinator = new TraversalCoordinator(Traversal, Grounded, Sliding, Airborne);
 		}
 	}

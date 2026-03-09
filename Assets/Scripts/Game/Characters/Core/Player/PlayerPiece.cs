@@ -5,6 +5,7 @@ using Assets.Scripts.Game.Characters.Core.Player.Intent;
 using Assets.Scripts.Game.Characters.Core.Player.Model;
 using Assets.Scripts.Game.Characters.Core.Player.Outputs;
 using Assets.Scripts.Game.Characters.Core.Player.Traversal;
+using Assets.Scripts.Game.Characters.Core.Player.Traversal.DTO_s;
 
 namespace Assets.Scripts.Game.Characters.Core.Player
 {
@@ -17,13 +18,22 @@ namespace Assets.Scripts.Game.Characters.Core.Player
 		private readonly PlayerIntentResolver _intentResolver;
 		private readonly PlayerModel _model = new();
 		private readonly PlayerOutputs _outputs = new();
-		private readonly SlidingState _sliding = new();
 		private readonly TraversalStateMachine _traversal = new();
 		private readonly TraversalCoordinator _traversalCoordinator;
 
-		public PlayerPiece()
+		private readonly SlidingState _sliding;
+
+		public void SetSlidingConfig(SlidingStateConfig cfg)
+		{
+			_sliding.SetConfig(cfg);
+		}
+
+		public PlayerPiece(SlidingStateConfig slidingCfg)
 		{
 			_intentResolver = new PlayerIntentResolver(new PlayerIntentConfig());
+
+			_sliding = new SlidingState(slidingCfg);
+
 			_traversalCoordinator = new TraversalCoordinator(
 				_traversal,
 				_grounded,

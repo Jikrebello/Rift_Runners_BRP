@@ -47,8 +47,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Intent
 				return false;
 
 			return model.TraversalMode == PlayerTraversalMode.Airborne
-				|| model.GroundedSubMode == PlayerGroundedSubMode.Sprinting
-				|| model.IsSliding;
+				|| model.GroundedSubMode == PlayerGroundedSubMode.Sprinting;
 		}
 
 		private static bool ContainsReference(List<IPlayerIntent> list, IPlayerIntent item)

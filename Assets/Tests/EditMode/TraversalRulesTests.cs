@@ -20,14 +20,12 @@ namespace Assets.Tests.EditMode
 			{
 				TraversalMode = PlayerTraversalMode.Grounded,
 				GroundedSubMode = PlayerGroundedSubMode.Sprinting,
-				IsSliding = false,
 			};
 			var outputs = new PlayerOutputs();
 
 			fx.Traversal.TransitionTo(fx.Grounded, model, outputs);
 			outputs.Clear();
 
-			// Grounded consumes tertiary and requests slide
 			fx.Grounded.HandleIntents(
 				model,
 				outputs,
@@ -42,7 +40,6 @@ namespace Assets.Tests.EditMode
 
 			model.WantsSlideThisFrame.ShouldBeTrue();
 
-			// Coordinator performs actual transition
 			fx.Coordinator.ApplyTransitions(
 				model,
 				outputs,
@@ -50,9 +47,7 @@ namespace Assets.Tests.EditMode
 			);
 
 			model.GroundedSubMode.ShouldBe(PlayerGroundedSubMode.Sliding);
-			model.IsSliding.ShouldBeTrue();
 
-			// SlidingState.Enter emits Sliding true and Sprinting false
 			outputs.Animation.Bools.ShouldContain(x => x.Param == AnimBool.Sliding && x.Value);
 			outputs.Animation.Bools.ShouldContain(x => x.Param == AnimBool.Sprinting && !x.Value);
 		}
@@ -65,7 +60,6 @@ namespace Assets.Tests.EditMode
 			{
 				TraversalMode = PlayerTraversalMode.Grounded,
 				GroundedSubMode = PlayerGroundedSubMode.Sliding,
-				IsSliding = true,
 			};
 			var outputs = new PlayerOutputs();
 
@@ -78,6 +72,7 @@ namespace Assets.Tests.EditMode
 				outputs,
 				new List<IPlayerIntent> { new JumpPressedIntent() }
 			);
+
 			fx.Sliding.Tick(
 				model,
 				outputs,
@@ -100,9 +95,7 @@ namespace Assets.Tests.EditMode
 				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 1f }
 			);
 
-			// After kickoff coordinator forces sprint & transitions grounded
 			model.GroundedSubMode.ShouldBe(PlayerGroundedSubMode.Sprinting);
-
 			outputs.Animation.Triggers.ShouldContain(x => x.Param == AnimTrigger.KickOffJump);
 		}
 
@@ -114,19 +107,19 @@ namespace Assets.Tests.EditMode
 			{
 				TraversalMode = PlayerTraversalMode.Grounded,
 				GroundedSubMode = PlayerGroundedSubMode.Sliding,
-				IsSliding = true,
 			};
 			var outputs = new PlayerOutputs();
 
 			fx.Traversal.TransitionTo(fx.Sliding, model, outputs);
 			outputs.Clear();
 
-			// Hold long enough to pass LeapHoldMinSeconds (use dt that exceeds it)
 			fx.Sliding.HandleIntents(
 				model,
 				outputs,
 				new List<IPlayerIntent> { new JumpPressedIntent() }
 			);
+
+			// Hold long enough to pass LeapHoldMinSeconds
 			fx.Sliding.Tick(
 				model,
 				outputs,
@@ -165,6 +158,7 @@ namespace Assets.Tests.EditMode
 				outputs,
 				new List<IPlayerIntent> { new JumpPressedIntent() }
 			);
+
 			fx.Grounded.Tick(
 				model,
 				outputs,
@@ -181,6 +175,40 @@ namespace Assets.Tests.EditMode
 			);
 
 			model.TraversalMode.ShouldBe(PlayerTraversalMode.Airborne);
+		}
+
+		[Test]
+		public void Sliding_WhenSpeedDropsBelowThreshold_RequestsExit_AndCoordinatorReturnsToStanding()
+		{
+			var fx = NewFixture();
+			var model = new PlayerModel
+			{
+				TraversalMode = PlayerTraversalMode.Grounded,
+				GroundedSubMode = PlayerGroundedSubMode.Sliding,
+			};
+			var outputs = new PlayerOutputs();
+
+			fx.Traversal.TransitionTo(fx.Sliding, model, outputs);
+			outputs.Clear();
+
+			// SlidingState should flag exit when PlanarSpeed <= SlideStopSpeed
+			fx.Sliding.Tick(
+				model,
+				outputs,
+				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 0.0f },
+				1f / 60f
+			);
+
+			model.WantsExitSlideThisFrame.ShouldBeTrue();
+
+			fx.Coordinator.ApplyTransitions(
+				model,
+				outputs,
+				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 0.0f }
+			);
+
+			model.GroundedSubMode.ShouldBe(PlayerGroundedSubMode.Standing);
+			model.WantsExitSlideThisFrame.ShouldBeFalse();
 		}
 
 		[Test]

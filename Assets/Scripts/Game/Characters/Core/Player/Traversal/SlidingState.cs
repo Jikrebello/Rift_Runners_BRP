@@ -2,35 +2,31 @@
 using Assets.Scripts.Game.Characters.Core.Player.Intent;
 using Assets.Scripts.Game.Characters.Core.Player.Model;
 using Assets.Scripts.Game.Characters.Core.Player.Outputs;
+using Assets.Scripts.Game.Characters.Core.Player.Traversal.DTO_s;
 
 namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 {
 	public sealed class SlidingState : ITraversalState
 	{
-		private const float KickOffTapMaxSeconds = 0.18f;
+		private SlidingStateConfig _cfg;
 
-		private const float LeapHoldMinSeconds = 0.22f;
+		public SlidingState(SlidingStateConfig cfg) => _cfg = cfg;
 
-		// Simple MVP tuning; later move to config like motor.
-		private const float SlideStopSpeed = 0.35f; // speed at which slide ends (tune)
+		public void SetConfig(SlidingStateConfig cfg) => _cfg = cfg;
 
 		public void Enter(PlayerModel model, PlayerOutputs outputs)
 		{
 			model.TraversalMode = PlayerTraversalMode.Grounded;
 			model.GroundedSubMode = PlayerGroundedSubMode.Sliding;
-			model.IsSliding = true;
 
 			outputs.Animation.AddBool(AnimBool.IsGrounded, true);
 			outputs.Animation.AddBool(AnimBool.Sprinting, false);
 			outputs.Animation.AddBool(AnimBool.Crouching, false);
-
 			outputs.Animation.AddBool(AnimBool.Sliding, true);
 		}
 
 		public void Exit(PlayerModel model, PlayerOutputs outputs)
 		{
-			model.IsSliding = false;
-
 			outputs.Animation.AddBool(AnimBool.Sliding, false);
 		}
 
@@ -68,7 +64,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 					}
 
 					// Tap => kickoff
-					if (model.JumpHoldTime <= KickOffTapMaxSeconds)
+					if (model.JumpHoldTime <= _cfg.KickOffTapMaxSeconds)
 						model.WantsKickOffThisFrame = true;
 
 					model.JumpIsHeld = false;
@@ -92,7 +88,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 			{
 				model.JumpHoldTime += dt;
 
-				if (model.JumpHoldTime >= LeapHoldMinSeconds)
+				if (model.JumpHoldTime >= _cfg.LeapHoldMinSeconds)
 				{
 					model.WantsLeapThisFrame = true;
 					model.WantsKickOffThisFrame = false;
@@ -103,8 +99,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 			}
 
 			// End slide based on actual speed
-			if (world.PlanarSpeed <= SlideStopSpeed)
-				model.IsSliding = false;
+			if (world.PlanarSpeed <= _cfg.SlideStopSpeed)
+				model.WantsExitSlideThisFrame = true;
 		}
 	}
 }

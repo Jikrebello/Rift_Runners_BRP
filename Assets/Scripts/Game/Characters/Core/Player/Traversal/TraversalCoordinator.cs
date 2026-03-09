@@ -121,23 +121,25 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 		}
 
 		/// <summary>
-		/// Attempts to transition the player from a sliding state to a grounded standing state if the player is no longer
-		/// sliding.
+		/// Attempts to transition the player from a sliding state to a grounded standing state if the exit slide condition is
+		/// met.
 		/// </summary>
-		/// <remarks>This method only performs the transition if the player was previously in the sliding submode and
-		/// is no longer sliding. If the player is not in the sliding submode or is still sliding, no state change
-		/// occurs.</remarks>
-		/// <param name="model">The player model containing the current state and properties of the player character.</param>
-		/// <param name="outputs">The outputs object that will be updated to reflect the player's new state after the transition.</param>
+		/// <remarks>This method only executes the transition if the player is currently in a sliding state and has
+		/// requested to exit the slide. It resets the exit slide request after processing.</remarks>
+		/// <param name="model">The player model representing the current state and properties of the player, including their grounded status and
+		/// slide exit request.</param>
+		/// <param name="outputs">The outputs object used to store the results of the player's state transition and any relevant output data.</param>
 		private void TryExitSlideToGrounded(PlayerModel model, PlayerOutputs outputs)
 		{
 			if (model.GroundedSubMode != PlayerGroundedSubMode.Sliding)
 				return;
 
-			if (model.IsSliding)
+			if (!model.WantsExitSlideThisFrame)
 				return;
 
+			model.WantsExitSlideThisFrame = false;
 			model.GroundedSubMode = PlayerGroundedSubMode.Standing;
+
 			_traversal.TransitionTo(_grounded, model, outputs);
 		}
 
@@ -164,7 +166,6 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 
 			MarkAirborneEnteredByLeap(model);
 
-			outputs.Motor.RequestJump = false;
 			_traversal.TransitionTo(_airborne, model, outputs);
 			return true;
 		}
@@ -220,7 +221,6 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 
 			MarkAirborneEnteredByLeap(model);
 
-			outputs.Motor.RequestJump = false;
 			_traversal.TransitionTo(_airborne, model, outputs);
 			return true;
 		}

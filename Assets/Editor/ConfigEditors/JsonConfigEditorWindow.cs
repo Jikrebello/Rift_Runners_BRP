@@ -296,7 +296,7 @@ namespace Assets.Editor.ConfigEditors
 			var data = Application.dataPath.Replace('\\', '/');
 
 			if (abs.StartsWith(data, StringComparison.OrdinalIgnoreCase))
-				return "Assets" + abs.Substring(data.Length);
+				return "Assets" + abs[data.Length..];
 
 			return absolutePath;
 		}

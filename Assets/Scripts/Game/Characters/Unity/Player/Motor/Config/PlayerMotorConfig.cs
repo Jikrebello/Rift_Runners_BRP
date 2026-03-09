@@ -16,4 +16,9 @@ namespace Assets.Scripts.Game.Characters.Unity.Player.Motor.Config
 
 		public float DropVelocity;
 	}
+
+	public static class PlayerMotorConfigPaths
+	{
+		public const string PlayerMotorConfigPath = "Configs/Player/player_motor.json";
+	}
 }

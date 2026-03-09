@@ -93,7 +93,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 
 		private static void HandleJumpPressed(PlayerModel model)
 		{
-			if (model.GroundedSubMode == PlayerGroundedSubMode.Sliding || model.IsSliding)
+			if (model.GroundedSubMode == PlayerGroundedSubMode.Sliding)
 				return;
 
 			model.WantsJumpThisFrame = true;
@@ -106,7 +106,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 
 		private static void HandleTertiaryPressed(PlayerModel model)
 		{
-			if (model.GroundedSubMode == PlayerGroundedSubMode.Sprinting && !model.IsSliding)
+			if (model.GroundedSubMode == PlayerGroundedSubMode.Sprinting)
 			{
 				model.WantsSlideThisFrame = true;
 			}
