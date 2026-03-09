@@ -1,9 +1,11 @@
+using System;
 using Assets.Scripts.Game.Characters.Core.Player.Action;
 using Assets.Scripts.Game.Characters.Core.Player.CombatMode;
 using Assets.Scripts.Game.Characters.Core.Player.Input;
 using Assets.Scripts.Game.Characters.Core.Player.Intent;
 using Assets.Scripts.Game.Characters.Core.Player.Model;
 using Assets.Scripts.Game.Characters.Core.Player.Outputs;
+using Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina;
 using Assets.Scripts.Game.Characters.Core.Player.Traversal;
 using Assets.Scripts.Game.Characters.Core.Player.Traversal.DTO_s;
 
@@ -18,21 +20,23 @@ namespace Assets.Scripts.Game.Characters.Core.Player
 		private readonly PlayerIntentResolver _intentResolver;
 		private readonly PlayerModel _model = new();
 		private readonly PlayerOutputs _outputs = new();
+		private readonly StaminaSystem _staminaSystem;
+		private readonly TraversalActionIntentSynthesizer _traversalActionIntentSynthesizer;
 		private readonly TraversalStateMachine _traversal = new();
 		private readonly TraversalCoordinator _traversalCoordinator;
 
 		private readonly SlidingState _sliding;
 
-		public void SetSlidingConfig(SlidingStateConfig cfg)
-		{
-			_sliding.SetConfig(cfg);
-		}
-
-		public PlayerPiece(SlidingStateConfig slidingCfg)
+		public PlayerPiece(SlidingStateConfig slidingCfg, StaminaConfig staminaCfg)
 		{
 			_intentResolver = new PlayerIntentResolver(new PlayerIntentConfig());
 
 			_sliding = new SlidingState(slidingCfg);
+			_traversalActionIntentSynthesizer = new TraversalActionIntentSynthesizer(slidingCfg);
+			_staminaSystem = new StaminaSystem(staminaCfg);
+
+			_model.MaxStamina = staminaCfg.MaxStamina;
+			_model.Stamina = staminaCfg.MaxStamina;
 
 			_traversalCoordinator = new TraversalCoordinator(
 				_traversal,
@@ -40,7 +44,29 @@ namespace Assets.Scripts.Game.Characters.Core.Player
 				_sliding,
 				_airborne
 			);
+
 			_traversal.TransitionTo(_grounded, _model, _outputs);
+		}
+
+		public void SetSlidingConfig(SlidingStateConfig cfg)
+		{
+			_sliding.SetConfig(cfg);
+			_traversalActionIntentSynthesizer.SetSlidingConfig(cfg);
+		}
+
+		public void SetStaminaConfig(StaminaConfig cfg)
+		{
+			_staminaSystem.SetConfig(cfg);
+
+			if (_model.MaxStamina <= 0f && _model.Stamina <= 0f)
+			{
+				_model.MaxStamina = cfg.MaxStamina;
+				_model.Stamina = cfg.MaxStamina;
+				return;
+			}
+
+			_model.MaxStamina = cfg.MaxStamina;
+			_model.Stamina = MathF.Min(_model.Stamina, _model.MaxStamina);
 		}
 
 		public PlayerOutputs Tick(
@@ -53,12 +79,14 @@ namespace Assets.Scripts.Game.Characters.Core.Player
 
 			var rawIntents = _intentResolver.Resolve(input);
 			var intents = PlayerIntentArbiter.Arbitrate(_model, world, rawIntents);
+			intents = _traversalActionIntentSynthesizer.Synthesize(_model, intents, dt);
+			intents = _staminaSystem.FilterAndApply(_model, _outputs, intents, dt);
 
 			_combatModeSystem.HandleIntents(_model, _outputs, intents);
 			_actionSystem.HandleIntents(_model, _outputs, intents);
 			_traversal.HandleIntents(_model, _outputs, intents);
 
-			_traversalCoordinator.ApplyTransitions(_model, _outputs, world);
+			_traversalCoordinator.ApplyTransitions(_model, _outputs, world, intents);
 
 			_traversal.Tick(_model, _outputs, world, dt);
 

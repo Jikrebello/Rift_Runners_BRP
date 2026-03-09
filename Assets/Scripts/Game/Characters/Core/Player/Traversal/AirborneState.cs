@@ -34,13 +34,16 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 					continue;
 				}
 
-				if (intent is JumpHeldIntent held)
+				if (intent is BeginGlideIntent)
 				{
-					// Glide is “while held”
-					model.IsGliding = held.IsHeld;
-					if (held.IsHeld)
-						model.AirOptionConsumedThisAirborne = true;
+					model.IsGliding = true;
+					model.AirOptionConsumedThisAirborne = true;
+					continue;
+				}
 
+				if (intent is EndGlideIntent)
+				{
+					model.IsGliding = false;
 					continue;
 				}
 
@@ -52,7 +55,6 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 
 				if (intent is TertiaryPressedIntent)
 				{
-					// Circle while airborne => drop
 					model.WantsDropThisFrame = true;
 					model.AirOptionConsumedThisAirborne = true;
 				}
@@ -66,10 +68,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 			float dt
 		)
 		{
-			// Air control
 			outputs.Motor.DesiredMove = model.MoveInput;
-
-			// Glide/drop outputs for motor adapter
 			outputs.Motor.GlideHeld = model.IsGliding;
 
 			if (model.WantsDropThisFrame)
@@ -81,7 +80,6 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 
 		private static void HandleAirJump(PlayerModel model, PlayerOutputs outputs)
 		{
-			// First jump handled on ground. Airborne JumpPressed => double jump (once).
 			if (model.HasDoubleJumped)
 				return;
 

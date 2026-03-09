@@ -18,6 +18,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 		{
 			model.TraversalMode = PlayerTraversalMode.Grounded;
 			model.GroundedSubMode = PlayerGroundedSubMode.Sliding;
+			model.JumpIsHeld = false;
+			model.JumpHoldTime = 0f;
 
 			outputs.Animation.AddBool(AnimBool.IsGrounded, true);
 			outputs.Animation.AddBool(AnimBool.Sprinting, false);
@@ -27,6 +29,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 
 		public void Exit(PlayerModel model, PlayerOutputs outputs)
 		{
+			model.JumpIsHeld = false;
+			model.JumpHoldTime = 0f;
 			outputs.Animation.AddBool(AnimBool.Sliding, false);
 		}
 
@@ -43,32 +47,6 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 				if (intent is MoveIntent m)
 				{
 					model.MoveInput = m.Direction;
-					continue;
-				}
-
-				if (intent is JumpPressedIntent)
-				{
-					model.JumpIsHeld = true;
-					model.JumpHoldTime = 0f;
-					continue;
-				}
-
-				if (intent is JumpReleasedIntent)
-				{
-					// If we already converted the hold into a leap this frame, ignore release
-					if (model.WantsLeapThisFrame)
-					{
-						model.JumpIsHeld = false;
-						model.JumpHoldTime = 0f;
-						continue;
-					}
-
-					// Tap => kickoff
-					if (model.JumpHoldTime <= _cfg.KickOffTapMaxSeconds)
-						model.WantsKickOffThisFrame = true;
-
-					model.JumpIsHeld = false;
-					model.JumpHoldTime = 0f;
 				}
 			}
 		}
@@ -80,25 +58,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 			float dt
 		)
 		{
-			// Slide motor request
 			outputs.Motor.DesiredMove = model.MoveInput;
 
-			// Accumulate hold time and arm leap
-			if (model.JumpIsHeld)
-			{
-				model.JumpHoldTime += dt;
-
-				if (model.JumpHoldTime >= _cfg.LeapHoldMinSeconds)
-				{
-					model.WantsLeapThisFrame = true;
-					model.WantsKickOffThisFrame = false;
-
-					model.JumpIsHeld = false;
-					model.JumpHoldTime = 0f;
-				}
-			}
-
-			// End slide based on actual speed
 			if (world.PlanarSpeed <= _cfg.SlideStopSpeed)
 				model.WantsExitSlideThisFrame = true;
 		}

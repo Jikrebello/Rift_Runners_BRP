@@ -43,7 +43,8 @@ namespace Assets.Tests.EditMode
 			fx.Coordinator.ApplyTransitions(
 				model,
 				outputs,
-				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 1f }
+				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 1f },
+				new List<IPlayerIntent>()
 			);
 
 			model.GroundedSubMode.ShouldBe(PlayerGroundedSubMode.Sliding);
@@ -53,9 +54,11 @@ namespace Assets.Tests.EditMode
 		}
 
 		[Test]
-		public void Sliding_TapJump_KickOffBackToSprinting_EmitsKickOffTrigger()
+		public void Sliding_TapJump_SynthesizesKickOff_AndCoordinatorReturnsToSprinting()
 		{
 			var fx = NewFixture();
+			var synthesizer = fx.Synthesizer;
+
 			var model = new PlayerModel
 			{
 				TraversalMode = PlayerTraversalMode.Grounded,
@@ -66,33 +69,29 @@ namespace Assets.Tests.EditMode
 			fx.Traversal.TransitionTo(fx.Sliding, model, outputs);
 			outputs.Clear();
 
-			// Tap: press then release quickly (within KickOffTapMaxSeconds)
-			fx.Sliding.HandleIntents(
+			var pressed = synthesizer.Synthesize(
 				model,
-				outputs,
-				new List<IPlayerIntent> { new JumpPressedIntent() }
-			);
-
-			fx.Sliding.Tick(
-				model,
-				outputs,
-				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 1f },
+				new List<IPlayerIntent> { new JumpPressedIntent() },
 				0.05f
 			);
 
-			fx.Sliding.HandleIntents(
+			pressed.ShouldNotContain(x => x is KickOffIntent);
+			pressed.ShouldNotContain(x => x is LeapIntent);
+
+			var released = synthesizer.Synthesize(
 				model,
-				outputs,
-				new List<IPlayerIntent> { new JumpReleasedIntent() }
+				new List<IPlayerIntent> { new JumpReleasedIntent() },
+				0f
 			);
 
-			model.WantsKickOffThisFrame.ShouldBeTrue();
-			model.WantsLeapThisFrame.ShouldBeFalse();
+			released.ShouldContain(x => x is KickOffIntent);
+			released.ShouldNotContain(x => x is LeapIntent);
 
 			fx.Coordinator.ApplyTransitions(
 				model,
 				outputs,
-				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 1f }
+				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 1f },
+				released
 			);
 
 			model.GroundedSubMode.ShouldBe(PlayerGroundedSubMode.Sprinting);
@@ -100,9 +99,11 @@ namespace Assets.Tests.EditMode
 		}
 
 		[Test]
-		public void Sliding_HoldJump_LeapsToAirborne_NoKickOff()
+		public void Sliding_HoldJump_SynthesizesLeap_AndCoordinatorTransitionsToAirborne()
 		{
 			var fx = NewFixture();
+			var synthesizer = fx.Synthesizer;
+
 			var model = new PlayerModel
 			{
 				TraversalMode = PlayerTraversalMode.Grounded,
@@ -113,27 +114,25 @@ namespace Assets.Tests.EditMode
 			fx.Traversal.TransitionTo(fx.Sliding, model, outputs);
 			outputs.Clear();
 
-			fx.Sliding.HandleIntents(
+			var pressed = synthesizer.Synthesize(
 				model,
-				outputs,
-				new List<IPlayerIntent> { new JumpPressedIntent() }
+				new List<IPlayerIntent> { new JumpPressedIntent() },
+				0f
 			);
 
-			// Hold long enough to pass LeapHoldMinSeconds
-			fx.Sliding.Tick(
-				model,
-				outputs,
-				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 1f },
-				0.30f
-			);
+			pressed.ShouldNotContain(x => x is LeapIntent);
+			pressed.ShouldNotContain(x => x is KickOffIntent);
 
-			model.WantsLeapThisFrame.ShouldBeTrue();
-			model.WantsKickOffThisFrame.ShouldBeFalse();
+			var held = synthesizer.Synthesize(model, new List<IPlayerIntent>(), 0.30f);
+
+			held.ShouldContain(x => x is LeapIntent);
+			held.ShouldNotContain(x => x is KickOffIntent);
 
 			fx.Coordinator.ApplyTransitions(
 				model,
 				outputs,
-				new PlayerWorldSnapshot { IsGrounded = false, PlanarSpeed = 1f }
+				new PlayerWorldSnapshot { IsGrounded = false, PlanarSpeed = 1f },
+				held
 			);
 
 			model.TraversalMode.ShouldBe(PlayerTraversalMode.Airborne);
@@ -171,7 +170,8 @@ namespace Assets.Tests.EditMode
 			fx.Coordinator.ApplyTransitions(
 				model,
 				outputs,
-				new PlayerWorldSnapshot { IsGrounded = false, PlanarSpeed = 1f }
+				new PlayerWorldSnapshot { IsGrounded = false, PlanarSpeed = 1f },
+				new List<IPlayerIntent>()
 			);
 
 			model.TraversalMode.ShouldBe(PlayerTraversalMode.Airborne);
@@ -191,7 +191,6 @@ namespace Assets.Tests.EditMode
 			fx.Traversal.TransitionTo(fx.Sliding, model, outputs);
 			outputs.Clear();
 
-			// SlidingState should flag exit when PlanarSpeed <= SlideStopSpeed
 			fx.Sliding.Tick(
 				model,
 				outputs,
@@ -204,7 +203,8 @@ namespace Assets.Tests.EditMode
 			fx.Coordinator.ApplyTransitions(
 				model,
 				outputs,
-				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 0.0f }
+				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 0.0f },
+				new List<IPlayerIntent>()
 			);
 
 			model.GroundedSubMode.ShouldBe(PlayerGroundedSubMode.Standing);
@@ -230,7 +230,8 @@ namespace Assets.Tests.EditMode
 			fx.Coordinator.ApplyTransitions(
 				model,
 				outputs,
-				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 0f }
+				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 0f },
+				new List<IPlayerIntent>()
 			);
 
 			model.TraversalMode.ShouldBe(PlayerTraversalMode.Grounded);
@@ -256,7 +257,8 @@ namespace Assets.Tests.EditMode
 			fx.Coordinator.ApplyTransitions(
 				model,
 				outputs,
-				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 0f }
+				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 0f },
+				new List<IPlayerIntent>()
 			);
 
 			outputs.Animation.Triggers.ShouldNotContain(x => x.Param == AnimTrigger.Roll);

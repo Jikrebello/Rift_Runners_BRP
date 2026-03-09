@@ -6,6 +6,7 @@ using Assets.Scripts.Game.Characters.Unity.Player.Anim;
 using Assets.Scripts.Game.Characters.Unity.Player.Input;
 using Assets.Scripts.Game.Characters.Unity.Player.Motor;
 using Assets.Scripts.Game.Characters.Unity.Player.Motor.Config;
+using Assets.Scripts.Game.Characters.Unity.Player.Resources.Config;
 using Assets.Scripts.Game.Characters.Unity.Player.Traversal.Config;
 using Assets.Scripts.Game.Characters.Unity.Player.World;
 using Assets.Scripts.Game.Characters.Unity.Shared.Config;
@@ -44,6 +45,7 @@ namespace Assets.Scripts.Game.Characters.Unity.Player.Host
 
 		private PollingConfigReloader<PlayerMotorConfig> _motorCfgReloader;
 		private PollingConfigReloader<PlayerTraversalConfig> _travCfgReloader;
+		private PollingConfigReloader<PlayerStaminaConfig> _staminaCfgReloader;
 
 		private void Awake()
 		{
@@ -60,13 +62,18 @@ namespace Assets.Scripts.Game.Characters.Unity.Player.Host
 				PlayerTraversalConfigPaths.PlayerTraversalConfigPath
 			);
 
+			_staminaCfgReloader = new PollingConfigReloader<PlayerStaminaConfig>(
+				PlayerStaminaConfigPaths.PlayerStaminaConfigPath
+			);
+
 			var slidingCfg = PlayerTraversalConfigMapper.ToSlidingStateConfig(
 				_travCfgReloader.Current
 			);
 
-			_player = new PlayerPiece(slidingCfg);
-			_motor = new UnityMotorAdapter(cc, transform, _motorCfgReloader.Current);
+			var staminaCfg = PlayerStaminaConfigMapper.ToStaminaConfig(_staminaCfgReloader.Current);
 
+			_player = new PlayerPiece(slidingCfg, staminaCfg);
+			_motor = new UnityMotorAdapter(cc, transform, _motorCfgReloader.Current);
 			_anim = new UnityAnimatorAdapter(animator);
 			_world = new UnityWorldSnapshotBuilder(cc, transform);
 
@@ -107,7 +114,9 @@ namespace Assets.Scripts.Game.Characters.Unity.Player.Host
 			_motor.Apply(outputs.Motor, dt);
 
 			if (_enableDebugLogs)
+			{
 				_debug.Apply(outputs.Debug);
+			}
 		}
 
 		private void OnDisable()
@@ -130,17 +139,21 @@ namespace Assets.Scripts.Game.Characters.Unity.Player.Host
 
 			_reloadCooldown = ReloadIntervalSeconds;
 
-			// Motor
 			if (_motorCfgReloader.PollAndReloadIfChanged(out var motorCfg))
 			{
 				_motor.SetConfig(motorCfg);
 			}
 
-			// Traversal
 			if (_travCfgReloader.PollAndReloadIfChanged(out var travCfg))
 			{
 				var slidingCfg = PlayerTraversalConfigMapper.ToSlidingStateConfig(travCfg);
 				_player.SetSlidingConfig(slidingCfg);
+			}
+
+			if (_staminaCfgReloader.PollAndReloadIfChanged(out var staminaCfg))
+			{
+				var mapped = PlayerStaminaConfigMapper.ToStaminaConfig(staminaCfg);
+				_player.SetStaminaConfig(mapped);
 			}
 #endif
 		}

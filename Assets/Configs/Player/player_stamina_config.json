@@ -1,0 +1,16 @@
+{
+  "MaxStamina": 100.0,
+  "GroundedRegenPerSecond": 18.0,
+  "SlidingRegenPerSecond": 28.0,
+  "SprintDrainPerSecond": 14.0,
+  "GlideDrainPerSecond": 22.0,
+  "LeapCost": 20.0,
+  "KickOffCost": 10.0,
+  "MinStaminaToEnterSprint": 12.0,
+  "PrimarySkillSlot1Cost": 0.0,
+  "PrimarySkillSlot2Cost": 0.0,
+  "PrimarySkillSlot3Cost": 0.0,
+  "SecondarySkillSlot1Cost": 0.0,
+  "SecondarySkillSlot2Cost": 0.0,
+  "SecondarySkillSlot3Cost": 0.0
+}

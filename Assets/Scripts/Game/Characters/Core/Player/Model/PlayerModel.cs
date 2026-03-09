@@ -14,15 +14,15 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Model
 		public bool IsSecondaryModifierActive => SecondaryMode == SecondaryModifierMode.Active;
 		public float JumpHoldTime { get; set; }
 		public bool JumpIsHeld { get; set; }
+		public float MaxStamina { get; set; }
 		public Vector2 MoveInput { get; set; } = Vector2.Zero;
 		public PrimaryModifierMode Phase { get; set; } = PrimaryModifierMode.Default;
 		public SecondaryModifierMode SecondaryMode { get; set; } = SecondaryModifierMode.None;
+		public float Stamina { get; set; }
 		public PlayerTraversalMode TraversalMode { get; set; } = PlayerTraversalMode.Grounded;
 		public bool WantsDropThisFrame { get; set; }
-		public bool WantsJumpThisFrame { get; set; }
-		public bool WantsKickOffThisFrame { get; set; }
-		public bool WantsLeapThisFrame { get; set; }
-		public bool WantsSlideThisFrame { get; set; }
 		public bool WantsExitSlideThisFrame { get; set; }
+		public bool WantsJumpThisFrame { get; set; }
+		public bool WantsSlideThisFrame { get; set; }
 	}
 }
