@@ -15,7 +15,11 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				recoverySeconds: 0.22f
 			),
 			new PlayerActionAvailability(requiresGrounded: true, allowWhileAirborne: false),
-			new PlayerActionExecutionPolicy(canBuffer: true, staminaCost: 0f)
+			new PlayerActionExecutionPolicy(
+				canBuffer: true,
+				staminaCost: 0f,
+				bufferWindow: PlayerActionBufferWindow.ActiveOrRecovery
+			)
 		);
 
 		public static readonly PlayerActionDefinition LightAttack2 = new(
@@ -29,7 +33,11 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				recoverySeconds: 0.20f
 			),
 			new PlayerActionAvailability(requiresGrounded: true, allowWhileAirborne: false),
-			new PlayerActionExecutionPolicy(canBuffer: true, staminaCost: 0f)
+			new PlayerActionExecutionPolicy(
+				canBuffer: true,
+				staminaCost: 0f,
+				bufferWindow: PlayerActionBufferWindow.ActiveOrRecovery
+			)
 		);
 
 		public static readonly PlayerActionDefinition LightAttack3 = new(
@@ -43,7 +51,11 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				recoverySeconds: 0.28f
 			),
 			new PlayerActionAvailability(requiresGrounded: true, allowWhileAirborne: false),
-			new PlayerActionExecutionPolicy(canBuffer: false, staminaCost: 0f)
+			new PlayerActionExecutionPolicy(
+				canBuffer: false,
+				staminaCost: 0f,
+				bufferWindow: PlayerActionBufferWindow.None
+			)
 		);
 
 		public static readonly PlayerActionDefinition HeavyAttack = new(
@@ -57,7 +69,11 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				recoverySeconds: 0.35f
 			),
 			new PlayerActionAvailability(requiresGrounded: true, allowWhileAirborne: false),
-			new PlayerActionExecutionPolicy(canBuffer: true, staminaCost: 10f)
+			new PlayerActionExecutionPolicy(
+				canBuffer: true,
+				staminaCost: 10f,
+				bufferWindow: PlayerActionBufferWindow.RecoveryOnly
+			)
 		);
 
 		public static readonly PlayerActionDefinition Skill1 = new(
@@ -71,7 +87,11 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				recoverySeconds: 0.30f
 			),
 			new PlayerActionAvailability(requiresGrounded: true, allowWhileAirborne: false),
-			new PlayerActionExecutionPolicy(canBuffer: false, staminaCost: 20f)
+			new PlayerActionExecutionPolicy(
+				canBuffer: false,
+				staminaCost: 20f,
+				bufferWindow: PlayerActionBufferWindow.None
+			)
 		);
 
 		public static readonly PlayerActionDefinition Skill2 = new(
@@ -85,7 +105,11 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				recoverySeconds: 0.30f
 			),
 			new PlayerActionAvailability(requiresGrounded: true, allowWhileAirborne: false),
-			new PlayerActionExecutionPolicy(canBuffer: false, staminaCost: 25f)
+			new PlayerActionExecutionPolicy(
+				canBuffer: false,
+				staminaCost: 25f,
+				bufferWindow: PlayerActionBufferWindow.None
+			)
 		);
 
 		public static readonly PlayerActionDefinition Skill3 = new(
@@ -99,7 +123,11 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				recoverySeconds: 0.30f
 			),
 			new PlayerActionAvailability(requiresGrounded: true, allowWhileAirborne: false),
-			new PlayerActionExecutionPolicy(canBuffer: false, staminaCost: 30f)
+			new PlayerActionExecutionPolicy(
+				canBuffer: false,
+				staminaCost: 30f,
+				bufferWindow: PlayerActionBufferWindow.None
+			)
 		);
 
 		public static readonly PlayerActionDefinition ContextInteract = new(
@@ -113,7 +141,11 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				recoverySeconds: 0.10f
 			),
 			new PlayerActionAvailability(requiresGrounded: true, allowWhileAirborne: false),
-			new PlayerActionExecutionPolicy(canBuffer: false, staminaCost: 0f)
+			new PlayerActionExecutionPolicy(
+				canBuffer: false,
+				staminaCost: 0f,
+				bufferWindow: PlayerActionBufferWindow.None
+			)
 		);
 
 		public static readonly PlayerActionDefinition ContextGrab = new(
@@ -127,7 +159,11 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				recoverySeconds: 0.14f
 			),
 			new PlayerActionAvailability(requiresGrounded: false, allowWhileAirborne: true),
-			new PlayerActionExecutionPolicy(canBuffer: false, staminaCost: 0f)
+			new PlayerActionExecutionPolicy(
+				canBuffer: false,
+				staminaCost: 0f,
+				bufferWindow: PlayerActionBufferWindow.None
+			)
 		);
 
 		public static readonly PlayerActionDefinition FundamentalRangedPrimary = new(
@@ -141,7 +177,11 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				recoverySeconds: 0.14f
 			),
 			new PlayerActionAvailability(requiresGrounded: false, allowWhileAirborne: true),
-			new PlayerActionExecutionPolicy(canBuffer: true, staminaCost: 0f)
+			new PlayerActionExecutionPolicy(
+				canBuffer: true,
+				staminaCost: 0f,
+				bufferWindow: PlayerActionBufferWindow.RecoveryOnly
+			)
 		);
 
 		public static PlayerActionDefinition Get(PlayerActionId id)

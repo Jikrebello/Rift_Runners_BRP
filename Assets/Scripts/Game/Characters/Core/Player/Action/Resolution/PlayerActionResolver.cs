@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Assets.Scripts.Game.Characters.Core.Player.Action.Definitions;
+using Assets.Scripts.Game.Characters.Core.Player.Action.Loadout;
 using Assets.Scripts.Game.Characters.Core.Player.Intent;
 using Assets.Scripts.Game.Characters.Core.Player.Model;
 
@@ -13,18 +14,20 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Resolution
 			out ResolvedPlayerActionRequest request
 		)
 		{
+			var bank = model.ActionSet.GetBank(model.CombatPosture);
+
 			for (int i = 0; i < intents.Count; i++)
 			{
 				var intent = intents[i];
 
 				if (intent is LightAttackIntent)
 				{
-					return TryResolveById(model.ActionSet.LightAttackId, out request);
+					return TryResolveById(bank.LightAttackId, out request);
 				}
 
 				if (intent is HeavyAttackIntent)
 				{
-					return TryResolveById(model.ActionSet.HeavyAttackId, out request);
+					return TryResolveById(bank.HeavyAttackId, out request);
 				}
 
 				if (intent is ContextInteractIntent)
@@ -37,7 +40,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Resolution
 
 				if (intent is RightActionIntent)
 				{
-					return TryResolveRightAction(model, out request);
+					return TryResolveRightAction(bank, out request);
 				}
 
 				if (intent is UseSkillIntent skill)
@@ -51,17 +54,11 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Resolution
 		}
 
 		private static bool TryResolveRightAction(
-			PlayerModel model,
+			PlayerActionBank bank,
 			out ResolvedPlayerActionRequest request
 		)
 		{
-			var id = model.CombatPosture switch
-			{
-				PlayerCombatPosture.Aim => model.ActionSet.SecondaryModeRightActionId,
-				_ => model.ActionSet.NeutralRightActionId,
-			};
-
-			return TryResolveById(id, out request);
+			return TryResolveById(bank.RightActionId, out request);
 		}
 
 		private static bool TryResolveSkill(

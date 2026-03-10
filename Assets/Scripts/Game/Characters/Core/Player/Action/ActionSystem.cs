@@ -76,6 +76,15 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action
 				return;
 			}
 
+			if (!current.Execution.AllowsBufferFrom(model.ActionRuntime.CurrentPhase))
+			{
+				outputs.Debug.Info(
+					"Action",
+					$"Rejected buffer: current phase does not allow buffering ({current.Id}, {model.ActionRuntime.CurrentPhase})."
+				);
+				return;
+			}
+
 			model.ActionRuntime.BufferedRequestedActionId = requested.Id;
 			outputs.Debug.Info("Action", $"Buffered requested action: {requested.Id}.");
 		}

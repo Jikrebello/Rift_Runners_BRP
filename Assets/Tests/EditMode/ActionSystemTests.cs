@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Assets.Scripts.Game.Characters.Core.Player.Action.Definitions;
 using Assets.Scripts.Game.Characters.Core.Player.Action.Runtime;
 using Assets.Scripts.Game.Characters.Core.Player.Intent;
@@ -33,6 +34,10 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
+			// Move into Active first so buffering is legal.
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.11f);
+
 			outputs.Clear();
 			system.Step(
 				model,
@@ -41,7 +46,10 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			model.ActionRuntime.BufferedRequestedActionId.ShouldBe(PlayerActionId.HeavyAttack);
+			Assert.That(
+				model.ActionRuntime.BufferedRequestedActionId,
+				Is.EqualTo(PlayerActionId.HeavyAttack)
+			);
 
 			outputs.Clear();
 			system.Step(
@@ -51,7 +59,10 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			model.ActionRuntime.BufferedRequestedActionId.ShouldBe(PlayerActionId.HeavyAttack);
+			Assert.That(
+				model.ActionRuntime.BufferedRequestedActionId,
+				Is.EqualTo(PlayerActionId.HeavyAttack)
+			);
 		}
 
 		[Test]
@@ -68,6 +79,10 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
+			// Move into Active first so buffering is legal.
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.11f);
+
 			outputs.Clear();
 			system.Step(
 				model,
@@ -76,21 +91,29 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			model.ActionRuntime.BufferedRequestedActionId.ShouldBe(PlayerActionId.HeavyAttack);
-
-			outputs.Clear();
-			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.11f);
+			Assert.That(
+				model.ActionRuntime.BufferedRequestedActionId,
+				Is.EqualTo(PlayerActionId.HeavyAttack)
+			);
 
 			outputs.Clear();
 			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.09f);
-
 			outputs.Clear();
 			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.23f);
 
-			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.HeavyAttack);
-			model.ActionRuntime.CurrentPhase.ShouldBe(PlayerActionPhase.Startup);
-			model.ActionRuntime.BufferedRequestedActionId.ShouldBe(PlayerActionId.None);
-			outputs.Animation.Triggers.ShouldContain(x => x.Param == AnimTrigger.HeavyAttack);
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.HeavyAttack)
+			);
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Startup));
+			Assert.That(
+				model.ActionRuntime.BufferedRequestedActionId,
+				Is.EqualTo(PlayerActionId.None)
+			);
+			Assert.That(
+				outputs.Animation.Triggers.Any(x => x.Param == AnimTrigger.HeavyAttack),
+				Is.True
+			);
 		}
 
 		[Test]
@@ -107,7 +130,16 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.LightAttack);
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.LightAttack)
+			);
+
+			// Move into Active first.
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.11f);
+
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Active));
 
 			outputs.Clear();
 			system.Step(
@@ -117,7 +149,10 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			model.ActionRuntime.BufferedRequestedActionId.ShouldBe(PlayerActionId.HeavyAttack);
+			Assert.That(
+				model.ActionRuntime.BufferedRequestedActionId,
+				Is.EqualTo(PlayerActionId.HeavyAttack)
+			);
 		}
 
 		[Test]
@@ -214,7 +249,6 @@ namespace Assets.Tests.EditMode
 			var model = new PlayerModel();
 			var outputs = new PlayerOutputs();
 
-			// Start first action immediately.
 			system.Step(
 				model,
 				outputs,
@@ -222,10 +256,21 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.LightAttack);
-			model.ActionRuntime.BufferedRequestedActionId.ShouldBe(PlayerActionId.None);
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.LightAttack)
+			);
+			Assert.That(
+				model.ActionRuntime.BufferedRequestedActionId,
+				Is.EqualTo(PlayerActionId.None)
+			);
 
-			// Repeating the same request while busy should fill the empty buffer.
+			// Move into Active first; Startup no longer accepts buffer input.
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.11f);
+
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Active));
+
 			outputs.Clear();
 			system.Step(
 				model,
@@ -234,10 +279,15 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.LightAttack);
-			model.ActionRuntime.BufferedRequestedActionId.ShouldBe(PlayerActionId.LightAttack);
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.LightAttack)
+			);
+			Assert.That(
+				model.ActionRuntime.BufferedRequestedActionId,
+				Is.EqualTo(PlayerActionId.LightAttack)
+			);
 
-			// Once buffer is occupied, later requests should not overwrite it.
 			outputs.Clear();
 			system.Step(
 				model,
@@ -246,12 +296,18 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.LightAttack);
-			model.ActionRuntime.BufferedRequestedActionId.ShouldBe(PlayerActionId.LightAttack);
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.LightAttack)
+			);
+			Assert.That(
+				model.ActionRuntime.BufferedRequestedActionId,
+				Is.EqualTo(PlayerActionId.LightAttack)
+			);
 		}
 
 		[Test]
-		public void SecondAction_WhileBusy_IsBuffered()
+		public void SecondAction_WhileBusy_IsBuffered_AndValidBufferWindow()
 		{
 			var system = NewSystem();
 			var model = new PlayerModel();
@@ -264,6 +320,12 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
+			// LightAttack only buffers from ActiveOrRecovery, so move into Active first.
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.11f);
+
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Active));
+
 			outputs.Clear();
 			system.Step(
 				model,
@@ -272,8 +334,14 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.LightAttack);
-			model.ActionRuntime.BufferedRequestedActionId.ShouldBe(PlayerActionId.HeavyAttack);
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.LightAttack)
+			);
+			Assert.That(
+				model.ActionRuntime.BufferedRequestedActionId,
+				Is.EqualTo(PlayerActionId.HeavyAttack)
+			);
 		}
 
 		[Test]
@@ -319,7 +387,16 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.LightAttack);
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.LightAttack)
+			);
+
+			// Buffer during Active, not Startup.
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.11f);
+
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Active));
 
 			outputs.Clear();
 			system.Step(
@@ -329,17 +406,21 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			model.ActionRuntime.BufferedRequestedActionId.ShouldBe(PlayerActionId.LightAttack);
+			Assert.That(
+				model.ActionRuntime.BufferedRequestedActionId,
+				Is.EqualTo(PlayerActionId.LightAttack)
+			);
 
 			outputs.Clear();
-			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.11f);
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.09f); // to Recovery
 			outputs.Clear();
-			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.09f);
-			outputs.Clear();
-			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.23f);
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.23f); // complete
 
-			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.LightAttack2);
-			model.ActionRuntime.CurrentPhase.ShouldBe(PlayerActionPhase.Startup);
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.LightAttack2)
+			);
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Startup));
 		}
 
 		[Test]
@@ -357,7 +438,10 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			// Buffer attack 1 request to promote into attack 2
+			// Move attack 1 into Active, then buffer next light input.
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.11f);
+
 			outputs.Clear();
 			system.Step(
 				model,
@@ -368,15 +452,21 @@ namespace Assets.Tests.EditMode
 
 			// Complete attack 1
 			outputs.Clear();
-			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.11f);
-			outputs.Clear();
 			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.09f);
 			outputs.Clear();
 			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.23f);
 
-			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.LightAttack2);
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.LightAttack2)
+			);
 
-			// Buffer another light request while attack 2 is running
+			// Move attack 2 into Active, then buffer another light input.
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.10f);
+
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Active));
+
 			outputs.Clear();
 			system.Step(
 				model,
@@ -385,18 +475,22 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			model.ActionRuntime.BufferedRequestedActionId.ShouldBe(PlayerActionId.LightAttack);
+			Assert.That(
+				model.ActionRuntime.BufferedRequestedActionId,
+				Is.EqualTo(PlayerActionId.LightAttack)
+			);
 
 			// Complete attack 2
-			outputs.Clear();
-			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.10f);
 			outputs.Clear();
 			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.09f);
 			outputs.Clear();
 			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.21f);
 
-			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.LightAttack3);
-			model.ActionRuntime.CurrentPhase.ShouldBe(PlayerActionPhase.Startup);
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.LightAttack3)
+			);
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Startup));
 		}
 
 		[Test]
@@ -417,7 +511,18 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.FundamentalRangedPrimary);
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.FundamentalRangedPrimary)
+			);
+
+			// FundamentalRangedPrimary buffers only in Recovery.
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.07f); // Active
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.09f); // Recovery
+
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Recovery));
 
 			outputs.Clear();
 			system.Step(
@@ -427,19 +532,172 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			model.ActionRuntime.BufferedRequestedActionId.ShouldBe(
-				PlayerActionId.FundamentalRangedPrimary
+			Assert.That(
+				model.ActionRuntime.BufferedRequestedActionId,
+				Is.EqualTo(PlayerActionId.FundamentalRangedPrimary)
+			);
+
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.15f);
+
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.FundamentalRangedPrimary)
+			);
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Startup));
+		}
+
+		[Test]
+		public void LightAttack_DoesNotBufferDuringStartup_WhenWindowStartsAtActive()
+		{
+			var system = NewSystem();
+			var model = new PlayerModel();
+			var outputs = new PlayerOutputs();
+
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new LightAttackIntent() },
+				dt: 0f
+			);
+
+			model.ActionRuntime.CurrentPhase.ShouldBe(PlayerActionPhase.Startup);
+
+			outputs.Clear();
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new LightAttackIntent() },
+				dt: 0f
+			);
+
+			model.ActionRuntime.HasBufferedAction.ShouldBeFalse();
+		}
+
+		[Test]
+		public void LightAttack_CanBufferDuringActive()
+		{
+			var system = NewSystem();
+			var model = new PlayerModel();
+			var outputs = new PlayerOutputs();
+
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new LightAttackIntent() },
+				dt: 0f
+			);
+
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.11f);
+
+			model.ActionRuntime.CurrentPhase.ShouldBe(PlayerActionPhase.Active);
+
+			outputs.Clear();
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new LightAttackIntent() },
+				dt: 0f
+			);
+
+			model.ActionRuntime.BufferedRequestedActionId.ShouldBe(PlayerActionId.LightAttack);
+		}
+
+		[Test]
+		public void HeavyAttack_DoesNotBufferDuringActive_WhenWindowIsRecoveryOnly()
+		{
+			var system = NewSystem();
+			var model = new PlayerModel();
+			var outputs = new PlayerOutputs();
+
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new HeavyAttackIntent() },
+				dt: 0f
+			);
+
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.19f);
+
+			model.ActionRuntime.CurrentPhase.ShouldBe(PlayerActionPhase.Active);
+
+			outputs.Clear();
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new LightAttackIntent() },
+				dt: 0f
+			);
+
+			model.ActionRuntime.HasBufferedAction.ShouldBeFalse();
+		}
+
+		[Test]
+		public void HeavyAttack_CanBufferDuringRecovery_WhenWindowIsRecoveryOnly()
+		{
+			var system = NewSystem();
+			var model = new PlayerModel { Stamina = 100f, MaxStamina = 100f };
+			var outputs = new PlayerOutputs();
+
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new HeavyAttackIntent() },
+				dt: 0f
+			);
+
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.19f);
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.11f);
+
+			model.ActionRuntime.CurrentPhase.ShouldBe(PlayerActionPhase.Recovery);
+
+			outputs.Clear();
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new LightAttackIntent() },
+				dt: 0f
+			);
+
+			model.ActionRuntime.BufferedRequestedActionId.ShouldBe(PlayerActionId.LightAttack);
+		}
+
+		[Test]
+		public void FundamentalRangedPrimary_DoesNotBufferDuringActive_WhenWindowIsRecoveryOnly()
+		{
+			var system = NewSystem();
+			var model = new PlayerModel
+			{
+				TraversalMode = PlayerTraversalMode.Grounded,
+				CombatPosture = PlayerCombatPosture.Aim,
+			};
+			var outputs = new PlayerOutputs();
+
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new RightActionIntent() },
+				dt: 0f
 			);
 
 			outputs.Clear();
 			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.07f);
-			outputs.Clear();
-			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.09f);
-			outputs.Clear();
-			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.15f);
 
-			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.FundamentalRangedPrimary);
-			model.ActionRuntime.CurrentPhase.ShouldBe(PlayerActionPhase.Startup);
+			model.ActionRuntime.CurrentPhase.ShouldBe(PlayerActionPhase.Active);
+
+			outputs.Clear();
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new RightActionIntent() },
+				dt: 0f
+			);
+
+			model.ActionRuntime.HasBufferedAction.ShouldBeFalse();
 		}
 
 		private static ActionTestDriver NewSystem() => new();

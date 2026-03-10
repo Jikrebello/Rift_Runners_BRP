@@ -22,7 +22,7 @@ namespace Assets.Tests.EditMode
 			var system = NewSystem();
 			var model = new PlayerModel { TraversalMode = PlayerTraversalMode.Grounded };
 
-			model.ActionSet.LightAttackId = PlayerActionId.HeavyAttack;
+			model.ActionSet.NeutralBank.LightAttackId = PlayerActionId.HeavyAttack;
 
 			var outputs = new PlayerOutputs();
 
@@ -43,7 +43,7 @@ namespace Assets.Tests.EditMode
 			var system = NewSystem();
 			var model = new PlayerModel { TraversalMode = PlayerTraversalMode.Grounded };
 
-			model.ActionSet.LightAttackId = PlayerActionId.None;
+			model.ActionSet.NeutralBank.LightAttackId = PlayerActionId.None;
 
 			var outputs = new PlayerOutputs();
 
@@ -68,7 +68,7 @@ namespace Assets.Tests.EditMode
 				CombatPosture = PlayerCombatPosture.None,
 			};
 
-			model.ActionSet.NeutralRightActionId = PlayerActionId.None;
+			model.ActionSet.NeutralBank.RightActionId = PlayerActionId.None;
 
 			var outputs = new PlayerOutputs();
 
@@ -93,7 +93,7 @@ namespace Assets.Tests.EditMode
 				CombatPosture = PlayerCombatPosture.Aim,
 			};
 
-			model.ActionSet.SecondaryModeRightActionId = PlayerActionId.FundamentalRangedPrimary;
+			model.ActionSet.AimBank.RightActionId = PlayerActionId.FundamentalRangedPrimary;
 
 			var outputs = new PlayerOutputs();
 
@@ -117,7 +117,7 @@ namespace Assets.Tests.EditMode
 				SecondaryMode = SecondaryModifierMode.None,
 			};
 
-			model.ActionSet.NeutralRightActionId = PlayerActionId.ContextGrab;
+			model.ActionSet.AimBank.RightActionId = PlayerActionId.ContextGrab;
 
 			var outputs = new PlayerOutputs();
 
@@ -171,6 +171,58 @@ namespace Assets.Tests.EditMode
 
 			model.ActionRuntime.HasActiveAction.ShouldBeFalse();
 			outputs.Animation.Triggers.Count.ShouldBe(0);
+		}
+
+		[Test]
+		public void LightAttack_InAimPosture_UsesAimBankLightAttack()
+		{
+			var system = NewSystem();
+			var model = new PlayerModel
+			{
+				TraversalMode = PlayerTraversalMode.Grounded,
+				CombatPosture = PlayerCombatPosture.Aim,
+			};
+			var outputs = new PlayerOutputs();
+
+			model.ActionSet.AimBank.LightAttackId = PlayerActionId.HeavyAttack;
+
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new LightAttackIntent() },
+				dt: 0f
+			);
+
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.HeavyAttack)
+			);
+		}
+
+		[Test]
+		public void HeavyAttack_InBlockPosture_UsesBlockBankHeavyAttack()
+		{
+			var system = NewSystem();
+			var model = new PlayerModel
+			{
+				TraversalMode = PlayerTraversalMode.Grounded,
+				CombatPosture = PlayerCombatPosture.Block,
+			};
+			var outputs = new PlayerOutputs();
+
+			model.ActionSet.BlockBank.HeavyAttackId = PlayerActionId.LightAttack;
+
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new HeavyAttackIntent() },
+				dt: 0f
+			);
+
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.LightAttack)
+			);
 		}
 
 		private static ActionTestDriver NewSystem() => new();
