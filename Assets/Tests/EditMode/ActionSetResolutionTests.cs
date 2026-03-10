@@ -137,7 +137,7 @@ namespace Assets.Tests.EditMode
 			var system = NewSystem();
 			var model = new PlayerModel { TraversalMode = PlayerTraversalMode.Grounded };
 
-			model.ActionSet.SkillSlot1Id = PlayerActionId.Skill2;
+			model.ActionSet.NeutralBank.SkillSlot1Id = PlayerActionId.Skill2;
 
 			var outputs = new PlayerOutputs();
 
@@ -158,7 +158,7 @@ namespace Assets.Tests.EditMode
 			var system = NewSystem();
 			var model = new PlayerModel { TraversalMode = PlayerTraversalMode.Grounded };
 
-			model.ActionSet.SkillSlot1Id = PlayerActionId.None;
+			model.ActionSet.NeutralBank.SkillSlot1Id = PlayerActionId.None;
 
 			var outputs = new PlayerOutputs();
 
@@ -223,6 +223,52 @@ namespace Assets.Tests.EditMode
 				model.ActionRuntime.CurrentActionId,
 				Is.EqualTo(PlayerActionId.LightAttack)
 			);
+		}
+
+		[Test]
+		public void SkillSlot1_InAimPosture_UsesAimBankSkillSlot1()
+		{
+			var system = NewSystem();
+			var model = new PlayerModel
+			{
+				TraversalMode = PlayerTraversalMode.Grounded,
+				CombatPosture = PlayerCombatPosture.Aim,
+			};
+			var outputs = new PlayerOutputs();
+
+			model.ActionSet.AimBank.SkillSlot1Id = PlayerActionId.Skill2;
+
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new UseSkillIntent(SkillBank.Primary, 1) },
+				dt: 0f
+			);
+
+			Assert.That(model.ActionRuntime.CurrentActionId, Is.EqualTo(PlayerActionId.Skill2));
+		}
+
+		[Test]
+		public void SkillSlot1_InSpellReadyPosture_UsesSpellReadyBankSkillSlot1()
+		{
+			var system = NewSystem();
+			var model = new PlayerModel
+			{
+				TraversalMode = PlayerTraversalMode.Grounded,
+				CombatPosture = PlayerCombatPosture.SpellReady,
+			};
+			var outputs = new PlayerOutputs();
+
+			model.ActionSet.SpellReadyBank.SkillSlot1Id = PlayerActionId.Skill3;
+
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new UseSkillIntent(SkillBank.Primary, 1) },
+				dt: 0f
+			);
+
+			Assert.That(model.ActionRuntime.CurrentActionId, Is.EqualTo(PlayerActionId.Skill3));
 		}
 
 		private static ActionTestDriver NewSystem() => new();
