@@ -14,7 +14,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Resolution
 			out ResolvedPlayerActionRequest request
 		)
 		{
-			var bank = model.ActionSet.GetBank(model.CombatPosture);
+			var bank = model.CombatProfile.ActionSet.GetBank(model.CombatPosture);
 
 			for (int i = 0; i < intents.Count; i++)
 			{

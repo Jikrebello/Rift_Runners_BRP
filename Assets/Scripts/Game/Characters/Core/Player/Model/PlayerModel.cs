@@ -7,7 +7,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Model
 	public sealed class PlayerModel
 	{
 		public PlayerActionRuntimeState ActionRuntime { get; } = new();
-		public PlayerActionSet ActionSet { get; } = PlayerActionSets.CreateDefault();
+		public PlayerCombatProfile CombatProfile { get; } = PlayerCombatProfiles.CreateDefault();
 
 		public AirborneEnterKind AirborneEnterKind { get; set; } = AirborneEnterKind.None;
 		public bool AirOptionConsumedThisAirborne { get; set; }

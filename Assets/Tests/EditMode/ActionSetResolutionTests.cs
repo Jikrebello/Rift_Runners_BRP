@@ -22,7 +22,7 @@ namespace Assets.Tests.EditMode
 			var system = NewSystem();
 			var model = new PlayerModel { TraversalMode = PlayerTraversalMode.Grounded };
 
-			model.ActionSet.NeutralBank.LightAttackId = PlayerActionId.HeavyAttack;
+			model.CombatProfile.ActionSet.NeutralBank.LightAttackId = PlayerActionId.HeavyAttack;
 
 			var outputs = new PlayerOutputs();
 
@@ -43,7 +43,7 @@ namespace Assets.Tests.EditMode
 			var system = NewSystem();
 			var model = new PlayerModel { TraversalMode = PlayerTraversalMode.Grounded };
 
-			model.ActionSet.NeutralBank.LightAttackId = PlayerActionId.None;
+			model.CombatProfile.ActionSet.NeutralBank.LightAttackId = PlayerActionId.None;
 
 			var outputs = new PlayerOutputs();
 
@@ -68,7 +68,7 @@ namespace Assets.Tests.EditMode
 				CombatPosture = PlayerCombatPosture.None,
 			};
 
-			model.ActionSet.NeutralBank.RightActionId = PlayerActionId.None;
+			model.CombatProfile.ActionSet.NeutralBank.RightActionId = PlayerActionId.None;
 
 			var outputs = new PlayerOutputs();
 
@@ -93,7 +93,8 @@ namespace Assets.Tests.EditMode
 				CombatPosture = PlayerCombatPosture.Aim,
 			};
 
-			model.ActionSet.AimBank.RightActionId = PlayerActionId.FundamentalRangedPrimary;
+			model.CombatProfile.ActionSet.AimBank.RightActionId =
+				PlayerActionId.FundamentalRangedPrimary;
 
 			var outputs = new PlayerOutputs();
 
@@ -117,7 +118,7 @@ namespace Assets.Tests.EditMode
 				SecondaryMode = SecondaryModifierMode.None,
 			};
 
-			model.ActionSet.AimBank.RightActionId = PlayerActionId.ContextGrab;
+			model.CombatProfile.ActionSet.AimBank.RightActionId = PlayerActionId.ContextGrab;
 
 			var outputs = new PlayerOutputs();
 
@@ -137,7 +138,7 @@ namespace Assets.Tests.EditMode
 			var system = NewSystem();
 			var model = new PlayerModel { TraversalMode = PlayerTraversalMode.Grounded };
 
-			model.ActionSet.NeutralBank.SkillSlot1Id = PlayerActionId.Skill2;
+			model.CombatProfile.ActionSet.NeutralBank.SkillSlot1Id = PlayerActionId.Skill2;
 
 			var outputs = new PlayerOutputs();
 
@@ -158,7 +159,7 @@ namespace Assets.Tests.EditMode
 			var system = NewSystem();
 			var model = new PlayerModel { TraversalMode = PlayerTraversalMode.Grounded };
 
-			model.ActionSet.NeutralBank.SkillSlot1Id = PlayerActionId.None;
+			model.CombatProfile.ActionSet.NeutralBank.SkillSlot1Id = PlayerActionId.None;
 
 			var outputs = new PlayerOutputs();
 
@@ -184,7 +185,7 @@ namespace Assets.Tests.EditMode
 			};
 			var outputs = new PlayerOutputs();
 
-			model.ActionSet.AimBank.LightAttackId = PlayerActionId.HeavyAttack;
+			model.CombatProfile.ActionSet.AimBank.LightAttackId = PlayerActionId.HeavyAttack;
 
 			system.Step(
 				model,
@@ -210,7 +211,7 @@ namespace Assets.Tests.EditMode
 			};
 			var outputs = new PlayerOutputs();
 
-			model.ActionSet.BlockBank.HeavyAttackId = PlayerActionId.LightAttack;
+			model.CombatProfile.ActionSet.BlockBank.HeavyAttackId = PlayerActionId.LightAttack;
 
 			system.Step(
 				model,
@@ -236,7 +237,7 @@ namespace Assets.Tests.EditMode
 			};
 			var outputs = new PlayerOutputs();
 
-			model.ActionSet.AimBank.SkillSlot1Id = PlayerActionId.Skill2;
+			model.CombatProfile.ActionSet.AimBank.SkillSlot1Id = PlayerActionId.Skill2;
 
 			system.Step(
 				model,
@@ -259,7 +260,7 @@ namespace Assets.Tests.EditMode
 			};
 			var outputs = new PlayerOutputs();
 
-			model.ActionSet.SpellReadyBank.SkillSlot1Id = PlayerActionId.Skill3;
+			model.CombatProfile.ActionSet.SpellReadyBank.SkillSlot1Id = PlayerActionId.Skill3;
 
 			system.Step(
 				model,
