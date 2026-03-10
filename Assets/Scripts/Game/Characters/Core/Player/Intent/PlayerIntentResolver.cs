@@ -88,7 +88,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Intent
 		)
 		{
 			if (input.ContextGrabOrFire.PressedThisFrame)
-				intents.Add(new ContextGrabOrFireIntent());
+				intents.Add(new RightActionIntent());
 		}
 
 		private static void EmitSkillIntents(

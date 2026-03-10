@@ -1,11 +1,17 @@
 using System.Numerics;
+using Assets.Scripts.Game.Characters.Core.Player.Action.Loadout;
+using Assets.Scripts.Game.Characters.Core.Player.Action.Runtime;
 
 namespace Assets.Scripts.Game.Characters.Core.Player.Model
 {
 	public sealed class PlayerModel
 	{
+		public PlayerActionRuntimeState ActionRuntime { get; } = new();
+		public PlayerActionSet ActionSet { get; } = PlayerActionSets.CreateDefault();
+
 		public AirborneEnterKind AirborneEnterKind { get; set; } = AirborneEnterKind.None;
 		public bool AirOptionConsumedThisAirborne { get; set; }
+		public PlayerCombatPosture CombatPosture { get; set; } = PlayerCombatPosture.None;
 		public PlayerCombatStance CombatStance { get; set; } = PlayerCombatStance.Holstered;
 		public UpperBodyMode EquippedUpperBodyMode { get; set; } = UpperBodyMode.Aim;
 		public PlayerGroundedSubMode GroundedSubMode { get; set; } = PlayerGroundedSubMode.Standing;

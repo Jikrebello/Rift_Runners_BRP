@@ -5,14 +5,13 @@ namespace Assets.Tests.EditMode
 {
 	internal sealed class TraversalFixture
 	{
-		public readonly TraversalStateMachine Traversal = new();
-		public readonly GroundedState Grounded = new();
-		public readonly SlidingState Sliding;
 		public readonly AirborneState Airborne = new();
 		public readonly TraversalCoordinator Coordinator;
-		public readonly TraversalActionIntentSynthesizer Synthesizer;
-
+		public readonly GroundedState Grounded = new();
+		public readonly SlidingState Sliding;
 		public readonly SlidingStateConfig SlidingConfig;
+		public readonly TraversalActionIntentSynthesizer Synthesizer;
+		public readonly TraversalStateMachine Traversal = new();
 
 		public TraversalFixture()
 		{

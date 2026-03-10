@@ -101,7 +101,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Intent
 			AddAll<UseSkillIntent>(intents, ordered);
 			AddAll<LightAttackIntent>(intents, ordered);
 			AddAll<HeavyAttackIntent>(intents, ordered);
-			AddAll<ContextGrabOrFireIntent>(intents, ordered);
+			AddAll<RightActionIntent>(intents, ordered);
 			AddAll<ContextInteractIntent>(intents, ordered);
 
 			// Bucket 4: movement (already kept, but include for completeness)

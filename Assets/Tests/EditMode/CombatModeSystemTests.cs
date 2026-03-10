@@ -8,6 +8,13 @@ using Shouldly;
 
 namespace Assets.Tests.EditMode
 {
+	/// <summary>
+	/// Contains unit tests for the CombatModeSystem, verifying the behavior of combat mode transitions based on player
+	/// intents.
+	/// </summary>
+	/// <remarks>These tests ensure that the CombatModeSystem correctly handles various player actions, such as
+	/// holding or releasing secondary modifiers and toggling weapon stances, affecting the player's combat stance and
+	/// upper body mode accordingly.</remarks>
 	public sealed class CombatModeSystemTests
 	{
 		[Test]
@@ -41,6 +48,119 @@ namespace Assets.Tests.EditMode
 			outputs.Animation.Ints.ShouldContain(x =>
 				x.Param == AnimInt.UpperBodyMode && x.Value == (int)UpperBodyMode.Aim
 			);
+		}
+
+		[Test]
+		public void HoldingSecondaryModifier_WithAimUpperBody_SetsCombatPostureToAim()
+		{
+			var model = new PlayerModel
+			{
+				CombatStance = PlayerCombatStance.Holstered,
+				SecondaryMode = SecondaryModifierMode.None,
+				EquippedUpperBodyMode = UpperBodyMode.Aim,
+			};
+
+			var outputs = new PlayerOutputs();
+			var sys = new CombatModeSystem();
+
+			sys.HandleIntents(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new SecondaryModifierHeldIntent(true) }
+			);
+
+			model.CombatPosture.ShouldBe(PlayerCombatPosture.Aim);
+		}
+
+		[Test]
+		public void HoldingSecondaryModifier_WithBlockUpperBody_SetsCombatPostureToBlock()
+		{
+			var model = new PlayerModel
+			{
+				CombatStance = PlayerCombatStance.Holstered,
+				SecondaryMode = SecondaryModifierMode.None,
+				EquippedUpperBodyMode = UpperBodyMode.Block,
+			};
+
+			var outputs = new PlayerOutputs();
+			var sys = new CombatModeSystem();
+
+			sys.HandleIntents(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new SecondaryModifierHeldIntent(true) }
+			);
+
+			model.CombatPosture.ShouldBe(PlayerCombatPosture.Block);
+		}
+
+		[Test]
+		public void HoldingSecondaryModifier_WithSpellReadyUpperBody_SetsCombatPostureToSpellReady()
+		{
+			var model = new PlayerModel
+			{
+				CombatStance = PlayerCombatStance.Holstered,
+				SecondaryMode = SecondaryModifierMode.None,
+				EquippedUpperBodyMode = UpperBodyMode.SpellReady,
+			};
+
+			var outputs = new PlayerOutputs();
+			var sys = new CombatModeSystem();
+
+			sys.HandleIntents(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new SecondaryModifierHeldIntent(true) }
+			);
+
+			model.CombatPosture.ShouldBe(PlayerCombatPosture.SpellReady);
+		}
+
+		[Test]
+		public void HolsteringWeapon_ClearsCombatPosture()
+		{
+			var model = new PlayerModel
+			{
+				CombatStance = PlayerCombatStance.Unholstered,
+				SecondaryMode = SecondaryModifierMode.Active,
+				CombatPosture = PlayerCombatPosture.Aim,
+				EquippedUpperBodyMode = UpperBodyMode.Aim,
+			};
+
+			var outputs = new PlayerOutputs();
+			var sys = new CombatModeSystem();
+
+			sys.HandleIntents(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new ToggleWeaponStanceIntent() }
+			);
+
+			model.CombatStance.ShouldBe(PlayerCombatStance.Holstered);
+			model.CombatPosture.ShouldBe(PlayerCombatPosture.None);
+		}
+
+		[Test]
+		public void ReleasingSecondaryModifier_ClearsCombatPosture()
+		{
+			var model = new PlayerModel
+			{
+				CombatStance = PlayerCombatStance.Unholstered,
+				SecondaryMode = SecondaryModifierMode.Active,
+				CombatPosture = PlayerCombatPosture.Block,
+				EquippedUpperBodyMode = UpperBodyMode.Block,
+			};
+
+			var outputs = new PlayerOutputs();
+			var sys = new CombatModeSystem();
+
+			sys.HandleIntents(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new SecondaryModifierHeldIntent(false) }
+			);
+
+			model.CombatPosture.ShouldBe(PlayerCombatPosture.None);
 		}
 
 		[Test]

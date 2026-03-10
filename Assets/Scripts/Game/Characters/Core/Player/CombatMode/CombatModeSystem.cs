@@ -34,19 +34,18 @@ namespace Assets.Scripts.Game.Characters.Core.Player.CombatMode
 
 		private static void ApplySecondaryModifier(PlayerModel model, bool held)
 		{
-			// Rule:
-			// - if held: auto-unholster and activate secondary mode (aim/block)
-			// - if released: leave unholstered but exit secondary mode
 			if (held)
 			{
 				if (model.CombatStance == PlayerCombatStance.Holstered)
 					model.CombatStance = PlayerCombatStance.Unholstered;
 
 				model.SecondaryMode = SecondaryModifierMode.Active;
+				model.CombatPosture = ResolvePosture(model.EquippedUpperBodyMode);
 				return;
 			}
 
 			model.SecondaryMode = SecondaryModifierMode.None;
+			model.CombatPosture = PlayerCombatPosture.None;
 		}
 
 		private static void EmitCombatModeOutputs(PlayerModel model, PlayerOutputs outputs)
@@ -60,7 +59,19 @@ namespace Assets.Scripts.Game.Characters.Core.Player.CombatMode
 			int upperBodyMode = secondaryActive
 				? (int)model.EquippedUpperBodyMode
 				: (int)UpperBodyMode.None;
+
 			outputs.Animation.AddInt(AnimInt.UpperBodyMode, upperBodyMode);
+		}
+
+		private static PlayerCombatPosture ResolvePosture(UpperBodyMode upperBodyMode)
+		{
+			return upperBodyMode switch
+			{
+				UpperBodyMode.Aim => PlayerCombatPosture.Aim,
+				UpperBodyMode.Block => PlayerCombatPosture.Block,
+				UpperBodyMode.SpellReady => PlayerCombatPosture.SpellReady,
+				_ => PlayerCombatPosture.None,
+			};
 		}
 
 		private static void ToggleStance(PlayerModel model)
@@ -70,9 +81,11 @@ namespace Assets.Scripts.Game.Characters.Core.Player.CombatMode
 					? PlayerCombatStance.Unholstered
 					: PlayerCombatStance.Holstered;
 
-			// If you holster, you cannot remain in modifier mode.
 			if (model.CombatStance == PlayerCombatStance.Holstered)
+			{
 				model.SecondaryMode = SecondaryModifierMode.None;
+				model.CombatPosture = PlayerCombatPosture.None;
+			}
 		}
 	}
 }

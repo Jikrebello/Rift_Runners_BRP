@@ -1,5 +1,6 @@
 using System;
 using Assets.Scripts.Game.Characters.Core.Player.Action;
+using Assets.Scripts.Game.Characters.Core.Player.Action.Resolution;
 using Assets.Scripts.Game.Characters.Core.Player.CombatMode;
 using Assets.Scripts.Game.Characters.Core.Player.Input;
 using Assets.Scripts.Game.Characters.Core.Player.Intent;
@@ -14,6 +15,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player
 	public sealed class PlayerPiece
 	{
 		private readonly ActionSystem _actionSystem = new();
+		private readonly PlayerActionResolver _actionResolver = new();
 		private readonly AirborneState _airborne = new();
 		private readonly CombatModeSystem _combatModeSystem = new();
 		private readonly GroundedState _grounded = new();
@@ -80,14 +82,24 @@ namespace Assets.Scripts.Game.Characters.Core.Player
 			var rawIntents = _intentResolver.Resolve(input);
 			var intents = PlayerIntentArbiter.Arbitrate(_model, world, rawIntents);
 			intents = _traversalActionIntentSynthesizer.Synthesize(_model, intents, dt);
+
+			ResolvedPlayerActionRequest? actionRequest = null;
+			if (_actionResolver.TryResolve(_model, intents, out var resolvedAction))
+				actionRequest = resolvedAction;
+
 			intents = _staminaSystem.FilterAndApply(_model, _outputs, intents, dt);
+			actionRequest = _staminaSystem.FilterAndApplyResolvedAction(
+				_model,
+				_outputs,
+				actionRequest
+			);
 
 			_combatModeSystem.HandleIntents(_model, _outputs, intents);
-			_actionSystem.HandleIntents(_model, _outputs, intents);
+			_actionSystem.HandleResolvedAction(_model, _outputs, actionRequest);
+			_actionSystem.Tick(_model, _outputs, dt);
 			_traversal.HandleIntents(_model, _outputs, intents);
 
 			_traversalCoordinator.ApplyTransitions(_model, _outputs, world, intents);
-
 			_traversal.Tick(_model, _outputs, world, dt);
 
 			return _outputs;

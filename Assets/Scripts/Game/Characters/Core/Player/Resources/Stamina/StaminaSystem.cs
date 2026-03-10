@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Assets.Scripts.Game.Characters.Core.Player.Action.Resolution;
 using Assets.Scripts.Game.Characters.Core.Player.Intent;
 using Assets.Scripts.Game.Characters.Core.Player.Model;
 using Assets.Scripts.Game.Characters.Core.Player.Outputs;
@@ -11,6 +12,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 		private StaminaConfig _cfg;
 
 		public StaminaSystem(StaminaConfig cfg) => _cfg = cfg;
+
+		public void SetConfig(StaminaConfig cfg) => _cfg = cfg;
 
 		public IReadOnlyList<IPlayerIntent> FilterAndApply(
 			PlayerModel model,
@@ -39,7 +42,33 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 			return filtered;
 		}
 
-		public void SetConfig(StaminaConfig cfg) => _cfg = cfg;
+		public ResolvedPlayerActionRequest? FilterAndApplyResolvedAction(
+			PlayerModel model,
+			PlayerOutputs outputs,
+			ResolvedPlayerActionRequest? request
+		)
+		{
+			if (!request.HasValue)
+				return null;
+
+			var action = request.Value.Action;
+			var cost = action.Execution.StaminaCost;
+
+			if (cost <= 0f)
+				return request;
+
+			if (model.Stamina < cost)
+			{
+				outputs.Debug.Warn(
+					"Stamina",
+					$"Denied Action({action.Id}): stamina={model.Stamina:0.##}, cost={cost:0.##}."
+				);
+				return null;
+			}
+
+			Spend(model, cost);
+			return request;
+		}
 
 		private static void CancelGlideIfExhausted(PlayerModel model, PlayerOutputs outputs)
 		{

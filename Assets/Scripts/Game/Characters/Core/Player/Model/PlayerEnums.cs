@@ -3,7 +3,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Model
 	public enum AirborneEnterKind
 	{
 		None = 0,
-		Leap = 1, // includes sprint jump and slide-hold leap
+		Leap = 1,
 		// later: Knockback, Fall, JumpPad, etc.
 	}
 
@@ -11,6 +11,14 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Model
 	{
 		Holstered,
 		Unholstered,
+	}
+
+	public enum PlayerCombatPosture
+	{
+		None = 0,
+		Aim = 1,
+		Block = 2,
+		SpellReady = 3,
 	}
 
 	public enum PlayerGroundedSubMode
@@ -35,7 +43,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Model
 	public enum SecondaryModifierMode
 	{
 		None,
-		Active, // later split Aim/Block based on equipment
+		Active,
 	}
 
 	public enum UpperBodyMode
@@ -43,5 +51,6 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Model
 		None = 0,
 		Aim = 1,
 		Block = 2,
+		SpellReady = 3,
 	}
 }
