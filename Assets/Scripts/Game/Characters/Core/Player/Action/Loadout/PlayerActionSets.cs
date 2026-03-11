@@ -8,29 +8,40 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Loadout
 		{
 			var set = new PlayerActionSet();
 
-			ConfigureNeutralBank(set.NeutralBank);
-			ConfigureAimBank(set.AimBank);
-			ConfigureBlockBank(set.BlockBank);
-			ConfigureSpellReadyBank(set.SpellReadyBank);
+			ConfigureBaseBank(set.BaseBank);
+			ConfigurePrimaryModifierBank(set.PrimaryModifierBank);
+			ConfigureSecondaryModifierBank(set.SecondaryModifierBank);
+			ConfigureDualModifierBank(set.DualModifierBank);
 
 			return set;
 		}
 
-		private static void ConfigureNeutralBank(PlayerActionBank bank)
+		private static void ConfigureBaseBank(PlayerActionBank bank)
 		{
 			bank.LightAttackId = PlayerActionId.LightAttack;
 			bank.HeavyAttackId = PlayerActionId.HeavyAttack;
 			bank.RightActionId = PlayerActionId.ContextGrab;
+
+			bank.SkillSlot1Id = PlayerActionId.None;
+			bank.SkillSlot2Id = PlayerActionId.None;
+			bank.SkillSlot3Id = PlayerActionId.None;
+		}
+
+		private static void ConfigurePrimaryModifierBank(PlayerActionBank bank)
+		{
+			bank.LightAttackId = PlayerActionId.Skill1;
+			bank.HeavyAttackId = PlayerActionId.Skill2;
+			bank.RightActionId = PlayerActionId.Skill3;
 
 			bank.SkillSlot1Id = PlayerActionId.Skill1;
 			bank.SkillSlot2Id = PlayerActionId.Skill2;
 			bank.SkillSlot3Id = PlayerActionId.Skill3;
 		}
 
-		private static void ConfigureAimBank(PlayerActionBank bank)
+		private static void ConfigureSecondaryModifierBank(PlayerActionBank bank)
 		{
-			bank.LightAttackId = PlayerActionId.LightAttack;
-			bank.HeavyAttackId = PlayerActionId.HeavyAttack;
+			bank.LightAttackId = PlayerActionId.Skill1;
+			bank.HeavyAttackId = PlayerActionId.Skill2;
 			bank.RightActionId = PlayerActionId.FundamentalRangedPrimary;
 
 			bank.SkillSlot1Id = PlayerActionId.Skill1;
@@ -38,22 +49,11 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Loadout
 			bank.SkillSlot3Id = PlayerActionId.Skill3;
 		}
 
-		private static void ConfigureBlockBank(PlayerActionBank bank)
+		private static void ConfigureDualModifierBank(PlayerActionBank bank)
 		{
-			bank.LightAttackId = PlayerActionId.LightAttack;
-			bank.HeavyAttackId = PlayerActionId.HeavyAttack;
-			bank.RightActionId = PlayerActionId.ContextGrab;
-
-			bank.SkillSlot1Id = PlayerActionId.Skill1;
-			bank.SkillSlot2Id = PlayerActionId.Skill2;
-			bank.SkillSlot3Id = PlayerActionId.Skill3;
-		}
-
-		private static void ConfigureSpellReadyBank(PlayerActionBank bank)
-		{
-			bank.LightAttackId = PlayerActionId.LightAttack;
-			bank.HeavyAttackId = PlayerActionId.HeavyAttack;
-			bank.RightActionId = PlayerActionId.ContextGrab;
+			bank.LightAttackId = PlayerActionId.Skill1;
+			bank.HeavyAttackId = PlayerActionId.Skill2;
+			bank.RightActionId = PlayerActionId.Skill3;
 
 			bank.SkillSlot1Id = PlayerActionId.Skill1;
 			bank.SkillSlot2Id = PlayerActionId.Skill2;

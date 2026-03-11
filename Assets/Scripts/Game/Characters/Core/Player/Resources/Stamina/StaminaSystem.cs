@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
+using Assets.Scripts.Game.Characters.Core.Player.Action.Definitions;
 using Assets.Scripts.Game.Characters.Core.Player.Action.Resolution;
 using Assets.Scripts.Game.Characters.Core.Player.Intent;
 using Assets.Scripts.Game.Characters.Core.Player.Model;
@@ -11,9 +13,14 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 	{
 		private StaminaConfig _cfg;
 
-		public StaminaSystem(StaminaConfig cfg) => _cfg = cfg;
+		private enum IntentStaminaDecision
+		{
+			NotApplicable = 0,
+			Approved = 1,
+			Denied = 2,
+		}
 
-		public void SetConfig(StaminaConfig cfg) => _cfg = cfg;
+		public StaminaSystem(StaminaConfig cfg) => _cfg = cfg;
 
 		public IReadOnlyList<IPlayerIntent> FilterAndApply(
 			PlayerModel model,
@@ -22,18 +29,29 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 			float dt
 		)
 		{
+			bool wasExhausted = model.IsExhausted;
+
 			ApplyPassiveStamina(model, outputs, dt);
+
+			bool enteredExhaustionThisTick = !wasExhausted && model.IsExhausted;
+
+			if (!enteredExhaustionThisTick)
+				UpdateExhaustionState(model, outputs, dt);
+
+			if (model.IsExhausted)
+				return FilterWhileExhausted(model, outputs, intents);
 
 			var filtered = new List<IPlayerIntent>(intents.Count);
 
 			for (int i = 0; i < intents.Count; i++)
 			{
 				var intent = intents[i];
+				var decision = EvaluateIntent(model, outputs, intent, out float cost);
 
-				if (ShouldDeny(model, outputs, intent, out float cost))
+				if (decision == IntentStaminaDecision.Denied)
 					continue;
 
-				if (cost > 0f)
+				if (decision == IntentStaminaDecision.Approved && cost > 0f)
 					Spend(model, cost);
 
 				filtered.Add(intent);
@@ -51,7 +69,23 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 			if (!request.HasValue)
 				return null;
 
+			if (model.IsExhausted)
+			{
+				outputs.Debug.Warn("Stamina", "Denied action: player is exhausted.");
+				return null;
+			}
+
 			var action = request.Value.Action;
+
+			if (RequiresPositiveStamina(action.Id) && model.Stamina <= 0f)
+			{
+				outputs.Debug.Warn(
+					"Stamina",
+					$"Denied Action({action.Id}): stamina={model.Stamina:0.##}, requires stamina above zero."
+				);
+				return null;
+			}
+
 			var cost = action.Execution.StaminaCost;
 
 			if (cost <= 0f)
@@ -69,6 +103,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 			Spend(model, cost);
 			return request;
 		}
+
+		public void SetConfig(StaminaConfig cfg) => _cfg = cfg;
 
 		private static void CancelGlideIfExhausted(PlayerModel model, PlayerOutputs outputs)
 		{
@@ -108,6 +144,14 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 			return stamina;
 		}
 
+		private static bool RequiresPositiveStamina(PlayerActionId actionId)
+		{
+			return actionId == PlayerActionId.LightAttack
+				|| actionId == PlayerActionId.LightAttack2
+				|| actionId == PlayerActionId.LightAttack3
+				|| actionId == PlayerActionId.HeavyAttack;
+		}
+
 		private static void Spend(PlayerModel model, float cost)
 		{
 			if (cost <= 0f)
@@ -117,6 +161,25 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 
 			if (model.Stamina < 0f)
 				model.Stamina = 0f;
+		}
+
+		private static IntentStaminaDecision TryHandleBeginGlideIntent(
+			PlayerModel model,
+			PlayerOutputs outputs,
+			IPlayerIntent intent,
+			out float cost
+		)
+		{
+			cost = 0f;
+
+			if (intent is not BeginGlideIntent)
+				return IntentStaminaDecision.NotApplicable;
+
+			if (model.Stamina > 0f)
+				return IntentStaminaDecision.Approved;
+
+			outputs.Debug.Warn("Stamina", $"Denied BeginGlide: stamina={model.Stamina:0.##}.");
+			return IntentStaminaDecision.Denied;
 		}
 
 		private void ApplyPassiveStamina(PlayerModel model, PlayerOutputs outputs, float dt)
@@ -130,6 +193,18 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 
 			CancelSprintIfExhausted(model, outputs);
 			CancelGlideIfExhausted(model, outputs);
+
+			if (!model.IsExhausted && model.Stamina <= 0f)
+				EnterExhaustion(model, outputs);
+		}
+
+		private void BeginRecovery(PlayerModel model, PlayerOutputs outputs)
+		{
+			model.ExhaustionState = PlayerExhaustionState.Recovering;
+			model.ExhaustionRecoveryRemaining = _cfg.Exhaustion.RecoveryDurationSeconds;
+			model.MoveInput = Vector2.Zero;
+
+			outputs.Debug.Info("Stamina", "Entered exhaustion recovery.");
 		}
 
 		private float CalculatePassiveDelta(PlayerModel model, float dt)
@@ -151,33 +226,83 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 			return 0f;
 		}
 
-		private bool ShouldDeny(
+		private void EnterExhaustion(PlayerModel model, PlayerOutputs outputs)
+		{
+			CancelSprintIfExhausted(model, outputs);
+			CancelGlideIfExhausted(model, outputs);
+
+			if (model.MoveInput.LengthSquared() > 0f)
+			{
+				model.ExhaustionState = PlayerExhaustionState.DrainedMoving;
+				model.MoveInput *= _cfg.Exhaustion.DrainedMoveInitialMultiplier;
+
+				outputs.Debug.Info("Stamina", "Entered exhaustion: drained movement.");
+				return;
+			}
+
+			BeginRecovery(model, outputs);
+		}
+
+		private IReadOnlyList<IPlayerIntent> FilterWhileExhausted(
+			PlayerModel model,
+			PlayerOutputs outputs,
+			IReadOnlyList<IPlayerIntent> intents
+		)
+		{
+			var filtered = new List<IPlayerIntent>(0);
+
+			for (int i = 0; i < intents.Count; i++)
+			{
+				var intent = intents[i];
+
+				if (intent is MoveIntent)
+					continue;
+
+				outputs.Debug.Info(
+					"Stamina",
+					$"Denied {intent.GetType().Name}: player is exhausted."
+				);
+			}
+
+			return filtered;
+		}
+
+		private IntentStaminaDecision EvaluateIntent(
 			PlayerModel model,
 			PlayerOutputs outputs,
 			IPlayerIntent intent,
 			out float cost
 		)
 		{
-			if (TryHandleSprintIntent(model, outputs, intent, out cost))
-				return true;
+			var decision = TryHandleSprintIntent(model, outputs, intent, out cost);
+			if (decision != IntentStaminaDecision.NotApplicable)
+				return decision;
 
-			if (TryHandleBeginGlideIntent(model, outputs, intent, out cost))
-				return true;
+			decision = TryHandleBeginGlideIntent(model, outputs, intent, out cost);
+			if (decision != IntentStaminaDecision.NotApplicable)
+				return decision;
 
-			if (TryHandleLeapIntent(model, outputs, intent, out cost))
-				return true;
+			decision = TryHandleLeapIntent(model, outputs, intent, out cost);
+			if (decision != IntentStaminaDecision.NotApplicable)
+				return decision;
 
-			if (TryHandleKickOffIntent(model, outputs, intent, out cost))
-				return true;
+			decision = TryHandleKickOffIntent(model, outputs, intent, out cost);
+			if (decision != IntentStaminaDecision.NotApplicable)
+				return decision;
 
-			if (TryHandleUseSkillIntent(model, outputs, intent, out cost))
-				return true;
+			decision = TryHandleDropIntent(model, outputs, intent, out cost);
+			if (decision != IntentStaminaDecision.NotApplicable)
+				return decision;
+
+			decision = TryHandleUseSkillIntent(model, outputs, intent, out cost);
+			if (decision != IntentStaminaDecision.NotApplicable)
+				return decision;
 
 			cost = 0f;
-			return false;
+			return IntentStaminaDecision.NotApplicable;
 		}
 
-		private static bool TryHandleBeginGlideIntent(
+		private IntentStaminaDecision TryHandleDropIntent(
 			PlayerModel model,
 			PlayerOutputs outputs,
 			IPlayerIntent intent,
@@ -186,17 +311,23 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 		{
 			cost = 0f;
 
-			if (intent is not BeginGlideIntent)
-				return false;
+			if (intent is not DropIntent)
+				return IntentStaminaDecision.NotApplicable;
 
-			if (model.Stamina > 0f)
-				return false;
+			cost = _cfg.Traversal.Drop;
 
-			outputs.Debug.Warn("Stamina", $"Denied BeginGlide: stamina={model.Stamina:0.##}.");
-			return true;
+			if (model.Stamina >= cost)
+				return IntentStaminaDecision.Approved;
+
+			outputs.Debug.Warn(
+				"Stamina",
+				$"Denied Drop: stamina={model.Stamina:0.##}, cost={cost:0.##}."
+			);
+			cost = 0f;
+			return IntentStaminaDecision.Denied;
 		}
 
-		private bool TryHandleKickOffIntent(
+		private IntentStaminaDecision TryHandleKickOffIntent(
 			PlayerModel model,
 			PlayerOutputs outputs,
 			IPlayerIntent intent,
@@ -206,22 +337,22 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 			cost = 0f;
 
 			if (intent is not KickOffIntent)
-				return false;
+				return IntentStaminaDecision.NotApplicable;
 
 			cost = _cfg.Traversal.KickOff;
 
 			if (model.Stamina >= cost)
-				return false;
+				return IntentStaminaDecision.Approved;
 
 			outputs.Debug.Warn(
 				"Stamina",
 				$"Denied KickOff: stamina={model.Stamina:0.##}, cost={cost:0.##}."
 			);
 			cost = 0f;
-			return true;
+			return IntentStaminaDecision.Denied;
 		}
 
-		private bool TryHandleLeapIntent(
+		private IntentStaminaDecision TryHandleLeapIntent(
 			PlayerModel model,
 			PlayerOutputs outputs,
 			IPlayerIntent intent,
@@ -231,22 +362,22 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 			cost = 0f;
 
 			if (intent is not LeapIntent)
-				return false;
+				return IntentStaminaDecision.NotApplicable;
 
 			cost = _cfg.Traversal.Leap;
 
 			if (model.Stamina >= cost)
-				return false;
+				return IntentStaminaDecision.Approved;
 
 			outputs.Debug.Warn(
 				"Stamina",
 				$"Denied Leap: stamina={model.Stamina:0.##}, cost={cost:0.##}."
 			);
 			cost = 0f;
-			return true;
+			return IntentStaminaDecision.Denied;
 		}
 
-		private bool TryHandleSprintIntent(
+		private IntentStaminaDecision TryHandleSprintIntent(
 			PlayerModel model,
 			PlayerOutputs outputs,
 			IPlayerIntent intent,
@@ -256,23 +387,23 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 			cost = 0f;
 
 			if (intent is not ToggleSprintIntent)
-				return false;
+				return IntentStaminaDecision.NotApplicable;
 
 			bool enteringSprint = model.GroundedSubMode != PlayerGroundedSubMode.Sprinting;
 			if (!enteringSprint)
-				return false;
+				return IntentStaminaDecision.Approved;
 
 			if (model.Stamina >= _cfg.Traversal.MinStaminaToEnterSprint)
-				return false;
+				return IntentStaminaDecision.Approved;
 
 			outputs.Debug.Warn(
 				"Stamina",
 				$"Denied ToggleSprint: stamina={model.Stamina:0.##}, required={_cfg.Traversal.MinStaminaToEnterSprint:0.##}."
 			);
-			return true;
+			return IntentStaminaDecision.Denied;
 		}
 
-		private bool TryHandleUseSkillIntent(
+		private IntentStaminaDecision TryHandleUseSkillIntent(
 			PlayerModel model,
 			PlayerOutputs outputs,
 			IPlayerIntent intent,
@@ -282,22 +413,62 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 			cost = 0f;
 
 			if (intent is not UseSkillIntent skill)
-				return false;
+				return IntentStaminaDecision.NotApplicable;
 
 			cost = _cfg.GetSkillCost(skill.Bank, skill.Slot);
 
 			if (cost <= 0f)
-				return false;
+				return IntentStaminaDecision.Approved;
 
 			if (model.Stamina >= cost)
-				return false;
+				return IntentStaminaDecision.Approved;
 
 			outputs.Debug.Warn(
 				"Stamina",
 				$"Denied UseSkill({skill.Bank},{skill.Slot}): stamina={model.Stamina:0.##}, cost={cost:0.##}."
 			);
 			cost = 0f;
-			return true;
+			return IntentStaminaDecision.Denied;
+		}
+
+		private void UpdateDrainedMoving(PlayerModel model, PlayerOutputs outputs, float dt)
+		{
+			float decay = MathF.Max(0f, 1f - (_cfg.Exhaustion.DrainedMoveDecayPerSecond * dt));
+			model.MoveInput *= decay;
+
+			if (model.MoveInput.Length() <= _cfg.Exhaustion.StopMoveThreshold)
+				BeginRecovery(model, outputs);
+		}
+
+		private void UpdateExhaustionState(PlayerModel model, PlayerOutputs outputs, float dt)
+		{
+			switch (model.ExhaustionState)
+			{
+				case PlayerExhaustionState.DrainedMoving:
+					UpdateDrainedMoving(model, outputs, dt);
+					break;
+
+				case PlayerExhaustionState.Recovering:
+					UpdateRecovering(model, outputs, dt);
+					break;
+			}
+		}
+
+		private void UpdateRecovering(PlayerModel model, PlayerOutputs outputs, float dt)
+		{
+			model.MoveInput = Vector2.Zero;
+			model.ExhaustionRecoveryRemaining -= dt;
+
+			if (model.ExhaustionRecoveryRemaining > 0f)
+				return;
+
+			if (model.Stamina <= 0f)
+				return;
+
+			model.ExhaustionState = PlayerExhaustionState.None;
+			model.ExhaustionRecoveryRemaining = 0f;
+
+			outputs.Debug.Info("Stamina", "Exhaustion recovery complete.");
 		}
 	}
 }

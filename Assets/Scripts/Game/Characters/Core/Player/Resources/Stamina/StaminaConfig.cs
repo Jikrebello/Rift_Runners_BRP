@@ -9,13 +9,15 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 		public readonly DrainRates Drain;
 		public readonly TraversalCosts Traversal;
 		public readonly SkillCosts Skills;
+		public readonly ExhaustionSettings Exhaustion;
 
 		public StaminaConfig(
 			float maxStamina,
 			RegenRates regen,
 			DrainRates drain,
 			TraversalCosts traversal,
-			SkillCosts skills
+			SkillCosts skills,
+			ExhaustionSettings exhaustion
 		)
 		{
 			MaxStamina = maxStamina;
@@ -23,6 +25,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 			Drain = drain;
 			Traversal = traversal;
 			Skills = skills;
+			Exhaustion = exhaustion;
 		}
 
 		public float GetSkillCost(SkillBank bank, int slot)

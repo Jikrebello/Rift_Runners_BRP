@@ -71,7 +71,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 			new PlayerActionAvailability(requiresGrounded: true, allowWhileAirborne: false),
 			new PlayerActionExecutionPolicy(
 				canBuffer: true,
-				staminaCost: 10f,
+				staminaCost: 0f,
 				bufferWindow: PlayerActionBufferWindow.RecoveryOnly
 			)
 		);

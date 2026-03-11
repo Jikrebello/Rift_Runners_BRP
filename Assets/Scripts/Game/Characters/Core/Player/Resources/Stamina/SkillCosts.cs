@@ -12,20 +12,20 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 		public readonly float SecondarySlot3;
 
 		public SkillCosts(
-			float primarySlot1,
-			float primarySlot2,
-			float primarySlot3,
-			float secondarySlot1,
-			float secondarySlot2,
-			float secondarySlot3
+			float primarySkillSlot1Cost,
+			float primarySkillSlot2Cost,
+			float primarySkillSlot3Cost,
+			float secondarySkillSlot1Cost,
+			float secondarySkillSlot2Cost,
+			float secondarySkillSlot3Cost
 		)
 		{
-			PrimarySlot1 = primarySlot1;
-			PrimarySlot2 = primarySlot2;
-			PrimarySlot3 = primarySlot3;
-			SecondarySlot1 = secondarySlot1;
-			SecondarySlot2 = secondarySlot2;
-			SecondarySlot3 = secondarySlot3;
+			PrimarySlot1 = primarySkillSlot1Cost;
+			PrimarySlot2 = primarySkillSlot2Cost;
+			PrimarySlot3 = primarySkillSlot3Cost;
+			SecondarySlot1 = secondarySkillSlot1Cost;
+			SecondarySlot2 = secondarySkillSlot2Cost;
+			SecondarySlot3 = secondarySkillSlot3Cost;
 		}
 
 		public float GetCost(SkillBank bank, int slot)

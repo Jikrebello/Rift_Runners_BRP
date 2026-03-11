@@ -1,64 +1,74 @@
 using System.Collections.Generic;
+using System.Linq;
+using Assets.Scripts.Game.Characters.Core.Player.Action.Loadout;
 using Assets.Scripts.Game.Characters.Core.Player.CombatMode;
 using Assets.Scripts.Game.Characters.Core.Player.Intent;
 using Assets.Scripts.Game.Characters.Core.Player.Model;
 using Assets.Scripts.Game.Characters.Core.Player.Outputs;
 using NUnit.Framework;
-using Shouldly;
 
 namespace Assets.Tests.EditMode
 {
-	/// <summary>
-	/// Contains unit tests for the CombatModeSystem, verifying the behavior of combat mode transitions based on player
-	/// intents.
-	/// </summary>
-	/// <remarks>These tests ensure that the CombatModeSystem correctly handles various player actions, such as
-	/// holding or releasing secondary modifiers and toggling weapon stances, affecting the player's combat stance and
-	/// upper body mode accordingly.</remarks>
 	public sealed class CombatModeSystemTests
 	{
 		[Test]
-		public void HoldingSecondaryModifier_AutoUnholsters_ActivatesSecondary_AndSetsUpperBodyMode()
+		public void HoldingPrimaryModifier_ActivatesPrimaryMode_WithoutChangingPosture()
 		{
-			// Arrange
 			var model = new PlayerModel
 			{
 				CombatStance = PlayerCombatStance.Holstered,
+				PrimaryMode = PrimaryModifierMode.None,
 				SecondaryMode = SecondaryModifierMode.None,
-				EquippedUpperBodyMode = UpperBodyMode.Aim,
+				CombatPosture = PlayerCombatPosture.None,
 			};
 
 			var outputs = new PlayerOutputs();
 			var sys = new CombatModeSystem();
 
-			var intents = new List<IPlayerIntent> { new SecondaryModifierHeldIntent(true) };
-
-			// Act
-			sys.HandleIntents(model, outputs, intents);
-
-			// Assert
-			model.CombatStance.ShouldBe(PlayerCombatStance.Unholstered);
-			model.IsSecondaryModifierActive.ShouldBeTrue();
-
-			outputs.Animation.Bools.ShouldContain(x => x.Param == AnimBool.Holstered && !x.Value);
-			outputs.Animation.Bools.ShouldContain(x =>
-				x.Param == AnimBool.SecondaryModifierActive && x.Value
+			sys.HandleIntents(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new PrimaryModifierHeldIntent(true) }
 			);
 
-			outputs.Animation.Ints.ShouldContain(x =>
-				x.Param == AnimInt.UpperBodyMode && x.Value == (int)UpperBodyMode.Aim
-			);
+			Assert.That(model.PrimaryMode, Is.EqualTo(PrimaryModifierMode.Active));
+			Assert.That(model.SecondaryMode, Is.EqualTo(SecondaryModifierMode.None));
+			Assert.That(model.CombatPosture, Is.EqualTo(PlayerCombatPosture.None));
+			Assert.That(model.CombatStance, Is.EqualTo(PlayerCombatStance.Holstered));
 		}
 
 		[Test]
-		public void HoldingSecondaryModifier_WithAimUpperBody_SetsCombatPostureToAim()
+		public void ReleasingPrimaryModifier_ClearsPrimaryMode()
+		{
+			var model = new PlayerModel
+			{
+				PrimaryMode = PrimaryModifierMode.Active,
+				SecondaryMode = SecondaryModifierMode.None,
+			};
+
+			var outputs = new PlayerOutputs();
+			var sys = new CombatModeSystem();
+
+			sys.HandleIntents(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new PrimaryModifierHeldIntent(false) }
+			);
+
+			Assert.That(model.PrimaryMode, Is.EqualTo(PrimaryModifierMode.None));
+		}
+
+		[Test]
+		public void HoldingSecondaryModifier_AutoUnholsters_ActivatesSecondary()
 		{
 			var model = new PlayerModel
 			{
 				CombatStance = PlayerCombatStance.Holstered,
 				SecondaryMode = SecondaryModifierMode.None,
-				EquippedUpperBodyMode = UpperBodyMode.Aim,
 			};
+
+			model.CombatLoadout.SecondarySlot.ModifierPostureEffect =
+				PlayerModifierPostureEffect.Aim;
 
 			var outputs = new PlayerOutputs();
 			var sys = new CombatModeSystem();
@@ -69,18 +79,33 @@ namespace Assets.Tests.EditMode
 				new List<IPlayerIntent> { new SecondaryModifierHeldIntent(true) }
 			);
 
-			model.CombatPosture.ShouldBe(PlayerCombatPosture.Aim);
+			Assert.That(model.CombatStance, Is.EqualTo(PlayerCombatStance.Unholstered));
+			Assert.That(model.SecondaryMode, Is.EqualTo(SecondaryModifierMode.Active));
+			Assert.That(model.IsSecondaryModifierActive, Is.True);
+
+			Assert.That(
+				outputs.Animation.Bools.Any(x => x.Param == AnimBool.Holstered && !x.Value),
+				Is.True
+			);
+			Assert.That(
+				outputs.Animation.Bools.Any(x =>
+					x.Param == AnimBool.SecondaryModifierActive && x.Value
+				),
+				Is.True
+			);
 		}
 
 		[Test]
-		public void HoldingSecondaryModifier_WithBlockUpperBody_SetsCombatPostureToBlock()
+		public void HoldingSecondaryModifier_WithAimSlotEffect_SetsCombatPostureToAim()
 		{
 			var model = new PlayerModel
 			{
 				CombatStance = PlayerCombatStance.Holstered,
 				SecondaryMode = SecondaryModifierMode.None,
-				EquippedUpperBodyMode = UpperBodyMode.Block,
 			};
+
+			model.CombatLoadout.SecondarySlot.ModifierPostureEffect =
+				PlayerModifierPostureEffect.Aim;
 
 			var outputs = new PlayerOutputs();
 			var sys = new CombatModeSystem();
@@ -91,18 +116,27 @@ namespace Assets.Tests.EditMode
 				new List<IPlayerIntent> { new SecondaryModifierHeldIntent(true) }
 			);
 
-			model.CombatPosture.ShouldBe(PlayerCombatPosture.Block);
+			Assert.That(model.CombatPosture, Is.EqualTo(PlayerCombatPosture.Aim));
+			Assert.That(model.EquippedUpperBodyMode, Is.EqualTo(UpperBodyMode.Aim));
+			Assert.That(
+				outputs.Animation.Ints.Any(x =>
+					x.Param == AnimInt.UpperBodyMode && x.Value == (int)UpperBodyMode.Aim
+				),
+				Is.True
+			);
 		}
 
 		[Test]
-		public void HoldingSecondaryModifier_WithSpellReadyUpperBody_SetsCombatPostureToSpellReady()
+		public void HoldingSecondaryModifier_WithBlockSlotEffect_SetsCombatPostureToBlock()
 		{
 			var model = new PlayerModel
 			{
 				CombatStance = PlayerCombatStance.Holstered,
 				SecondaryMode = SecondaryModifierMode.None,
-				EquippedUpperBodyMode = UpperBodyMode.SpellReady,
 			};
+
+			model.CombatLoadout.SecondarySlot.ModifierPostureEffect =
+				PlayerModifierPostureEffect.Block;
 
 			var outputs = new PlayerOutputs();
 			var sys = new CombatModeSystem();
@@ -113,19 +147,27 @@ namespace Assets.Tests.EditMode
 				new List<IPlayerIntent> { new SecondaryModifierHeldIntent(true) }
 			);
 
-			model.CombatPosture.ShouldBe(PlayerCombatPosture.SpellReady);
+			Assert.That(model.CombatPosture, Is.EqualTo(PlayerCombatPosture.Block));
+			Assert.That(model.EquippedUpperBodyMode, Is.EqualTo(UpperBodyMode.Block));
+			Assert.That(
+				outputs.Animation.Ints.Any(x =>
+					x.Param == AnimInt.UpperBodyMode && x.Value == (int)UpperBodyMode.Block
+				),
+				Is.True
+			);
 		}
 
 		[Test]
-		public void HolsteringWeapon_ClearsCombatPosture()
+		public void HoldingSecondaryModifier_WithNoPostureEffect_KeepsCombatPostureNone()
 		{
 			var model = new PlayerModel
 			{
-				CombatStance = PlayerCombatStance.Unholstered,
-				SecondaryMode = SecondaryModifierMode.Active,
-				CombatPosture = PlayerCombatPosture.Aim,
-				EquippedUpperBodyMode = UpperBodyMode.Aim,
+				CombatStance = PlayerCombatStance.Holstered,
+				SecondaryMode = SecondaryModifierMode.None,
 			};
+
+			model.CombatLoadout.SecondarySlot.ModifierPostureEffect =
+				PlayerModifierPostureEffect.None;
 
 			var outputs = new PlayerOutputs();
 			var sys = new CombatModeSystem();
@@ -133,15 +175,21 @@ namespace Assets.Tests.EditMode
 			sys.HandleIntents(
 				model,
 				outputs,
-				new List<IPlayerIntent> { new ToggleWeaponStanceIntent() }
+				new List<IPlayerIntent> { new SecondaryModifierHeldIntent(true) }
 			);
 
-			model.CombatStance.ShouldBe(PlayerCombatStance.Holstered);
-			model.CombatPosture.ShouldBe(PlayerCombatPosture.None);
+			Assert.That(model.CombatPosture, Is.EqualTo(PlayerCombatPosture.None));
+			Assert.That(model.EquippedUpperBodyMode, Is.EqualTo(UpperBodyMode.None));
+			Assert.That(
+				outputs.Animation.Ints.Any(x =>
+					x.Param == AnimInt.UpperBodyMode && x.Value == (int)UpperBodyMode.None
+				),
+				Is.True
+			);
 		}
 
 		[Test]
-		public void ReleasingSecondaryModifier_ClearsCombatPosture()
+		public void ReleasingSecondaryModifier_LeavesUnholstered_DisablesSecondary_AndClearsPosture()
 		{
 			var model = new PlayerModel
 			{
@@ -160,95 +208,160 @@ namespace Assets.Tests.EditMode
 				new List<IPlayerIntent> { new SecondaryModifierHeldIntent(false) }
 			);
 
-			model.CombatPosture.ShouldBe(PlayerCombatPosture.None);
+			Assert.That(model.CombatStance, Is.EqualTo(PlayerCombatStance.Unholstered));
+			Assert.That(model.SecondaryMode, Is.EqualTo(SecondaryModifierMode.None));
+			Assert.That(model.CombatPosture, Is.EqualTo(PlayerCombatPosture.None));
+			Assert.That(model.EquippedUpperBodyMode, Is.EqualTo(UpperBodyMode.None));
+
+			Assert.That(
+				outputs.Animation.Bools.Any(x =>
+					x.Param == AnimBool.SecondaryModifierActive && !x.Value
+				),
+				Is.True
+			);
+			Assert.That(
+				outputs.Animation.Ints.Any(x =>
+					x.Param == AnimInt.UpperBodyMode && x.Value == (int)UpperBodyMode.None
+				),
+				Is.True
+			);
 		}
 
 		[Test]
-		public void ReleasingSecondaryModifier_LeavesUnholstered_DisablesSecondary_AndResetsUpperBodyMode()
+		public void HoldingPrimaryAndSecondaryModifiers_KeepsPrimaryActiveWhileApplyingSecondaryPosture()
 		{
 			var model = new PlayerModel
 			{
-				CombatStance = PlayerCombatStance.Unholstered,
-				SecondaryMode = SecondaryModifierMode.Active,
-				EquippedUpperBodyMode = UpperBodyMode.Block,
+				CombatStance = PlayerCombatStance.Holstered,
+				PrimaryMode = PrimaryModifierMode.None,
+				SecondaryMode = SecondaryModifierMode.None,
 			};
+
+			model.CombatLoadout.SecondarySlot.ModifierPostureEffect =
+				PlayerModifierPostureEffect.Aim;
 
 			var outputs = new PlayerOutputs();
 			var sys = new CombatModeSystem();
 
-			var intents = new List<IPlayerIntent> { new SecondaryModifierHeldIntent(false) };
-
-			sys.HandleIntents(model, outputs, intents);
-
-			model.CombatStance.ShouldBe(PlayerCombatStance.Unholstered);
-			model.IsSecondaryModifierActive.ShouldBeFalse();
-
-			outputs.Animation.Bools.ShouldContain(x =>
-				x.Param == AnimBool.SecondaryModifierActive && !x.Value
+			sys.HandleIntents(
+				model,
+				outputs,
+				new List<IPlayerIntent>
+				{
+					new PrimaryModifierHeldIntent(true),
+					new SecondaryModifierHeldIntent(true),
+				}
 			);
 
-			outputs.Animation.Ints.ShouldContain(x =>
-				x.Param == AnimInt.UpperBodyMode && x.Value == (int)UpperBodyMode.None
-			);
+			Assert.That(model.PrimaryMode, Is.EqualTo(PrimaryModifierMode.Active));
+			Assert.That(model.SecondaryMode, Is.EqualTo(SecondaryModifierMode.Active));
+			Assert.That(model.CombatPosture, Is.EqualTo(PlayerCombatPosture.Aim));
+			Assert.That(model.EquippedUpperBodyMode, Is.EqualTo(UpperBodyMode.Aim));
+			Assert.That(model.CombatStance, Is.EqualTo(PlayerCombatStance.Unholstered));
 		}
 
 		[Test]
-		public void TogglingWeaponStance_ToHolstered_ClearsSecondary_AndResetsUpperBodyMode()
+		public void ReleasingSecondaryModifier_DoesNotClearPrimaryModifier()
 		{
 			var model = new PlayerModel
 			{
 				CombatStance = PlayerCombatStance.Unholstered,
+				PrimaryMode = PrimaryModifierMode.Active,
 				SecondaryMode = SecondaryModifierMode.Active,
+				CombatPosture = PlayerCombatPosture.Aim,
 				EquippedUpperBodyMode = UpperBodyMode.Aim,
 			};
 
 			var outputs = new PlayerOutputs();
 			var sys = new CombatModeSystem();
 
-			var intents = new List<IPlayerIntent> { new ToggleWeaponStanceIntent() };
-
-			sys.HandleIntents(model, outputs, intents);
-
-			model.CombatStance.ShouldBe(PlayerCombatStance.Holstered);
-			model.IsSecondaryModifierActive.ShouldBeFalse();
-
-			outputs.Animation.Bools.ShouldContain(x => x.Param == AnimBool.Holstered && x.Value);
-			outputs.Animation.Bools.ShouldContain(x =>
-				x.Param == AnimBool.SecondaryModifierActive && !x.Value
+			sys.HandleIntents(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new SecondaryModifierHeldIntent(false) }
 			);
 
-			outputs.Animation.Ints.ShouldContain(x =>
-				x.Param == AnimInt.UpperBodyMode && x.Value == (int)UpperBodyMode.None
-			);
+			Assert.That(model.PrimaryMode, Is.EqualTo(PrimaryModifierMode.Active));
+			Assert.That(model.SecondaryMode, Is.EqualTo(SecondaryModifierMode.None));
+			Assert.That(model.CombatPosture, Is.EqualTo(PlayerCombatPosture.None));
+			Assert.That(model.EquippedUpperBodyMode, Is.EqualTo(UpperBodyMode.None));
 		}
 
 		[Test]
-		public void TogglingWeaponStance_ToUnholstered_DoesNotForceSecondaryActive()
+		public void TogglingWeaponStance_ToHolstered_ClearsPrimarySecondaryAndPosture()
 		{
 			var model = new PlayerModel
 			{
-				CombatStance = PlayerCombatStance.Holstered,
-				SecondaryMode = SecondaryModifierMode.None,
-				EquippedUpperBodyMode = UpperBodyMode.Block,
+				CombatStance = PlayerCombatStance.Unholstered,
+				PrimaryMode = PrimaryModifierMode.Active,
+				SecondaryMode = SecondaryModifierMode.Active,
+				CombatPosture = PlayerCombatPosture.Aim,
+				EquippedUpperBodyMode = UpperBodyMode.Aim,
 			};
 
 			var outputs = new PlayerOutputs();
 			var sys = new CombatModeSystem();
 
-			var intents = new List<IPlayerIntent> { new ToggleWeaponStanceIntent() };
-
-			sys.HandleIntents(model, outputs, intents);
-
-			model.CombatStance.ShouldBe(PlayerCombatStance.Unholstered);
-			model.IsSecondaryModifierActive.ShouldBeFalse();
-
-			outputs.Animation.Bools.ShouldContain(x => x.Param == AnimBool.Holstered && !x.Value);
-			outputs.Animation.Bools.ShouldContain(x =>
-				x.Param == AnimBool.SecondaryModifierActive && !x.Value
+			sys.HandleIntents(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new ToggleWeaponStanceIntent() }
 			);
 
-			outputs.Animation.Ints.ShouldContain(x =>
-				x.Param == AnimInt.UpperBodyMode && x.Value == (int)UpperBodyMode.None
+			Assert.That(model.CombatStance, Is.EqualTo(PlayerCombatStance.Holstered));
+			Assert.That(model.PrimaryMode, Is.EqualTo(PrimaryModifierMode.None));
+			Assert.That(model.SecondaryMode, Is.EqualTo(SecondaryModifierMode.None));
+			Assert.That(model.CombatPosture, Is.EqualTo(PlayerCombatPosture.None));
+			Assert.That(model.EquippedUpperBodyMode, Is.EqualTo(UpperBodyMode.None));
+
+			Assert.That(
+				outputs.Animation.Bools.Any(x => x.Param == AnimBool.Holstered && x.Value),
+				Is.True
+			);
+			Assert.That(
+				outputs.Animation.Bools.Any(x =>
+					x.Param == AnimBool.SecondaryModifierActive && !x.Value
+				),
+				Is.True
+			);
+		}
+
+		[Test]
+		public void TogglingWeaponStance_ToUnholstered_DoesNotForceModifiersOrPosture()
+		{
+			var model = new PlayerModel
+			{
+				CombatStance = PlayerCombatStance.Holstered,
+				PrimaryMode = PrimaryModifierMode.None,
+				SecondaryMode = SecondaryModifierMode.None,
+				CombatPosture = PlayerCombatPosture.None,
+				EquippedUpperBodyMode = UpperBodyMode.None,
+			};
+
+			var outputs = new PlayerOutputs();
+			var sys = new CombatModeSystem();
+
+			sys.HandleIntents(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new ToggleWeaponStanceIntent() }
+			);
+
+			Assert.That(model.CombatStance, Is.EqualTo(PlayerCombatStance.Unholstered));
+			Assert.That(model.PrimaryMode, Is.EqualTo(PrimaryModifierMode.None));
+			Assert.That(model.SecondaryMode, Is.EqualTo(SecondaryModifierMode.None));
+			Assert.That(model.CombatPosture, Is.EqualTo(PlayerCombatPosture.None));
+			Assert.That(model.EquippedUpperBodyMode, Is.EqualTo(UpperBodyMode.None));
+
+			Assert.That(
+				outputs.Animation.Bools.Any(x => x.Param == AnimBool.Holstered && !x.Value),
+				Is.True
+			);
+			Assert.That(
+				outputs.Animation.Bools.Any(x =>
+					x.Param == AnimBool.SecondaryModifierActive && !x.Value
+				),
+				Is.True
 			);
 		}
 	}

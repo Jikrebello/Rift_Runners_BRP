@@ -7,7 +7,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Model
 	public sealed class PlayerModel
 	{
 		public PlayerActionRuntimeState ActionRuntime { get; } = new();
-		public PlayerCombatProfile CombatProfile { get; } = PlayerCombatProfiles.CreateDefault();
+		public PlayerCombatLoadout CombatLoadout { get; } = PlayerCombatLoadouts.CreateDefault();
 
 		public AirborneEnterKind AirborneEnterKind { get; set; } = AirborneEnterKind.None;
 		public bool AirOptionConsumedThisAirborne { get; set; }
@@ -16,13 +16,17 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Model
 		public UpperBodyMode EquippedUpperBodyMode { get; set; } = UpperBodyMode.Aim;
 		public PlayerGroundedSubMode GroundedSubMode { get; set; } = PlayerGroundedSubMode.Standing;
 		public bool HasDoubleJumped { get; set; }
+		public bool IsExhausted => ExhaustionState != PlayerExhaustionState.None;
+		public PlayerExhaustionState ExhaustionState { get; set; } = PlayerExhaustionState.None;
+		public float ExhaustionRecoveryRemaining { get; set; }
 		public bool IsGliding { get; set; }
+		public bool IsPrimaryModifierActive => PrimaryMode == PrimaryModifierMode.Active;
 		public bool IsSecondaryModifierActive => SecondaryMode == SecondaryModifierMode.Active;
 		public float JumpHoldTime { get; set; }
 		public bool JumpIsHeld { get; set; }
 		public float MaxStamina { get; set; }
 		public Vector2 MoveInput { get; set; } = Vector2.Zero;
-		public PrimaryModifierMode Phase { get; set; } = PrimaryModifierMode.Default;
+		public PrimaryModifierMode PrimaryMode { get; set; } = PrimaryModifierMode.None;
 		public SecondaryModifierMode SecondaryMode { get; set; } = SecondaryModifierMode.None;
 		public float Stamina { get; set; }
 		public PlayerTraversalMode TraversalMode { get; set; } = PlayerTraversalMode.Grounded;

@@ -14,7 +14,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Resolution
 			out ResolvedPlayerActionRequest request
 		)
 		{
-			var bank = model.CombatProfile.ActionSet.GetBank(model.CombatPosture);
+			var selector = ResolveSelector(model);
+			var bank = model.CombatLoadout.ActionSet.GetBank(selector);
 
 			for (int i = 0; i < intents.Count; i++)
 			{
@@ -43,6 +44,23 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Resolution
 
 			request = default;
 			return false;
+		}
+
+		private static PlayerActionBankSelector ResolveSelector(PlayerModel model)
+		{
+			bool primary = model.IsPrimaryModifierActive;
+			bool secondary = model.IsSecondaryModifierActive;
+
+			if (primary && secondary)
+				return PlayerActionBankSelector.DualModifier;
+
+			if (primary)
+				return PlayerActionBankSelector.PrimaryModifier;
+
+			if (secondary)
+				return PlayerActionBankSelector.SecondaryModifier;
+
+			return PlayerActionBankSelector.Base;
 		}
 
 		private static bool TryResolveSkill(

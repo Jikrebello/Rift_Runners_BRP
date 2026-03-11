@@ -13,6 +13,7 @@ namespace Assets.Scripts.Game.Characters.Unity.Player.Resources.Config
 		public float GlideDrainPerSecond = 22f;
 		public float LeapCost = 20f;
 		public float KickOffCost = 10f;
+		public float DropCost = 8f;
 		public float MinStaminaToEnterSprint = 12f;
 
 		public float PrimarySkillSlot1Cost = 0f;
@@ -31,7 +32,12 @@ namespace Assets.Scripts.Game.Characters.Unity.Player.Resources.Config
 				cfg.MaxStamina,
 				new RegenRates(cfg.GroundedRegenPerSecond, cfg.SlidingRegenPerSecond),
 				new DrainRates(cfg.SprintDrainPerSecond, cfg.GlideDrainPerSecond),
-				new TraversalCosts(cfg.LeapCost, cfg.KickOffCost, cfg.MinStaminaToEnterSprint),
+				new TraversalCosts(
+					cfg.LeapCost,
+					cfg.KickOffCost,
+					cfg.DropCost,
+					cfg.MinStaminaToEnterSprint
+				),
 				new SkillCosts(
 					cfg.PrimarySkillSlot1Cost,
 					cfg.PrimarySkillSlot2Cost,
@@ -39,6 +45,12 @@ namespace Assets.Scripts.Game.Characters.Unity.Player.Resources.Config
 					cfg.SecondarySkillSlot1Cost,
 					cfg.SecondarySkillSlot2Cost,
 					cfg.SecondarySkillSlot3Cost
+				),
+				exhaustion: new ExhaustionSettings(
+					drainedMoveInitialMultiplier: 0.35f,
+					drainedMoveDecayPerSecond: 4f,
+					recoveryDurationSeconds: 1.0f,
+					stopMoveThreshold: 0.05f
 				)
 			);
 		}

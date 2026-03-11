@@ -7,18 +7,25 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Model
 		// later: Knockback, Fall, JumpPad, etc.
 	}
 
-	public enum PlayerCombatStance
-	{
-		Holstered,
-		Unholstered,
-	}
-
 	public enum PlayerCombatPosture
 	{
 		None = 0,
 		Aim = 1,
 		Block = 2,
 		SpellReady = 3,
+	}
+
+	public enum PlayerCombatStance
+	{
+		Holstered,
+		Unholstered,
+	}
+
+	public enum PlayerExhaustionState
+	{
+		None = 0,
+		DrainedMoving = 1,
+		Recovering = 2,
 	}
 
 	public enum PlayerGroundedSubMode
@@ -37,7 +44,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Model
 
 	public enum PrimaryModifierMode
 	{
-		Default,
+		None,
+		Active,
 	}
 
 	public enum SecondaryModifierMode
