@@ -60,3 +60,24 @@ Thumbs.db
 
 # Ignore Windows system files
 Thumbs.db
+
+# --- .NET / Visual Studio / Rider ---
+**/bin/
+**/obj/
+.vs/
+.idea/
+*.user
+*.rsuser
+*.suo
+
+# --- Test output ---
+TestResults/
+*.trx
+
+# --- Optional: coverage / diagnostics ---
+coverage/
+*.coverage
+*.coveragexml
+
+# --- Optional: local logs/artifacts ---
+*.log
