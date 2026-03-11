@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7151deaba4b7c284382a3faa66863b42, type: 3}
+  m_Name: ConfigRegistry
+  m_EditorClassIdentifier: Assembly-CSharp-Editor::Assets.Editor.ConfigEditors.ConfigRegistryAsset
+  Entries:
+  - DisplayName: Player Motor
+    DefaultAssetPath: Assets/Configs/Player/player_motor.json
+    TypeName: Assets.Scripts.Game.Characters.Unity.Player.Motor.Config.PlayerMotorConfig,
+      Game.Characters.Unity
+  - DisplayName: Player Traversal
+    DefaultAssetPath: Assets/Configs/Player/player_traversal_config.json
+    TypeName: Assets.Scripts.Game.Characters.Unity.Player.Traversal.Config.PlayerTraversalConfig,
+      Game.Characters.Unity
+  - DisplayName: Player Stamina
+    DefaultAssetPath: Assets/Configs/Player/player_stamina_config.json
+    TypeName: Assets.Scripts.Game.Characters.Unity.Player.Resources.Config.PlayerStaminaConfig,
+      Game.Characters.Unity
