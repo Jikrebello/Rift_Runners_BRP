@@ -1,0 +1,16 @@
+project_name: "Rift_Runners_BRP"
+languages:
+  - csharp
+encoding: "utf-8"
+line_ending: "crlf"
+ignore_all_files_in_gitignore: true
+ignored_paths:
+  - "Library/**"
+  - "Temp/**"
+  - "Logs/**"
+  - "TestResults/**"
+  - "UserSettings/**"
+  - ".vs/**"
+  - "**/bin/**"
+  - "**/obj/**"
+initial_prompt: "Prefer symbol-aware navigation for C# source and tests. Use text search for markdown, config, or unknown-symbol discovery. Preserve the core-versus-Unity boundary and push testable logic into core when practical."

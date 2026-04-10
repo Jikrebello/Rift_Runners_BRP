@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rift Runners Unity"
+  short_description: "Repo guidance for Rift Runners work"
+  default_prompt: "Use $rift-runners-unity to work in Rift_Runners_BRP while preserving the core-versus-Unity architecture."
