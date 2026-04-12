@@ -19,6 +19,10 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				canBuffer: true,
 				staminaCost: 0f,
 				bufferWindow: PlayerActionBufferWindow.ActiveOrRecovery
+			),
+			new PlayerActionCancelPolicy(
+				PlayerActionBufferWindow.RecoveryOnly,
+				PlayerActionId.HeavyAttack
 			)
 		);
 
@@ -37,7 +41,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				canBuffer: true,
 				staminaCost: 0f,
 				bufferWindow: PlayerActionBufferWindow.ActiveOrRecovery
-			)
+			),
+			PlayerActionCancelPolicy.None
 		);
 
 		public static readonly PlayerActionDefinition LightAttack3 = new(
@@ -55,7 +60,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				canBuffer: false,
 				staminaCost: 0f,
 				bufferWindow: PlayerActionBufferWindow.None
-			)
+			),
+			PlayerActionCancelPolicy.None
 		);
 
 		public static readonly PlayerActionDefinition HeavyAttack = new(
@@ -73,7 +79,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				canBuffer: true,
 				staminaCost: 0f,
 				bufferWindow: PlayerActionBufferWindow.RecoveryOnly
-			)
+			),
+			PlayerActionCancelPolicy.None
 		);
 
 		public static readonly PlayerActionDefinition Skill1 = new(
@@ -91,7 +98,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				canBuffer: false,
 				staminaCost: 20f,
 				bufferWindow: PlayerActionBufferWindow.None
-			)
+			),
+			PlayerActionCancelPolicy.None
 		);
 
 		public static readonly PlayerActionDefinition Skill2 = new(
@@ -109,7 +117,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				canBuffer: false,
 				staminaCost: 25f,
 				bufferWindow: PlayerActionBufferWindow.None
-			)
+			),
+			PlayerActionCancelPolicy.None
 		);
 
 		public static readonly PlayerActionDefinition Skill3 = new(
@@ -127,7 +136,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				canBuffer: false,
 				staminaCost: 30f,
 				bufferWindow: PlayerActionBufferWindow.None
-			)
+			),
+			PlayerActionCancelPolicy.None
 		);
 
 		public static readonly PlayerActionDefinition ContextInteract = new(
@@ -145,7 +155,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				canBuffer: false,
 				staminaCost: 0f,
 				bufferWindow: PlayerActionBufferWindow.None
-			)
+			),
+			PlayerActionCancelPolicy.None
 		);
 
 		public static readonly PlayerActionDefinition ContextGrab = new(
@@ -163,7 +174,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				canBuffer: false,
 				staminaCost: 0f,
 				bufferWindow: PlayerActionBufferWindow.None
-			)
+			),
+			PlayerActionCancelPolicy.None
 		);
 
 		public static readonly PlayerActionDefinition FundamentalRangedPrimary = new(
@@ -181,7 +193,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 				canBuffer: true,
 				staminaCost: 0f,
 				bufferWindow: PlayerActionBufferWindow.RecoveryOnly
-			)
+			),
+			PlayerActionCancelPolicy.None
 		);
 
 		public static PlayerActionDefinition Get(PlayerActionId id)

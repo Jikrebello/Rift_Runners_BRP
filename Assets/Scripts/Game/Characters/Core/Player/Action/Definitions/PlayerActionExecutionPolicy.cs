@@ -21,16 +21,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 
 		public bool AllowsBufferFrom(PlayerActionPhase phase)
 		{
-			return BufferWindow switch
-			{
-				PlayerActionBufferWindow.None => false,
-				PlayerActionBufferWindow.Any => true,
-				PlayerActionBufferWindow.ActiveOnly => phase == PlayerActionPhase.Active,
-				PlayerActionBufferWindow.RecoveryOnly => phase == PlayerActionPhase.Recovery,
-				PlayerActionBufferWindow.ActiveOrRecovery => phase == PlayerActionPhase.Active
-					|| phase == PlayerActionPhase.Recovery,
-				_ => false,
-			};
+			return BufferWindow.AllowsPhase(phase);
 		}
 	}
 }

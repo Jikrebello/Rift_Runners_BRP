@@ -26,6 +26,7 @@
 
     <Compile Include="..\..\Assets\Tests\EditMode\ActionSetResolutionTests.cs" />
     <Compile Include="..\..\Assets\Tests\EditMode\ActionStaminaTests.cs" />
+    <Compile Include="..\..\Assets\Tests\EditMode\ActionCancelTests.cs" />
     <Compile Include="..\..\Assets\Tests\EditMode\ActionSystemContextTests.cs" />
     <Compile Include="..\..\Assets\Tests\EditMode\ActionSystemTests.cs" />
     <Compile Include="..\..\Assets\Tests\EditMode\CombatModeSystemTests.cs" />

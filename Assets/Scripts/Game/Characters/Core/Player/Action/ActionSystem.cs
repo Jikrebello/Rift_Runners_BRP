@@ -32,6 +32,10 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action
 			}
 
 			var current = PlayerActionDefinitions.Get(model.ActionRuntime.CurrentActionId);
+
+			if (TryCancelIntoRequestedAction(model, outputs, current, requested))
+				return;
+
 			TryBufferAction(model, outputs, current, requested);
 		}
 
@@ -87,6 +91,30 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action
 
 			model.ActionRuntime.BufferedRequestedActionId = requested.Id;
 			outputs.Debug.Info("Action", $"Buffered requested action: {requested.Id}.");
+		}
+
+		private static bool TryCancelIntoRequestedAction(
+			PlayerModel model,
+			PlayerOutputs outputs,
+			PlayerActionDefinition current,
+			PlayerActionDefinition requested
+		)
+		{
+			var currentPhase = model.ActionRuntime.CurrentPhase;
+			if (!current.CancelPolicy.AllowsCancelTo(requested.Id, currentPhase))
+				return false;
+
+			var currentActionId = current.Id;
+			model.ActionRuntime.ClearCurrent();
+			model.ActionRuntime.ClearBuffered();
+
+			outputs.Debug.Info(
+				"Action",
+				$"Cancelled action: {currentActionId} -> {requested.Id} during {currentPhase}."
+			);
+
+			StartAction(model, outputs, requested);
+			return true;
 		}
 
 		private static void StartAction(

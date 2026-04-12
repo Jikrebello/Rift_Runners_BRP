@@ -11,6 +11,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 		public readonly PlayerActionTiming Timing;
 		public readonly PlayerActionAvailability Availability;
 		public readonly PlayerActionExecutionPolicy Execution;
+		public readonly PlayerActionCancelPolicy CancelPolicy;
 
 		public PlayerActionDefinition(
 			PlayerActionId id,
@@ -19,7 +20,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 			AnimTrigger animationTrigger,
 			PlayerActionTiming timing,
 			PlayerActionAvailability availability,
-			PlayerActionExecutionPolicy execution
+			PlayerActionExecutionPolicy execution,
+			PlayerActionCancelPolicy cancelPolicy
 		)
 		{
 			Id = id;
@@ -29,6 +31,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 			Timing = timing;
 			Availability = availability;
 			Execution = execution;
+			CancelPolicy = cancelPolicy;
 		}
 	}
 }
