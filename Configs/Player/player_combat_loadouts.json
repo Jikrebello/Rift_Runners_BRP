@@ -1,0 +1,50 @@
+{
+  "DefaultLoadoutId": "Default",
+  "Loadouts": [
+    {
+      "Id": "Default",
+      "PrimarySlot": {
+        "SlotKind": "Sword",
+        "ModifierPostureEffect": "None"
+      },
+      "SecondarySlot": {
+        "SlotKind": "Bow",
+        "ModifierPostureEffect": "Aim"
+      },
+      "ActionSet": {
+        "BaseBank": {
+          "LightAttackId": "LightAttack",
+          "HeavyAttackId": "HeavyAttack",
+          "RightActionId": "ContextGrab",
+          "SkillSlot1Id": "None",
+          "SkillSlot2Id": "None",
+          "SkillSlot3Id": "None"
+        },
+        "PrimaryModifierBank": {
+          "LightAttackId": "Skill1",
+          "HeavyAttackId": "Skill2",
+          "RightActionId": "Skill3",
+          "SkillSlot1Id": "Skill1",
+          "SkillSlot2Id": "Skill2",
+          "SkillSlot3Id": "Skill3"
+        },
+        "SecondaryModifierBank": {
+          "LightAttackId": "Skill1",
+          "HeavyAttackId": "Skill2",
+          "RightActionId": "FundamentalRangedPrimary",
+          "SkillSlot1Id": "Skill1",
+          "SkillSlot2Id": "Skill2",
+          "SkillSlot3Id": "Skill3"
+        },
+        "DualModifierBank": {
+          "LightAttackId": "Skill1",
+          "HeavyAttackId": "Skill2",
+          "RightActionId": "Skill3",
+          "SkillSlot1Id": "Skill1",
+          "SkillSlot2Id": "Skill2",
+          "SkillSlot3Id": "Skill3"
+        }
+      }
+    }
+  ]
+}

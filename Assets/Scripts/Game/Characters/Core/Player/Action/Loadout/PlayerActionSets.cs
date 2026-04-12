@@ -16,6 +16,21 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Loadout
 			return set;
 		}
 
+		public static PlayerActionSet Clone(PlayerActionSet source)
+		{
+			var clone = new PlayerActionSet();
+			CopyInto(source, clone);
+			return clone;
+		}
+
+		public static void CopyInto(PlayerActionSet source, PlayerActionSet destination)
+		{
+			CopyBank(source.BaseBank, destination.BaseBank);
+			CopyBank(source.PrimaryModifierBank, destination.PrimaryModifierBank);
+			CopyBank(source.SecondaryModifierBank, destination.SecondaryModifierBank);
+			CopyBank(source.DualModifierBank, destination.DualModifierBank);
+		}
+
 		private static void ConfigureBaseBank(PlayerActionBank bank)
 		{
 			bank.LightAttackId = PlayerActionId.LightAttack;
@@ -58,6 +73,17 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Loadout
 			bank.SkillSlot1Id = PlayerActionId.Skill1;
 			bank.SkillSlot2Id = PlayerActionId.Skill2;
 			bank.SkillSlot3Id = PlayerActionId.Skill3;
+		}
+
+		private static void CopyBank(PlayerActionBank source, PlayerActionBank destination)
+		{
+			destination.LightAttackId = source.LightAttackId;
+			destination.HeavyAttackId = source.HeavyAttackId;
+			destination.ContextInteractId = source.ContextInteractId;
+			destination.RightActionId = source.RightActionId;
+			destination.SkillSlot1Id = source.SkillSlot1Id;
+			destination.SkillSlot2Id = source.SkillSlot2Id;
+			destination.SkillSlot3Id = source.SkillSlot3Id;
 		}
 	}
 }

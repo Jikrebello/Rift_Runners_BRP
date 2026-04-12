@@ -2,6 +2,8 @@
 {
 	public static class PlayerCombatLoadouts
 	{
+		public const string DefaultLoadoutId = "Default";
+
 		public static PlayerCombatLoadout CreateDefault()
 		{
 			var loadout = new PlayerCombatLoadout();
@@ -13,23 +15,43 @@
 			loadout.SecondarySlot.ModifierPostureEffect = PlayerModifierPostureEffect.Aim;
 
 			var defaultSet = PlayerActionSets.CreateDefault();
-
-			CopyBank(defaultSet.BaseBank, loadout.ActionSet.BaseBank);
-			CopyBank(defaultSet.PrimaryModifierBank, loadout.ActionSet.PrimaryModifierBank);
-			CopyBank(defaultSet.SecondaryModifierBank, loadout.ActionSet.SecondaryModifierBank);
-			CopyBank(defaultSet.DualModifierBank, loadout.ActionSet.DualModifierBank);
+			PlayerActionSets.CopyInto(defaultSet, loadout.ActionSet);
 
 			return loadout;
 		}
 
-		private static void CopyBank(PlayerActionBank source, PlayerActionBank destination)
+		public static PlayerCombatLoadoutCatalog CreateDefaultCatalog()
 		{
-			destination.LightAttackId = source.LightAttackId;
-			destination.HeavyAttackId = source.HeavyAttackId;
-			destination.RightActionId = source.RightActionId;
-			destination.SkillSlot1Id = source.SkillSlot1Id;
-			destination.SkillSlot2Id = source.SkillSlot2Id;
-			destination.SkillSlot3Id = source.SkillSlot3Id;
+			return new PlayerCombatLoadoutCatalog(
+				DefaultLoadoutId,
+				new System.Collections.Generic.Dictionary<string, PlayerCombatLoadout>
+				{
+					[DefaultLoadoutId] = CreateDefault(),
+				}
+			);
+		}
+
+		public static PlayerCombatLoadout Clone(PlayerCombatLoadout source)
+		{
+			var clone = new PlayerCombatLoadout();
+			CopyInto(source, clone);
+			return clone;
+		}
+
+		public static void CopyInto(PlayerCombatLoadout source, PlayerCombatLoadout destination)
+		{
+			CopySlot(source.PrimarySlot, destination.PrimarySlot);
+			CopySlot(source.SecondarySlot, destination.SecondarySlot);
+			PlayerActionSets.CopyInto(source.ActionSet, destination.ActionSet);
+		}
+
+		private static void CopySlot(
+			PlayerCombatSlotProfile source,
+			PlayerCombatSlotProfile destination
+		)
+		{
+			destination.SlotKind = source.SlotKind;
+			destination.ModifierPostureEffect = source.ModifierPostureEffect;
 		}
 	}
 }
