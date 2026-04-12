@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Assets.Scripts.Game.Characters.Core.Player.Action;
+using Assets.Scripts.Game.Characters.Core.Player.Action.Definitions;
 using Assets.Scripts.Game.Characters.Core.Player.Action.Resolution;
 using Assets.Scripts.Game.Characters.Core.Player.Intent;
 using Assets.Scripts.Game.Characters.Core.Player.Model;
@@ -9,8 +10,17 @@ namespace Assets.Tests.EditMode
 {
 	internal sealed class ActionTestDriver
 	{
-		private readonly PlayerActionResolver _resolver = new();
-		private readonly ActionSystem _system = new();
+		private readonly PlayerActionResolver _resolver;
+		private readonly ActionSystem _system;
+
+		public ActionTestDriver()
+			: this(PlayerActionDefinitions.CreateDefaultRegistry()) { }
+
+		public ActionTestDriver(PlayerActionDefinitionRegistry definitions)
+		{
+			_resolver = new PlayerActionResolver(definitions);
+			_system = new ActionSystem(definitions);
+		}
 
 		public void Step(
 			PlayerModel model,

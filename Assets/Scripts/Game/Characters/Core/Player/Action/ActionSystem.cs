@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Game.Characters.Core.Player.Action.Definitions;
+using Assets.Scripts.Game.Characters.Core.Player.Action.Definitions;
 using Assets.Scripts.Game.Characters.Core.Player.Action.Resolution;
 using Assets.Scripts.Game.Characters.Core.Player.Action.Runtime;
 using Assets.Scripts.Game.Characters.Core.Player.Model;
@@ -8,6 +8,16 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action
 {
 	public sealed class ActionSystem
 	{
+		private readonly PlayerActionDefinitionRegistry _definitions;
+
+		public ActionSystem()
+			: this(PlayerActionDefinitions.CreateDefaultRegistry()) { }
+
+		public ActionSystem(PlayerActionDefinitionRegistry definitions)
+		{
+			_definitions = definitions;
+		}
+
 		public void HandleResolvedAction(
 			PlayerModel model,
 			PlayerOutputs outputs,
@@ -31,7 +41,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action
 				return;
 			}
 
-			var current = PlayerActionDefinitions.Get(model.ActionRuntime.CurrentActionId);
+			var current = _definitions.Get(model.ActionRuntime.CurrentActionId);
 
 			if (TryCancelIntoRequestedAction(model, outputs, current, requested))
 				return;
@@ -131,14 +141,14 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action
 			outputs.Debug.Info("Action", $"Started action: {action.Id} -> Startup.");
 		}
 
-		private static void TickCurrentAction(PlayerModel model, PlayerOutputs outputs, float dt)
+		private void TickCurrentAction(PlayerModel model, PlayerOutputs outputs, float dt)
 		{
 			if (!model.ActionRuntime.HasActiveAction)
 				return;
 
 			model.ActionRuntime.PhaseElapsedSeconds += dt;
 
-			var action = PlayerActionDefinitions.Get(model.ActionRuntime.CurrentActionId);
+			var action = _definitions.Get(model.ActionRuntime.CurrentActionId);
 
 			switch (model.ActionRuntime.CurrentPhase)
 			{
@@ -182,7 +192,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action
 			outputs.Debug.Info("Action", $"Action phase -> {nextPhase}.");
 		}
 
-		private static void TryPromoteBufferedAction(
+		private void TryPromoteBufferedAction(
 			PlayerModel model,
 			PlayerOutputs outputs,
 			PlayerActionId completedActionId
@@ -196,7 +206,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action
 
 			var nextActionId = PlayerActionGrammar.ResolveFollowUp(completedActionId, requestedId);
 
-			var nextAction = PlayerActionDefinitions.Get(nextActionId);
+			var nextAction = _definitions.Get(nextActionId);
 			if (nextAction.Id == PlayerActionId.None)
 				return;
 

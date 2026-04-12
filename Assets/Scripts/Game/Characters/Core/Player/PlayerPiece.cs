@@ -1,5 +1,6 @@
 using System;
 using Assets.Scripts.Game.Characters.Core.Player.Action;
+using Assets.Scripts.Game.Characters.Core.Player.Action.Definitions;
 using Assets.Scripts.Game.Characters.Core.Player.Action.Resolution;
 using Assets.Scripts.Game.Characters.Core.Player.CombatMode;
 using Assets.Scripts.Game.Characters.Core.Player.Input;
@@ -14,8 +15,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player
 {
 	public sealed class PlayerPiece
 	{
-		private readonly ActionSystem _actionSystem = new();
-		private readonly PlayerActionResolver _actionResolver = new();
+		private readonly ActionSystem _actionSystem;
+		private readonly PlayerActionResolver _actionResolver;
 		private readonly AirborneState _airborne = new();
 		private readonly CombatModeSystem _combatModeSystem = new();
 		private readonly GroundedState _grounded = new();
@@ -30,7 +31,16 @@ namespace Assets.Scripts.Game.Characters.Core.Player
 		private readonly SlidingState _sliding;
 
 		public PlayerPiece(SlidingStateConfig slidingCfg, StaminaConfig staminaCfg)
+			: this(slidingCfg, staminaCfg, PlayerActionDefinitions.CreateDefaultRegistry()) { }
+
+		public PlayerPiece(
+			SlidingStateConfig slidingCfg,
+			StaminaConfig staminaCfg,
+			PlayerActionDefinitionRegistry actionDefinitions
+		)
 		{
+			_actionSystem = new ActionSystem(actionDefinitions);
+			_actionResolver = new PlayerActionResolver(actionDefinitions);
 			_intentResolver = new PlayerIntentResolver(new PlayerIntentConfig());
 
 			_sliding = new SlidingState(slidingCfg);

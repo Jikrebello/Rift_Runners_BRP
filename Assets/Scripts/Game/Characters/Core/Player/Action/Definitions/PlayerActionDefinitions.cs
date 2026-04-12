@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Game.Characters.Core.Player.Outputs;
+using System.Collections.Generic;
+using Assets.Scripts.Game.Characters.Core.Player.Outputs;
 
 namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 {
@@ -197,22 +198,34 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 			PlayerActionCancelPolicy.None
 		);
 
+		private static readonly PlayerActionDefinition[] AllDefinitions =
+		{
+			LightAttack,
+			LightAttack2,
+			LightAttack3,
+			HeavyAttack,
+			Skill1,
+			Skill2,
+			Skill3,
+			ContextInteract,
+			ContextGrab,
+			FundamentalRangedPrimary,
+		};
+
+		private static readonly PlayerActionDefinitionRegistry DefaultRegistry = new(
+			AllDefinitions
+		);
+
+		public static IReadOnlyList<PlayerActionDefinition> All => AllDefinitions;
+
+		public static PlayerActionDefinitionRegistry CreateDefaultRegistry()
+		{
+			return DefaultRegistry;
+		}
+
 		public static PlayerActionDefinition Get(PlayerActionId id)
 		{
-			return id switch
-			{
-				PlayerActionId.LightAttack => LightAttack,
-				PlayerActionId.LightAttack2 => LightAttack2,
-				PlayerActionId.LightAttack3 => LightAttack3,
-				PlayerActionId.HeavyAttack => HeavyAttack,
-				PlayerActionId.Skill1 => Skill1,
-				PlayerActionId.Skill2 => Skill2,
-				PlayerActionId.Skill3 => Skill3,
-				PlayerActionId.ContextInteract => ContextInteract,
-				PlayerActionId.ContextGrab => ContextGrab,
-				PlayerActionId.FundamentalRangedPrimary => FundamentalRangedPrimary,
-				_ => default,
-			};
+			return DefaultRegistry.Get(id);
 		}
 	}
 }

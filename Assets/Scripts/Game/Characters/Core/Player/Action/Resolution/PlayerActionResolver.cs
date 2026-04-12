@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Assets.Scripts.Game.Characters.Core.Player.Action.Definitions;
 using Assets.Scripts.Game.Characters.Core.Player.Action.Loadout;
 using Assets.Scripts.Game.Characters.Core.Player.Intent;
@@ -8,6 +8,16 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Resolution
 {
 	public sealed class PlayerActionResolver
 	{
+		private readonly PlayerActionDefinitionRegistry _definitions;
+
+		public PlayerActionResolver()
+			: this(PlayerActionDefinitions.CreateDefaultRegistry()) { }
+
+		public PlayerActionResolver(PlayerActionDefinitionRegistry definitions)
+		{
+			_definitions = definitions;
+		}
+
 		public bool TryResolve(
 			PlayerModel model,
 			IReadOnlyList<IPlayerIntent> intents,
@@ -28,12 +38,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Resolution
 					return TryResolveById(bank.HeavyAttackId, out request);
 
 				if (intent is ContextInteractIntent)
-				{
-					request = new ResolvedPlayerActionRequest(
-						PlayerActionDefinitions.ContextInteract
-					);
-					return true;
-				}
+					return TryResolveById(PlayerActionId.ContextInteract, out request);
 
 				if (intent is RightActionIntent)
 					return TryResolveById(bank.RightActionId, out request);
@@ -63,7 +68,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Resolution
 			return PlayerActionBankSelector.Base;
 		}
 
-		private static bool TryResolveSkill(
+		private bool TryResolveSkill(
 			PlayerActionBank bank,
 			int slot,
 			out ResolvedPlayerActionRequest request
@@ -80,12 +85,9 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Resolution
 			return TryResolveById(id, out request);
 		}
 
-		private static bool TryResolveById(
-			PlayerActionId id,
-			out ResolvedPlayerActionRequest request
-		)
+		private bool TryResolveById(PlayerActionId id, out ResolvedPlayerActionRequest request)
 		{
-			var action = PlayerActionDefinitions.Get(id);
+			var action = _definitions.Get(id);
 			if (action.Id == PlayerActionId.None)
 			{
 				request = default;

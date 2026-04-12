@@ -1,0 +1,219 @@
+{
+  "Actions": [
+    {
+      "Id": "LightAttack",
+      "Source": "Fundamental",
+      "Category": "Attack",
+      "AnimationTrigger": "LightAttack",
+      "Timing": {
+        "StartupSeconds": 0.1,
+        "ActiveSeconds": 0.08,
+        "RecoverySeconds": 0.22
+      },
+      "Availability": {
+        "RequiresGrounded": true,
+        "AllowWhileAirborne": false
+      },
+      "Execution": {
+        "CanBuffer": true,
+        "StaminaCost": 0.0,
+        "BufferWindow": "ActiveOrRecovery"
+      },
+      "CancelPolicy": {
+        "Window": "RecoveryOnly",
+        "AllowedTargetIds": [
+          "HeavyAttack"
+        ]
+      }
+    },
+    {
+      "Id": "LightAttack2",
+      "Source": "Fundamental",
+      "Category": "Attack",
+      "AnimationTrigger": "LightAttack",
+      "Timing": {
+        "StartupSeconds": 0.09,
+        "ActiveSeconds": 0.08,
+        "RecoverySeconds": 0.2
+      },
+      "Availability": {
+        "RequiresGrounded": true,
+        "AllowWhileAirborne": false
+      },
+      "Execution": {
+        "CanBuffer": true,
+        "StaminaCost": 0.0,
+        "BufferWindow": "ActiveOrRecovery"
+      },
+      "CancelPolicy": null
+    },
+    {
+      "Id": "LightAttack3",
+      "Source": "Fundamental",
+      "Category": "Attack",
+      "AnimationTrigger": "LightAttack",
+      "Timing": {
+        "StartupSeconds": 0.12,
+        "ActiveSeconds": 0.1,
+        "RecoverySeconds": 0.28
+      },
+      "Availability": {
+        "RequiresGrounded": true,
+        "AllowWhileAirborne": false
+      },
+      "Execution": {
+        "CanBuffer": false,
+        "StaminaCost": 0.0,
+        "BufferWindow": "None"
+      },
+      "CancelPolicy": null
+    },
+    {
+      "Id": "HeavyAttack",
+      "Source": "Fundamental",
+      "Category": "Attack",
+      "AnimationTrigger": "HeavyAttack",
+      "Timing": {
+        "StartupSeconds": 0.18,
+        "ActiveSeconds": 0.1,
+        "RecoverySeconds": 0.35
+      },
+      "Availability": {
+        "RequiresGrounded": true,
+        "AllowWhileAirborne": false
+      },
+      "Execution": {
+        "CanBuffer": true,
+        "StaminaCost": 0.0,
+        "BufferWindow": "RecoveryOnly"
+      },
+      "CancelPolicy": null
+    },
+    {
+      "Id": "Skill1",
+      "Source": "Skill",
+      "Category": "Skill",
+      "AnimationTrigger": "Skill1",
+      "Timing": {
+        "StartupSeconds": 0.15,
+        "ActiveSeconds": 0.12,
+        "RecoverySeconds": 0.3
+      },
+      "Availability": {
+        "RequiresGrounded": true,
+        "AllowWhileAirborne": false
+      },
+      "Execution": {
+        "CanBuffer": false,
+        "StaminaCost": 20.0,
+        "BufferWindow": "None"
+      },
+      "CancelPolicy": null
+    },
+    {
+      "Id": "Skill2",
+      "Source": "Skill",
+      "Category": "Skill",
+      "AnimationTrigger": "Skill2",
+      "Timing": {
+        "StartupSeconds": 0.15,
+        "ActiveSeconds": 0.12,
+        "RecoverySeconds": 0.3
+      },
+      "Availability": {
+        "RequiresGrounded": true,
+        "AllowWhileAirborne": false
+      },
+      "Execution": {
+        "CanBuffer": false,
+        "StaminaCost": 25.0,
+        "BufferWindow": "None"
+      },
+      "CancelPolicy": null
+    },
+    {
+      "Id": "Skill3",
+      "Source": "Skill",
+      "Category": "Skill",
+      "AnimationTrigger": "Skill3",
+      "Timing": {
+        "StartupSeconds": 0.15,
+        "ActiveSeconds": 0.12,
+        "RecoverySeconds": 0.3
+      },
+      "Availability": {
+        "RequiresGrounded": true,
+        "AllowWhileAirborne": false
+      },
+      "Execution": {
+        "CanBuffer": false,
+        "StaminaCost": 30.0,
+        "BufferWindow": "None"
+      },
+      "CancelPolicy": null
+    },
+    {
+      "Id": "ContextInteract",
+      "Source": "Context",
+      "Category": "Interact",
+      "AnimationTrigger": "ContextInteract",
+      "Timing": {
+        "StartupSeconds": 0.05,
+        "ActiveSeconds": 0.05,
+        "RecoverySeconds": 0.1
+      },
+      "Availability": {
+        "RequiresGrounded": true,
+        "AllowWhileAirborne": false
+      },
+      "Execution": {
+        "CanBuffer": false,
+        "StaminaCost": 0.0,
+        "BufferWindow": "None"
+      },
+      "CancelPolicy": null
+    },
+    {
+      "Id": "ContextGrab",
+      "Source": "Context",
+      "Category": "Interact",
+      "AnimationTrigger": "ContextGrabOrFire",
+      "Timing": {
+        "StartupSeconds": 0.06,
+        "ActiveSeconds": 0.08,
+        "RecoverySeconds": 0.14
+      },
+      "Availability": {
+        "RequiresGrounded": false,
+        "AllowWhileAirborne": true
+      },
+      "Execution": {
+        "CanBuffer": false,
+        "StaminaCost": 0.0,
+        "BufferWindow": "None"
+      },
+      "CancelPolicy": null
+    },
+    {
+      "Id": "FundamentalRangedPrimary",
+      "Source": "Fundamental",
+      "Category": "Attack",
+      "AnimationTrigger": "ContextGrabOrFire",
+      "Timing": {
+        "StartupSeconds": 0.06,
+        "ActiveSeconds": 0.08,
+        "RecoverySeconds": 0.14
+      },
+      "Availability": {
+        "RequiresGrounded": false,
+        "AllowWhileAirborne": true
+      },
+      "Execution": {
+        "CanBuffer": true,
+        "StaminaCost": 0.0,
+        "BufferWindow": "RecoveryOnly"
+      },
+      "CancelPolicy": null
+    }
+  ]
+}

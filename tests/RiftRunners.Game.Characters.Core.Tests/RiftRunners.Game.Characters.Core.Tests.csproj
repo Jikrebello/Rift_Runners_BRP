@@ -24,6 +24,8 @@
 		<Compile Include="..\..\Assets\Tests\EditMode\ActionTestDriver.cs" />
 		<Compile Include="..\..\Assets\Tests\EditMode\TraversalFixture.cs" />
 
+		<Compile Include="..\..\Assets\Tests\EditMode\ActionDefinitionRegistryIntegrationTests.cs" />
+		<Compile Include="..\..\Assets\Tests\EditMode\ActionDefinitionRegistryTests.cs" />
 		<Compile Include="..\..\Assets\Tests\EditMode\ActionSetResolutionTests.cs" />
 		<Compile Include="..\..\Assets\Tests\EditMode\ActionStaminaTests.cs" />
 		<Compile Include="..\..\Assets\Tests\EditMode\ActionCancelTests.cs" />
