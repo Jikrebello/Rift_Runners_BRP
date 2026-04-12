@@ -23,7 +23,9 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Loadout
 			if (loadouts == null)
 				throw new ArgumentNullException(nameof(loadouts));
 
-			_loadouts = new Dictionary<string, PlayerCombatLoadout>(StringComparer.OrdinalIgnoreCase);
+			_loadouts = new Dictionary<string, PlayerCombatLoadout>(
+				StringComparer.OrdinalIgnoreCase
+			);
 			foreach (var pair in loadouts)
 			{
 				if (string.IsNullOrWhiteSpace(pair.Key))

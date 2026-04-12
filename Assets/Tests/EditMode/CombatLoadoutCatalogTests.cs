@@ -25,7 +25,10 @@ namespace Assets.Tests.EditMode
 			var catalog = PlayerCombatLoadoutCatalogLoader.LoadExisting(definitions, path);
 			var loadout = catalog.GetDefaultLoadout();
 
-			Assert.That(catalog.DefaultLoadoutId, Is.EqualTo(PlayerCombatLoadouts.DefaultLoadoutId));
+			Assert.That(
+				catalog.DefaultLoadoutId,
+				Is.EqualTo(PlayerCombatLoadouts.DefaultLoadoutId)
+			);
 			Assert.That(loadout.PrimarySlot.SlotKind, Is.EqualTo(PlayerCombatSlotKind.Sword));
 			Assert.That(
 				loadout.SecondarySlot.ModifierPostureEffect,
@@ -54,7 +57,10 @@ namespace Assets.Tests.EditMode
 			var catalog = PlayerCombatLoadoutCatalogLoader.LoadExisting(definitions, path);
 			var loadout = catalog.GetDefaultLoadout();
 
-			Assert.That(catalog.LoadoutIds.Single(), Is.EqualTo(PlayerCombatLoadouts.DefaultLoadoutId));
+			Assert.That(
+				catalog.LoadoutIds.Single(),
+				Is.EqualTo(PlayerCombatLoadouts.DefaultLoadoutId)
+			);
 			Assert.That(loadout.PrimarySlot.SlotKind, Is.EqualTo(PlayerCombatSlotKind.Sword));
 		}
 
@@ -138,10 +144,7 @@ namespace Assets.Tests.EditMode
 			);
 
 			Assert.That(success, Is.False);
-			Assert.That(
-				errors,
-				Has.Some.Contains("references missing action definition 'Skill3'")
-			);
+			Assert.That(errors, Has.Some.Contains("references missing action definition 'Skill3'"));
 		}
 
 		[Test]
@@ -186,7 +189,9 @@ namespace Assets.Tests.EditMode
 
 		private static PlayerActionDefinitionRegistry LoadActionDefinitions()
 		{
-			return PlayerActionDefinitionCatalogLoader.LoadExisting(GetCommittedActionCatalogPath());
+			return PlayerActionDefinitionCatalogLoader.LoadExisting(
+				GetCommittedActionCatalogPath()
+			);
 		}
 
 		private static IReadOnlyList<string> GetBuildErrors(PlayerCombatLoadoutCatalogConfig config)
@@ -208,13 +213,14 @@ namespace Assets.Tests.EditMode
 		{
 			var defaultDefinitions = PlayerActionDefinitions
 				.CreateDefaultRegistry()
-				.Definitions
-				.Where(x => x.Id != removedId);
+				.Definitions.Where(x => x.Id != removedId);
 
 			return new PlayerActionDefinitionRegistry(defaultDefinitions);
 		}
 
-		private static PlayerCombatLoadoutConfig CloneLoadoutConfig(PlayerCombatLoadoutConfig source)
+		private static PlayerCombatLoadoutConfig CloneLoadoutConfig(
+			PlayerCombatLoadoutConfig source
+		)
 		{
 			return new PlayerCombatLoadoutConfig
 			{
@@ -254,17 +260,30 @@ namespace Assets.Tests.EditMode
 
 		private static string GetCommittedActionCatalogPath([CallerFilePath] string sourcePath = "")
 		{
-			return GetPathFromRepoRoot(sourcePath, "Configs", "Player", "player_action_definitions.json");
+			return GetPathFromRepoRoot(
+				sourcePath,
+				"Configs",
+				"Player",
+				"player_action_definitions.json"
+			);
 		}
 
 		private static string GetCommittedCombatLoadoutCatalogPath(
 			[CallerFilePath] string sourcePath = ""
 		)
 		{
-			return GetPathFromRepoRoot(sourcePath, "Configs", "Player", "player_combat_loadouts.json");
+			return GetPathFromRepoRoot(
+				sourcePath,
+				"Configs",
+				"Player",
+				"player_combat_loadouts.json"
+			);
 		}
 
-		private static string GetPathFromRepoRoot(string sourcePath, params string[] relativeSegments)
+		private static string GetPathFromRepoRoot(
+			string sourcePath,
+			params string[] relativeSegments
+		)
 		{
 			var sourceDirectory = Path.GetDirectoryName(sourcePath)!;
 			var segments = new List<string> { sourceDirectory, "..", "..", ".." };

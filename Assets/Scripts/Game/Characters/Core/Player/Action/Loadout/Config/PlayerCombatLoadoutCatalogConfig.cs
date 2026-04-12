@@ -33,8 +33,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Loadout.Config
 			new PlayerActionBankConfig();
 		public PlayerActionBankConfig SecondaryModifierBank { get; set; } =
 			new PlayerActionBankConfig();
-		public PlayerActionBankConfig DualModifierBank { get; set; } =
-			new PlayerActionBankConfig();
+		public PlayerActionBankConfig DualModifierBank { get; set; } = new PlayerActionBankConfig();
 	}
 
 	public sealed class PlayerActionBankConfig

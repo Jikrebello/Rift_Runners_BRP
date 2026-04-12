@@ -7,7 +7,9 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Loadout.Config
 {
 	public static class PlayerCombatLoadoutCatalogBuilder
 	{
-		public static PlayerCombatLoadoutCatalogConfig CreateConfig(PlayerCombatLoadoutCatalog catalog)
+		public static PlayerCombatLoadoutCatalogConfig CreateConfig(
+			PlayerCombatLoadoutCatalog catalog
+		)
 		{
 			if (catalog == null)
 				throw new ArgumentNullException(nameof(catalog));
@@ -41,16 +43,12 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Loadout.Config
 				return false;
 			}
 
-			var loadouts = new Dictionary<string, PlayerCombatLoadout>(StringComparer.OrdinalIgnoreCase);
+			var loadouts = new Dictionary<string, PlayerCombatLoadout>(
+				StringComparer.OrdinalIgnoreCase
+			);
 			for (int i = 0; i < config.Loadouts.Count; i++)
 			{
-				TryParseLoadout(
-					config.Loadouts[i],
-					i,
-					actionDefinitions,
-					loadouts,
-					errorList
-				);
+				TryParseLoadout(config.Loadouts[i], i, actionDefinitions, loadouts, errorList);
 			}
 
 			if (
