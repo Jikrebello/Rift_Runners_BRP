@@ -1,9 +1,9 @@
 <Solution>
-  <Folder Name="/src/">
-    <Project Path="src/RiftRunners.Game.Characters.Core/RiftRunners.Game.Characters.Core.csproj" />
-    <Project Path="src/RiftRunners.Game.SharedKernel/RiftRunners.Game.SharedKernel.csproj" />
-  </Folder>
-  <Folder Name="/tests/">
-    <Project Path="tests/RiftRunners.Game.Characters.Core.Tests/RiftRunners.Game.Characters.Core.Tests.csproj" />
-  </Folder>
+	<Folder Name="/src/">
+		<Project Path="src/RiftRunners.Game.Characters.Core/RiftRunners.Game.Characters.Core.csproj" />
+		<Project Path="src/RiftRunners.Game.SharedKernel/RiftRunners.Game.SharedKernel.csproj" />
+	</Folder>
+	<Folder Name="/tests/">
+		<Project Path="tests/RiftRunners.Game.Characters.Core.Tests/RiftRunners.Game.Characters.Core.Tests.csproj" />
+	</Folder>
 </Solution>

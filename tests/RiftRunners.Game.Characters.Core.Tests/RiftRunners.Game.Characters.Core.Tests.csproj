@@ -1,38 +1,38 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <LangVersion>latest</LangVersion>
-    <IsPackable>false</IsPackable>
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<LangVersion>latest</LangVersion>
+		<IsPackable>false</IsPackable>
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
-    <PackageReference Include="NUnit" Version="4.2.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
-    <PackageReference Include="Shouldly" Version="4.3.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+		<PackageReference Include="NUnit" Version="4.2.2" />
+		<PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+		<PackageReference Include="Shouldly" Version="4.3.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\RiftRunners.Game.Characters.Core\RiftRunners.Game.Characters.Core.csproj" />
-    <ProjectReference Include="..\..\src\RiftRunners.Game.SharedKernel\RiftRunners.Game.SharedKernel.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\RiftRunners.Game.Characters.Core\RiftRunners.Game.Characters.Core.csproj" />
+		<ProjectReference Include="..\..\src\RiftRunners.Game.SharedKernel\RiftRunners.Game.SharedKernel.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\..\Assets\Tests\EditMode\ActionTestDriver.cs" />
-    <Compile Include="..\..\Assets\Tests\EditMode\TraversalFixture.cs" />
+	<ItemGroup>
+		<Compile Include="..\..\Assets\Tests\EditMode\ActionTestDriver.cs" />
+		<Compile Include="..\..\Assets\Tests\EditMode\TraversalFixture.cs" />
 
-    <Compile Include="..\..\Assets\Tests\EditMode\ActionSetResolutionTests.cs" />
-    <Compile Include="..\..\Assets\Tests\EditMode\ActionStaminaTests.cs" />
-    <Compile Include="..\..\Assets\Tests\EditMode\ActionCancelTests.cs" />
-    <Compile Include="..\..\Assets\Tests\EditMode\ActionSystemContextTests.cs" />
-    <Compile Include="..\..\Assets\Tests\EditMode\ActionSystemTests.cs" />
-    <Compile Include="..\..\Assets\Tests\EditMode\CombatModeSystemTests.cs" />
-    <Compile Include="..\..\Assets\Tests\EditMode\ExhaustionStaminaTests.cs" />
-    <Compile Include="..\..\Assets\Tests\EditMode\PlayerIntentArbiterTests.cs" />
-    <Compile Include="..\..\Assets\Tests\EditMode\TraversalRulesTests.cs" />
-    <Compile Include="..\..\Assets\Tests\EditMode\TraversalStaminaTests.cs" />
-  </ItemGroup>
+		<Compile Include="..\..\Assets\Tests\EditMode\ActionSetResolutionTests.cs" />
+		<Compile Include="..\..\Assets\Tests\EditMode\ActionStaminaTests.cs" />
+		<Compile Include="..\..\Assets\Tests\EditMode\ActionCancelTests.cs" />
+		<Compile Include="..\..\Assets\Tests\EditMode\ActionSystemContextTests.cs" />
+		<Compile Include="..\..\Assets\Tests\EditMode\ActionSystemTests.cs" />
+		<Compile Include="..\..\Assets\Tests\EditMode\CombatModeSystemTests.cs" />
+		<Compile Include="..\..\Assets\Tests\EditMode\ExhaustionStaminaTests.cs" />
+		<Compile Include="..\..\Assets\Tests\EditMode\PlayerIntentArbiterTests.cs" />
+		<Compile Include="..\..\Assets\Tests\EditMode\TraversalRulesTests.cs" />
+		<Compile Include="..\..\Assets\Tests\EditMode\TraversalStaminaTests.cs" />
+	</ItemGroup>
 </Project>

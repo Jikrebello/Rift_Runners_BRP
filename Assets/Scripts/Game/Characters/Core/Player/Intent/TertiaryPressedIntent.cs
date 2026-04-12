@@ -1,5 +1,4 @@
 ﻿namespace Assets.Scripts.Game.Characters.Core.Player.Intent
 {
-	public sealed class TertiaryPressedIntent : IPlayerIntent
-	{ }
+	public sealed class TertiaryPressedIntent : IPlayerIntent { }
 }

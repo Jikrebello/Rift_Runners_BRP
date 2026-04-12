@@ -40,7 +40,10 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			Assert.That(model.ActionRuntime.CurrentActionId, Is.EqualTo(PlayerActionId.HeavyAttack));
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.HeavyAttack)
+			);
 			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Startup));
 			Assert.That(model.ActionRuntime.HasBufferedAction, Is.False);
 			Assert.That(
@@ -76,7 +79,10 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			Assert.That(model.ActionRuntime.CurrentActionId, Is.EqualTo(PlayerActionId.LightAttack));
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.LightAttack)
+			);
 			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Active));
 			Assert.That(
 				model.ActionRuntime.BufferedRequestedActionId,
@@ -113,7 +119,10 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			Assert.That(model.ActionRuntime.CurrentActionId, Is.EqualTo(PlayerActionId.LightAttack));
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.LightAttack)
+			);
 			Assert.That(
 				model.ActionRuntime.BufferedRequestedActionId,
 				Is.EqualTo(PlayerActionId.LightAttack)
@@ -122,7 +131,10 @@ namespace Assets.Tests.EditMode
 			outputs.Clear();
 			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.23f);
 
-			Assert.That(model.ActionRuntime.CurrentActionId, Is.EqualTo(PlayerActionId.LightAttack2));
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.LightAttack2)
+			);
 			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Startup));
 		}
 
@@ -155,7 +167,10 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			Assert.That(model.ActionRuntime.CurrentActionId, Is.EqualTo(PlayerActionId.HeavyAttack));
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.HeavyAttack)
+			);
 			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Recovery));
 			Assert.That(
 				model.ActionRuntime.BufferedRequestedActionId,
