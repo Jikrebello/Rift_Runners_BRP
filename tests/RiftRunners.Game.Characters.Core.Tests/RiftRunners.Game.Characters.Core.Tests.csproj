@@ -35,6 +35,7 @@
 		<Compile Include="..\..\Assets\Tests\EditMode\ActionSystemTests.cs" />
 		<Compile Include="..\..\Assets\Tests\EditMode\CombatModeSystemTests.cs" />
 		<Compile Include="..\..\Assets\Tests\EditMode\ExhaustionStaminaTests.cs" />
+		<Compile Include="..\..\Assets\Tests\EditMode\GroundedBlockTraversalTests.cs" />
 		<Compile Include="..\..\Assets\Tests\EditMode\PlayerIntentArbiterTests.cs" />
 		<Compile Include="..\..\Assets\Tests\EditMode\TraversalRulesTests.cs" />
 		<Compile Include="..\..\Assets\Tests\EditMode\TraversalStaminaTests.cs" />

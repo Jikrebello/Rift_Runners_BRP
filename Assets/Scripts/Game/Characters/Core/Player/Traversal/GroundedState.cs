@@ -2,11 +2,24 @@ using System.Collections.Generic;
 using Assets.Scripts.Game.Characters.Core.Player.Intent;
 using Assets.Scripts.Game.Characters.Core.Player.Model;
 using Assets.Scripts.Game.Characters.Core.Player.Outputs;
+using Assets.Scripts.Game.Characters.Core.Player.Traversal.DTO_s;
 
 namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 {
 	public sealed class GroundedState : ITraversalState
 	{
+		private GroundedTraversalConfig _config;
+
+		public GroundedState()
+			: this(GroundedTraversalConfig.Default) { }
+
+		public GroundedState(GroundedTraversalConfig config)
+		{
+			_config = config;
+		}
+
+		public void SetConfig(GroundedTraversalConfig config) => _config = config;
+
 		public void Enter(PlayerModel model, PlayerOutputs outputs)
 		{
 			model.TraversalMode = PlayerTraversalMode.Grounded;
@@ -39,7 +52,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 
 				if (intent is ToggleSprintIntent)
 				{
-					HandleToggleSprint(model, outputs);
+					HandleToggleSprint(model, ResolveMovementProfile(model));
 					continue;
 				}
 
@@ -69,6 +82,10 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 			float dt
 		)
 		{
+			var movementProfile = ResolveMovementProfile(model);
+			EnforceMovementProfileConstraints(model, movementProfile);
+			var effectiveMove = model.MoveInput * movementProfile.MoveInputMultiplier;
+
 			outputs.Animation.AddBool(
 				AnimBool.Crouching,
 				model.GroundedSubMode == PlayerGroundedSubMode.Crouching
@@ -79,10 +96,10 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 				model.GroundedSubMode == PlayerGroundedSubMode.Sprinting
 			);
 
-			var speedBlend = model.MoveInput.Length();
+			var speedBlend = effectiveMove.Length();
 			outputs.Animation.AddFloat(AnimFloat.Speed, speedBlend);
 
-			outputs.Motor.DesiredMove = model.MoveInput;
+			outputs.Motor.DesiredMove = effectiveMove;
 
 			if (model.WantsJumpThisFrame)
 			{
@@ -126,17 +143,43 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 					: PlayerGroundedSubMode.Crouching;
 		}
 
-		private static void HandleToggleSprint(PlayerModel model, PlayerOutputs outputs)
+		private static void EnforceMovementProfileConstraints(
+			PlayerModel model,
+			GroundedMovementProfile movementProfile
+		)
 		{
+			if (
+				!movementProfile.AllowSprint
+				&& model.GroundedSubMode == PlayerGroundedSubMode.Sprinting
+			)
+			{
+				model.GroundedSubMode = PlayerGroundedSubMode.Standing;
+			}
+		}
+
+		private static void HandleToggleSprint(
+			PlayerModel model,
+			GroundedMovementProfile movementProfile
+		)
+		{
+			if (!movementProfile.AllowSprint)
+				return;
+
 			if (model.GroundedSubMode == PlayerGroundedSubMode.Sprinting)
 			{
 				model.GroundedSubMode = PlayerGroundedSubMode.Standing;
-				outputs.Animation.AddBool(AnimBool.Sprinting, false);
 				return;
 			}
 
 			model.GroundedSubMode = PlayerGroundedSubMode.Sprinting;
 			model.CombatStance = PlayerCombatStance.Holstered;
+		}
+
+		private GroundedMovementProfile ResolveMovementProfile(PlayerModel model)
+		{
+			return model.CombatPosture == PlayerCombatPosture.Block
+				? _config.BlockProfile
+				: _config.DefaultProfile;
 		}
 
 		private static void HandleToggleWeaponStance(PlayerModel model, PlayerOutputs outputs)
