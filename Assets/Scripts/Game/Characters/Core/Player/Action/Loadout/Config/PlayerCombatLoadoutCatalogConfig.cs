@@ -33,16 +33,13 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Loadout.Config
 			new PlayerActionBankConfig();
 		public PlayerActionBankConfig SecondaryModifierBank { get; set; } =
 			new PlayerActionBankConfig();
-		public PlayerActionBankConfig DualModifierBank { get; set; } = new PlayerActionBankConfig();
 	}
 
 	public sealed class PlayerActionBankConfig
 	{
-		public string LightAttackId { get; set; } = string.Empty;
-		public string HeavyAttackId { get; set; } = string.Empty;
+		public string PrimaryFaceActionId { get; set; } = string.Empty;
+		public string SecondaryFaceActionId { get; set; } = string.Empty;
+		public string TertiaryFaceActionId { get; set; } = string.Empty;
 		public string RightActionId { get; set; } = string.Empty;
-		public string SkillSlot1Id { get; set; } = string.Empty;
-		public string SkillSlot2Id { get; set; } = string.Empty;
-		public string SkillSlot3Id { get; set; } = string.Empty;
 	}
 }

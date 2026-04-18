@@ -294,10 +294,6 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 			if (decision != IntentStaminaDecision.NotApplicable)
 				return decision;
 
-			decision = TryHandleUseSkillIntent(model, outputs, intent, out cost);
-			if (decision != IntentStaminaDecision.NotApplicable)
-				return decision;
-
 			cost = 0f;
 			return IntentStaminaDecision.NotApplicable;
 		}
@@ -400,34 +396,6 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Resources.Stamina
 				"Stamina",
 				$"Denied ToggleSprint: stamina={model.Stamina:0.##}, required={_cfg.Traversal.MinStaminaToEnterSprint:0.##}."
 			);
-			return IntentStaminaDecision.Denied;
-		}
-
-		private IntentStaminaDecision TryHandleUseSkillIntent(
-			PlayerModel model,
-			PlayerOutputs outputs,
-			IPlayerIntent intent,
-			out float cost
-		)
-		{
-			cost = 0f;
-
-			if (intent is not UseSkillIntent skill)
-				return IntentStaminaDecision.NotApplicable;
-
-			cost = _cfg.GetSkillCost(skill.Bank, skill.Slot);
-
-			if (cost <= 0f)
-				return IntentStaminaDecision.Approved;
-
-			if (model.Stamina >= cost)
-				return IntentStaminaDecision.Approved;
-
-			outputs.Debug.Warn(
-				"Stamina",
-				$"Denied UseSkill({skill.Bank},{skill.Slot}): stamina={model.Stamina:0.##}, cost={cost:0.##}."
-			);
-			cost = 0f;
 			return IntentStaminaDecision.Denied;
 		}
 

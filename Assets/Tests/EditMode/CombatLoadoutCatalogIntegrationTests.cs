@@ -33,7 +33,7 @@ namespace Assets.Tests.EditMode
 			system.Step(
 				model,
 				outputs,
-				new List<IPlayerIntent> { new LightAttackIntent() },
+				new List<IPlayerIntent> { new PrimaryPressedIntent() },
 				dt: 0f
 			);
 			Assert.That(
@@ -48,10 +48,13 @@ namespace Assets.Tests.EditMode
 			system.Step(
 				model,
 				outputs,
-				new List<IPlayerIntent> { new RightActionIntent() },
+				new List<IPlayerIntent> { new CombatTertiaryPressedIntent() },
 				dt: 0f
 			);
-			Assert.That(model.ActionRuntime.CurrentActionId, Is.EqualTo(PlayerActionId.Skill3));
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.SwordSkillTertiary)
+			);
 
 			model.ActionRuntime.ClearCurrent();
 			model.ActionRuntime.ClearBuffered();
@@ -61,23 +64,23 @@ namespace Assets.Tests.EditMode
 			system.Step(
 				model,
 				outputs,
-				new List<IPlayerIntent> { new RightActionIntent() },
+				new List<IPlayerIntent> { new CombatTertiaryPressedIntent() },
 				dt: 0f
 			);
 			Assert.That(
 				model.ActionRuntime.CurrentActionId,
-				Is.EqualTo(PlayerActionId.FundamentalBlockPrimary)
+				Is.EqualTo(PlayerActionId.ShieldSkillTertiary)
 			);
 			Assert.That(
 				outputs.Animation.Triggers,
 				Has.Some.Matches<TriggerCmd>(x =>
-					x.Param == AnimTrigger.FundamentalBlockPrimary
+					x.Param == AnimTrigger.ShieldSkillTertiary
 				)
 			);
 		}
 
 		[Test]
-		public void ExplicitlyLoadedDefaultLoadout_SecondaryModifierSkillSlot1_DoesNotStartAction()
+		public void ExplicitlyLoadedDefaultLoadout_SecondaryModifierRightAction_RemainsShieldFundamental()
 		{
 			var definitions = PlayerActionDefinitionCatalogLoader.LoadExisting(
 				GetCommittedActionCatalogPath()
@@ -99,12 +102,20 @@ namespace Assets.Tests.EditMode
 			system.Step(
 				model,
 				outputs,
-				new List<IPlayerIntent> { new UseSkillIntent(SkillBank.Secondary, 1) },
+				new List<IPlayerIntent> { new RightActionIntent() },
 				dt: 0f
 			);
 
-			Assert.That(model.ActionRuntime.HasActiveAction, Is.False);
-			Assert.That(outputs.Animation.Triggers.Count, Is.EqualTo(0));
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.FundamentalBlockPrimary)
+			);
+			Assert.That(
+				outputs.Animation.Triggers,
+				Has.Some.Matches<TriggerCmd>(x =>
+					x.Param == AnimTrigger.FundamentalBlockPrimary
+				)
+			);
 		}
 
 		[Test]
@@ -122,8 +133,6 @@ namespace Assets.Tests.EditMode
 			var outputs = new PlayerOutputs();
 
 			PlayerCombatLoadouts.CopyInto(loadoutCatalog.GetDefaultLoadout(), model.CombatLoadout);
-			model.CombatLoadout.ActionSet.BaseBank.ContextInteractId = PlayerActionId.None;
-
 			system.Step(
 				model,
 				outputs,

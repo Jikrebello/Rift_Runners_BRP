@@ -90,10 +90,10 @@
       "CancelPolicy": null
     },
     {
-      "Id": "Skill1",
+      "Id": "SwordSkillPrimary",
       "Source": "Skill",
       "Category": "Skill",
-      "AnimationTrigger": "Skill1",
+      "AnimationTrigger": "SwordSkillPrimary",
       "Timing": {
         "StartupSeconds": 0.15,
         "ActiveSeconds": 0.12,
@@ -111,14 +111,14 @@
       "CancelPolicy": null
     },
     {
-      "Id": "Skill2",
+      "Id": "SwordSkillSecondary",
       "Source": "Skill",
       "Category": "Skill",
-      "AnimationTrigger": "Skill2",
+      "AnimationTrigger": "SwordSkillSecondary",
       "Timing": {
-        "StartupSeconds": 0.15,
+        "StartupSeconds": 0.17,
         "ActiveSeconds": 0.12,
-        "RecoverySeconds": 0.3
+        "RecoverySeconds": 0.32
       },
       "Availability": {
         "RequiresGrounded": true,
@@ -132,14 +132,14 @@
       "CancelPolicy": null
     },
     {
-      "Id": "Skill3",
+      "Id": "SwordSkillTertiary",
       "Source": "Skill",
       "Category": "Skill",
-      "AnimationTrigger": "Skill3",
+      "AnimationTrigger": "SwordSkillTertiary",
       "Timing": {
-        "StartupSeconds": 0.15,
-        "ActiveSeconds": 0.12,
-        "RecoverySeconds": 0.3
+        "StartupSeconds": 0.2,
+        "ActiveSeconds": 0.14,
+        "RecoverySeconds": 0.34
       },
       "Availability": {
         "RequiresGrounded": true,
@@ -233,6 +233,69 @@
         "CanBuffer": true,
         "StaminaCost": 0.0,
         "BufferWindow": "RecoveryOnly"
+      },
+      "CancelPolicy": null
+    },
+    {
+      "Id": "ShieldSkillPrimary",
+      "Source": "Skill",
+      "Category": "Skill",
+      "AnimationTrigger": "ShieldSkillPrimary",
+      "Timing": {
+        "StartupSeconds": 0.12,
+        "ActiveSeconds": 0.1,
+        "RecoverySeconds": 0.24
+      },
+      "Availability": {
+        "RequiresGrounded": true,
+        "AllowWhileAirborne": false
+      },
+      "Execution": {
+        "CanBuffer": false,
+        "StaminaCost": 20.0,
+        "BufferWindow": "None"
+      },
+      "CancelPolicy": null
+    },
+    {
+      "Id": "ShieldSkillSecondary",
+      "Source": "Skill",
+      "Category": "Skill",
+      "AnimationTrigger": "ShieldSkillSecondary",
+      "Timing": {
+        "StartupSeconds": 0.16,
+        "ActiveSeconds": 0.12,
+        "RecoverySeconds": 0.28
+      },
+      "Availability": {
+        "RequiresGrounded": true,
+        "AllowWhileAirborne": false
+      },
+      "Execution": {
+        "CanBuffer": false,
+        "StaminaCost": 25.0,
+        "BufferWindow": "None"
+      },
+      "CancelPolicy": null
+    },
+    {
+      "Id": "ShieldSkillTertiary",
+      "Source": "Skill",
+      "Category": "Skill",
+      "AnimationTrigger": "ShieldSkillTertiary",
+      "Timing": {
+        "StartupSeconds": 0.18,
+        "ActiveSeconds": 0.14,
+        "RecoverySeconds": 0.3
+      },
+      "Availability": {
+        "RequiresGrounded": true,
+        "AllowWhileAirborne": false
+      },
+      "Execution": {
+        "CanBuffer": false,
+        "StaminaCost": 30.0,
+        "BufferWindow": "None"
       },
       "CancelPolicy": null
     }

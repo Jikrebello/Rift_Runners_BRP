@@ -189,7 +189,8 @@ namespace Assets.Tests.EditMode
 			};
 			var outputs = new PlayerOutputs();
 
-			model.CombatLoadout.ActionSet.PrimaryModifierBank.RightActionId = PlayerActionId.Skill3;
+			model.CombatLoadout.ActionSet.PrimaryModifierBank.RightActionId =
+				PlayerActionId.SwordSkillTertiary;
 
 			system.Step(
 				model,
@@ -198,10 +199,13 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			Assert.That(model.ActionRuntime.CurrentActionId, Is.EqualTo(PlayerActionId.Skill3));
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.SwordSkillTertiary)
+			);
 			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Startup));
 			Assert.That(
-				outputs.Animation.Triggers.Any(x => x.Param == AnimTrigger.Skill3),
+				outputs.Animation.Triggers.Any(x => x.Param == AnimTrigger.SwordSkillTertiary),
 				Is.True
 			);
 		}
@@ -240,7 +244,7 @@ namespace Assets.Tests.EditMode
 		}
 
 		[Test]
-		public void RightAction_WithDualModifiers_UsesDualModifierBank()
+		public void RightAction_WithBothModifiers_UsesSecondaryModifierBank()
 		{
 			var system = NewSystem();
 			var model = new PlayerModel
@@ -251,7 +255,10 @@ namespace Assets.Tests.EditMode
 			};
 			var outputs = new PlayerOutputs();
 
-			model.CombatLoadout.ActionSet.DualModifierBank.RightActionId = PlayerActionId.Skill2;
+			model.CombatLoadout.ActionSet.PrimaryModifierBank.RightActionId =
+				PlayerActionId.SwordSkillSecondary;
+			model.CombatLoadout.ActionSet.SecondaryModifierBank.RightActionId =
+				PlayerActionId.FundamentalBlockPrimary;
 
 			system.Step(
 				model,
@@ -260,10 +267,13 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			Assert.That(model.ActionRuntime.CurrentActionId, Is.EqualTo(PlayerActionId.Skill2));
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.FundamentalBlockPrimary)
+			);
 			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Startup));
 			Assert.That(
-				outputs.Animation.Triggers.Any(x => x.Param == AnimTrigger.Skill2),
+				outputs.Animation.Triggers.Any(x => x.Param == AnimTrigger.FundamentalBlockPrimary),
 				Is.True
 			);
 		}

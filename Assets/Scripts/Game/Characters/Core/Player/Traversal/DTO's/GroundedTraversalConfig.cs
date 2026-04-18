@@ -6,6 +6,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal.DTO_s
 		public const float DefaultBlockedMoveInputMultiplier = 0.5f;
 		public const bool DefaultSprintAllowed = true;
 		public const bool DefaultBlockedSprintAllowed = false;
+		public const bool DefaultBlockDashRequiresMoveInput = true;
 
 		public static GroundedTraversalConfig Default =>
 			new(
@@ -16,19 +17,23 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal.DTO_s
 				new GroundedMovementProfile(
 					DefaultBlockedMoveInputMultiplier,
 					DefaultBlockedSprintAllowed
-				)
+				),
+				DefaultBlockDashRequiresMoveInput
 			);
 
 		public readonly GroundedMovementProfile DefaultProfile;
 		public readonly GroundedMovementProfile BlockProfile;
+		public readonly bool BlockDashRequiresMoveInput;
 
 		public GroundedTraversalConfig(
 			GroundedMovementProfile defaultProfile,
-			GroundedMovementProfile blockProfile
+			GroundedMovementProfile blockProfile,
+			bool blockDashRequiresMoveInput
 		)
 		{
 			DefaultProfile = defaultProfile;
 			BlockProfile = blockProfile;
+			BlockDashRequiresMoveInput = blockDashRequiresMoveInput;
 		}
 	}
 }

@@ -12,11 +12,15 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Intent
 			IReadOnlyList<IPlayerIntent> rawIntents
 		)
 		{
-			ScanFrame(rawIntents, out bool hasUseSkill, out bool hasTertiaryPressed);
+			ScanFrame(
+				rawIntents,
+				out bool hasCombatTertiaryPressed,
+				out bool hasTertiaryPressed
+			);
 
 			bool circleIsTraversal = ComputeCircleIsTraversal(model, hasTertiaryPressed);
 
-			var filtered = Filter(rawIntents, hasUseSkill, circleIsTraversal);
+			var filtered = Filter(rawIntents, hasCombatTertiaryPressed, circleIsTraversal);
 
 			return OrderByPriority(filtered);
 		}
@@ -62,7 +66,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Intent
 
 		private static List<IPlayerIntent> Filter(
 			IReadOnlyList<IPlayerIntent> rawIntents,
-			bool hasUseSkill,
+			bool hasCombatTertiaryPressed,
 			bool circleIsTraversal
 		)
 		{
@@ -72,7 +76,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Intent
 			{
 				var intent = rawIntents[i];
 
-				if (ShouldDrop(intent, hasUseSkill, circleIsTraversal))
+				if (ShouldDrop(intent, hasCombatTertiaryPressed, circleIsTraversal))
 					continue;
 
 				result.Add(intent);
@@ -98,7 +102,9 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Intent
 			AddAll<ToggleCrouchIntent>(intents, ordered);
 
 			// Bucket 3: actions
-			AddAll<UseSkillIntent>(intents, ordered);
+			AddAll<PrimaryPressedIntent>(intents, ordered);
+			AddAll<SecondaryPressedIntent>(intents, ordered);
+			AddAll<CombatTertiaryPressedIntent>(intents, ordered);
 			AddAll<LightAttackIntent>(intents, ordered);
 			AddAll<HeavyAttackIntent>(intents, ordered);
 			AddAll<RightActionIntent>(intents, ordered);
@@ -114,19 +120,19 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Intent
 
 		private static void ScanFrame(
 			IReadOnlyList<IPlayerIntent> rawIntents,
-			out bool hasUseSkill,
+			out bool hasCombatTertiaryPressed,
 			out bool hasTertiaryPressed
 		)
 		{
-			hasUseSkill = false;
+			hasCombatTertiaryPressed = false;
 			hasTertiaryPressed = false;
 
 			for (int i = 0; i < rawIntents.Count; i++)
 			{
 				var intent = rawIntents[i];
 
-				if (intent is UseSkillIntent)
-					hasUseSkill = true;
+				if (intent is CombatTertiaryPressedIntent)
+					hasCombatTertiaryPressed = true;
 
 				if (intent is TertiaryPressedIntent)
 					hasTertiaryPressed = true;
@@ -135,7 +141,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Intent
 
 		private static bool ShouldDrop(
 			IPlayerIntent intent,
-			bool hasUseSkill,
+			bool hasCombatTertiaryPressed,
 			bool circleIsTraversal
 		)
 		{
@@ -143,12 +149,17 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Intent
 			if (intent is MoveIntent)
 				return false;
 
-			// If a skill fired, drop competing "circle meanings"
-			if (hasUseSkill && (intent is ContextInteractIntent || intent is TertiaryPressedIntent))
+			if (
+				circleIsTraversal
+				&& (intent is CombatTertiaryPressedIntent || intent is ContextInteractIntent)
+			)
 				return true;
 
-			// If circle is being used for traversal, drop contextual interact this frame
-			if (circleIsTraversal && intent is ContextInteractIntent)
+			if (
+				!circleIsTraversal
+				&& hasCombatTertiaryPressed
+				&& intent is TertiaryPressedIntent
+			)
 				return true;
 
 			return false;

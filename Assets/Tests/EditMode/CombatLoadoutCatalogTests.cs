@@ -36,16 +36,24 @@ namespace Assets.Tests.EditMode
 				Is.EqualTo(PlayerModifierPostureEffect.Block)
 			);
 			Assert.That(
-				loadout.ActionSet.BaseBank.LightAttackId,
+				loadout.ActionSet.BaseBank.PrimaryFaceActionId,
 				Is.EqualTo(PlayerActionId.LightAttack)
+			);
+			Assert.That(
+				loadout.ActionSet.BaseBank.TertiaryFaceActionId,
+				Is.EqualTo(PlayerActionId.ContextInteract)
 			);
 			Assert.That(
 				loadout.ActionSet.SecondaryModifierBank.RightActionId,
 				Is.EqualTo(PlayerActionId.FundamentalBlockPrimary)
 			);
 			Assert.That(
-				loadout.ActionSet.SecondaryModifierBank.SkillSlot1Id,
-				Is.EqualTo(PlayerActionId.None)
+				loadout.ActionSet.PrimaryModifierBank.PrimaryFaceActionId,
+				Is.EqualTo(PlayerActionId.SwordSkillPrimary)
+			);
+			Assert.That(
+				loadout.ActionSet.SecondaryModifierBank.TertiaryFaceActionId,
+				Is.EqualTo(PlayerActionId.ShieldSkillTertiary)
 			);
 		}
 
@@ -114,24 +122,26 @@ namespace Assets.Tests.EditMode
 		public void CatalogBuilder_RejectsMissingRequiredBanks()
 		{
 			var config = PlayerCombatLoadoutCatalogLoader.CreateDefaultCatalog();
-			config.Loadouts[0].ActionSet.DualModifierBank = null;
+			config.Loadouts[0].ActionSet.SecondaryModifierBank = null;
 
 			var errors = GetBuildErrors(config);
 
-			Assert.That(errors, Has.Some.Contains("ActionSet.DualModifierBank is required."));
+			Assert.That(errors, Has.Some.Contains("ActionSet.SecondaryModifierBank is required."));
 		}
 
 		[Test]
 		public void CatalogBuilder_RejectsUnknownActionIdValues()
 		{
 			var config = PlayerCombatLoadoutCatalogLoader.CreateDefaultCatalog();
-			config.Loadouts[0].ActionSet.BaseBank.LightAttackId = "SpiralStrike";
+			config.Loadouts[0].ActionSet.BaseBank.PrimaryFaceActionId = "SpiralStrike";
 
 			var errors = GetBuildErrors(config);
 
 			Assert.That(
 				errors,
-				Has.Some.Contains("BaseBank.LightAttackId value 'SpiralStrike' is not recognized.")
+				Has.Some.Contains(
+					"BaseBank.PrimaryFaceActionId value 'SpiralStrike' is not recognized."
+				)
 			);
 		}
 
@@ -139,7 +149,7 @@ namespace Assets.Tests.EditMode
 		public void CatalogBuilder_RejectsMissingActionDefinitionReferences()
 		{
 			var config = PlayerCombatLoadoutCatalogLoader.CreateDefaultCatalog();
-			var limitedDefinitions = CreateDefinitionRegistryWithout(PlayerActionId.Skill3);
+			var limitedDefinitions = CreateDefinitionRegistryWithout(PlayerActionId.ShieldSkillTertiary);
 
 			var success = PlayerCombatLoadoutCatalogBuilder.TryBuild(
 				config,
@@ -149,7 +159,10 @@ namespace Assets.Tests.EditMode
 			);
 
 			Assert.That(success, Is.False);
-			Assert.That(errors, Has.Some.Contains("references missing action definition 'Skill3'"));
+			Assert.That(
+				errors,
+				Has.Some.Contains("references missing action definition 'ShieldSkillTertiary'")
+			);
 		}
 
 		[Test]
@@ -245,7 +258,6 @@ namespace Assets.Tests.EditMode
 					BaseBank = CloneBankConfig(source.ActionSet.BaseBank),
 					PrimaryModifierBank = CloneBankConfig(source.ActionSet.PrimaryModifierBank),
 					SecondaryModifierBank = CloneBankConfig(source.ActionSet.SecondaryModifierBank),
-					DualModifierBank = CloneBankConfig(source.ActionSet.DualModifierBank),
 				},
 			};
 		}
@@ -254,12 +266,10 @@ namespace Assets.Tests.EditMode
 		{
 			return new PlayerActionBankConfig
 			{
-				LightAttackId = source.LightAttackId,
-				HeavyAttackId = source.HeavyAttackId,
+				PrimaryFaceActionId = source.PrimaryFaceActionId,
+				SecondaryFaceActionId = source.SecondaryFaceActionId,
+				TertiaryFaceActionId = source.TertiaryFaceActionId,
 				RightActionId = source.RightActionId,
-				SkillSlot1Id = source.SkillSlot1Id,
-				SkillSlot2Id = source.SkillSlot2Id,
-				SkillSlot3Id = source.SkillSlot3Id,
 			};
 		}
 

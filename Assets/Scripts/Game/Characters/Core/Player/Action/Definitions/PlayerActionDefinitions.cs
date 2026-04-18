@@ -84,11 +84,11 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 			PlayerActionCancelPolicy.None
 		);
 
-		public static readonly PlayerActionDefinition Skill1 = new(
-			PlayerActionId.Skill1,
+		public static readonly PlayerActionDefinition SwordSkillPrimary = new(
+			PlayerActionId.SwordSkillPrimary,
 			PlayerActionSource.Skill,
 			PlayerActionCategory.Skill,
-			AnimTrigger.Skill1,
+			AnimTrigger.SwordSkillPrimary,
 			new PlayerActionTiming(
 				startupSeconds: 0.15f,
 				activeSeconds: 0.12f,
@@ -103,15 +103,15 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 			PlayerActionCancelPolicy.None
 		);
 
-		public static readonly PlayerActionDefinition Skill2 = new(
-			PlayerActionId.Skill2,
+		public static readonly PlayerActionDefinition SwordSkillSecondary = new(
+			PlayerActionId.SwordSkillSecondary,
 			PlayerActionSource.Skill,
 			PlayerActionCategory.Skill,
-			AnimTrigger.Skill2,
+			AnimTrigger.SwordSkillSecondary,
 			new PlayerActionTiming(
-				startupSeconds: 0.15f,
+				startupSeconds: 0.17f,
 				activeSeconds: 0.12f,
-				recoverySeconds: 0.30f
+				recoverySeconds: 0.32f
 			),
 			new PlayerActionAvailability(requiresGrounded: true, allowWhileAirborne: false),
 			new PlayerActionExecutionPolicy(
@@ -122,14 +122,71 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 			PlayerActionCancelPolicy.None
 		);
 
-		public static readonly PlayerActionDefinition Skill3 = new(
-			PlayerActionId.Skill3,
+		public static readonly PlayerActionDefinition SwordSkillTertiary = new(
+			PlayerActionId.SwordSkillTertiary,
 			PlayerActionSource.Skill,
 			PlayerActionCategory.Skill,
-			AnimTrigger.Skill3,
+			AnimTrigger.SwordSkillTertiary,
 			new PlayerActionTiming(
-				startupSeconds: 0.15f,
+				startupSeconds: 0.20f,
+				activeSeconds: 0.14f,
+				recoverySeconds: 0.34f
+			),
+			new PlayerActionAvailability(requiresGrounded: true, allowWhileAirborne: false),
+			new PlayerActionExecutionPolicy(
+				canBuffer: false,
+				staminaCost: 30f,
+				bufferWindow: PlayerActionBufferWindow.None
+			),
+			PlayerActionCancelPolicy.None
+		);
+
+		public static readonly PlayerActionDefinition ShieldSkillPrimary = new(
+			PlayerActionId.ShieldSkillPrimary,
+			PlayerActionSource.Skill,
+			PlayerActionCategory.Skill,
+			AnimTrigger.ShieldSkillPrimary,
+			new PlayerActionTiming(
+				startupSeconds: 0.12f,
+				activeSeconds: 0.10f,
+				recoverySeconds: 0.24f
+			),
+			new PlayerActionAvailability(requiresGrounded: true, allowWhileAirborne: false),
+			new PlayerActionExecutionPolicy(
+				canBuffer: false,
+				staminaCost: 20f,
+				bufferWindow: PlayerActionBufferWindow.None
+			),
+			PlayerActionCancelPolicy.None
+		);
+
+		public static readonly PlayerActionDefinition ShieldSkillSecondary = new(
+			PlayerActionId.ShieldSkillSecondary,
+			PlayerActionSource.Skill,
+			PlayerActionCategory.Skill,
+			AnimTrigger.ShieldSkillSecondary,
+			new PlayerActionTiming(
+				startupSeconds: 0.16f,
 				activeSeconds: 0.12f,
+				recoverySeconds: 0.28f
+			),
+			new PlayerActionAvailability(requiresGrounded: true, allowWhileAirborne: false),
+			new PlayerActionExecutionPolicy(
+				canBuffer: false,
+				staminaCost: 25f,
+				bufferWindow: PlayerActionBufferWindow.None
+			),
+			PlayerActionCancelPolicy.None
+		);
+
+		public static readonly PlayerActionDefinition ShieldSkillTertiary = new(
+			PlayerActionId.ShieldSkillTertiary,
+			PlayerActionSource.Skill,
+			PlayerActionCategory.Skill,
+			AnimTrigger.ShieldSkillTertiary,
+			new PlayerActionTiming(
+				startupSeconds: 0.18f,
+				activeSeconds: 0.14f,
 				recoverySeconds: 0.30f
 			),
 			new PlayerActionAvailability(requiresGrounded: true, allowWhileAirborne: false),
@@ -223,13 +280,16 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 			LightAttack2,
 			LightAttack3,
 			HeavyAttack,
-			Skill1,
-			Skill2,
-			Skill3,
+			SwordSkillPrimary,
+			SwordSkillSecondary,
+			SwordSkillTertiary,
 			ContextInteract,
 			ContextGrab,
 			FundamentalRangedPrimary,
 			FundamentalBlockPrimary,
+			ShieldSkillPrimary,
+			ShieldSkillSecondary,
+			ShieldSkillTertiary,
 		};
 
 		private static readonly PlayerActionDefinitionRegistry DefaultRegistry = new(

@@ -73,13 +73,13 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Intent
 		)
 		{
 			if (input.Primary.PressedThisFrame)
-				intents.Add(new LightAttackIntent());
+				intents.Add(new PrimaryPressedIntent());
 
 			if (input.Secondary.PressedThisFrame)
-				intents.Add(new HeavyAttackIntent());
+				intents.Add(new SecondaryPressedIntent());
 
 			if (input.Tertiary.PressedThisFrame)
-				intents.Add(new ContextInteractIntent());
+				intents.Add(new CombatTertiaryPressedIntent());
 		}
 
 		private static void EmitRightActionIntent(
@@ -91,30 +91,11 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Intent
 				intents.Add(new RightActionIntent());
 		}
 
-		private static void EmitSkillIntents(
-			in PlayerInputSnapshot input,
-			List<IPlayerIntent> intents,
-			SkillBank bank
-		)
-		{
-			if (input.Primary.PressedThisFrame)
-				intents.Add(new UseSkillIntent(bank, 1));
-
-			if (input.Secondary.PressedThisFrame)
-				intents.Add(new UseSkillIntent(bank, 2));
-
-			if (input.Tertiary.PressedThisFrame)
-				intents.Add(new UseSkillIntent(bank, 3));
-		}
-
 		private static void EmitSkillOrBaseFaceIntents(
 			in PlayerInputSnapshot input,
 			List<IPlayerIntent> intents
 		)
 		{
-			if (TryEmitSkillIntents(input, intents))
-				return;
-
 			EmitBaseFaceIntents(input, intents);
 		}
 
@@ -126,27 +107,6 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Intent
 			// This is the “circle pressed” signal traversal needs for slide/drop/etc.
 			if (input.Tertiary.PressedThisFrame)
 				intents.Add(new TertiaryPressedIntent());
-		}
-
-		private static bool TryEmitSkillIntents(
-			in PlayerInputSnapshot input,
-			List<IPlayerIntent> intents
-		)
-		{
-			// Priority: Secondary (L1) > Primary (R1)
-			if (input.SecondarySkillModifier.Held)
-			{
-				EmitSkillIntents(input, intents, SkillBank.Secondary);
-				return true;
-			}
-
-			if (input.PrimarySkillModifier.Held)
-			{
-				EmitSkillIntents(input, intents, SkillBank.Primary);
-				return true;
-			}
-
-			return false;
 		}
 
 		private void AddModifierIntents(in PlayerInputSnapshot input, List<IPlayerIntent> intents)

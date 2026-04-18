@@ -20,6 +20,9 @@ namespace Assets.Tests.EditMode
 			* GroundedTraversalConfig.DefaultMoveInputMultiplier;
 		private static readonly Vector2 BlockExpectedMove = FullMoveInput
 			* GroundedTraversalConfig.DefaultBlockedMoveInputMultiplier;
+		private static readonly Vector2 ExpectedBlockDashDirection = Vector2.Normalize(
+			FullMoveInput
+		);
 
 		[Test]
 		public void GroundedState_BlockPosture_UsesBlockedMovementProfile()
@@ -177,6 +180,97 @@ namespace Assets.Tests.EditMode
 				outputs.Animation.Ints.Any(x =>
 					x.Param == AnimInt.UpperBodyMode && x.Value == (int)UpperBodyMode.Block
 				),
+				Is.True
+			);
+		}
+
+		[Test]
+		public void GroundedState_BlockPosture_JumpWithMoveInput_RequestsBlockDash_NotJump()
+		{
+			var fx = NewFixture();
+			var model = NewGroundedModel();
+			model.CombatPosture = PlayerCombatPosture.Block;
+			model.SecondaryMode = SecondaryModifierMode.Active;
+			var outputs = new PlayerOutputs();
+
+			fx.Grounded.HandleIntents(
+				model,
+				outputs,
+				new List<IPlayerIntent>
+				{
+					new MoveIntent(FullMoveInput),
+					new JumpPressedIntent(),
+				}
+			);
+			fx.Grounded.Tick(
+				model,
+				outputs,
+				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 0f },
+				1f / 60f
+			);
+
+			Assert.That(outputs.Motor.RequestBlockDashThisFrame, Is.True);
+			Assert.That(outputs.Motor.BlockDashDirection, Is.EqualTo(ExpectedBlockDashDirection));
+			Assert.That(outputs.Motor.RequestJump, Is.False);
+			Assert.That(
+				outputs.Animation.Triggers.Last(x => x.Param == AnimTrigger.BlockDash).Param,
+				Is.EqualTo(AnimTrigger.BlockDash)
+			);
+		}
+
+		[Test]
+		public void GroundedState_BlockPosture_JumpWithoutMoveInput_RemainsNormalJump()
+		{
+			var fx = NewFixture();
+			var model = NewGroundedModel();
+			model.CombatPosture = PlayerCombatPosture.Block;
+			model.SecondaryMode = SecondaryModifierMode.Active;
+			var outputs = new PlayerOutputs();
+
+			fx.Grounded.HandleIntents(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new JumpPressedIntent() }
+			);
+			fx.Grounded.Tick(
+				model,
+				outputs,
+				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 0f },
+				1f / 60f
+			);
+
+			Assert.That(outputs.Motor.RequestBlockDashThisFrame, Is.False);
+			Assert.That(outputs.Motor.RequestJump, Is.True);
+		}
+
+		[Test]
+		public void PlayerPiece_DefaultSwordShield_SecondaryModifierHeld_JumpWithMoveInput_RequestsBlockDash()
+		{
+			var piece = NewPlayerPiece();
+			var outputs = piece.Tick(
+				new PlayerInputSnapshot
+				{
+					Move = FullMoveInput,
+					Jump = new ButtonState
+					{
+						Held = true,
+						PressedThisFrame = true,
+					},
+					SecondarySkillModifier = new ButtonState
+					{
+						Held = true,
+						PressedThisFrame = true,
+					},
+				},
+				new PlayerWorldSnapshot { IsGrounded = true, PlanarSpeed = 0f },
+				1f / 60f
+			);
+
+			Assert.That(outputs.Motor.RequestBlockDashThisFrame, Is.True);
+			Assert.That(outputs.Motor.BlockDashDirection, Is.EqualTo(ExpectedBlockDashDirection));
+			Assert.That(outputs.Motor.RequestJump, Is.False);
+			Assert.That(
+				outputs.Animation.Triggers.Any(x => x.Param == AnimTrigger.BlockDash),
 				Is.True
 			);
 		}

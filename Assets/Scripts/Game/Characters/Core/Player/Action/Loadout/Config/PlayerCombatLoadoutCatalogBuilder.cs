@@ -219,9 +219,6 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Loadout.Config
 			if (actionSetConfig.SecondaryModifierBank == null)
 				errors.Add($"{location} ActionSet.SecondaryModifierBank is required.");
 
-			if (actionSetConfig.DualModifierBank == null)
-				errors.Add($"{location} ActionSet.DualModifierBank is required.");
-
 			if (errors.Count > startErrorCount)
 				return;
 
@@ -246,13 +243,6 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Loadout.Config
 				actionDefinitions,
 				errors
 			);
-			ApplyBank(
-				actionSetConfig.DualModifierBank,
-				actionSet.DualModifierBank,
-				location + " ActionSet.DualModifierBank",
-				actionDefinitions,
-				errors
-			);
 		}
 
 		private static void ApplyBank(
@@ -263,39 +253,27 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Loadout.Config
 			List<string> errors
 		)
 		{
-			bank.LightAttackId = ParseMappedActionId(
-				bankConfig.LightAttackId,
-				location + ".LightAttackId",
+			bank.PrimaryFaceActionId = ParseMappedActionId(
+				bankConfig.PrimaryFaceActionId,
+				location + ".PrimaryFaceActionId",
 				actionDefinitions,
 				errors
 			);
-			bank.HeavyAttackId = ParseMappedActionId(
-				bankConfig.HeavyAttackId,
-				location + ".HeavyAttackId",
+			bank.SecondaryFaceActionId = ParseMappedActionId(
+				bankConfig.SecondaryFaceActionId,
+				location + ".SecondaryFaceActionId",
+				actionDefinitions,
+				errors
+			);
+			bank.TertiaryFaceActionId = ParseMappedActionId(
+				bankConfig.TertiaryFaceActionId,
+				location + ".TertiaryFaceActionId",
 				actionDefinitions,
 				errors
 			);
 			bank.RightActionId = ParseMappedActionId(
 				bankConfig.RightActionId,
 				location + ".RightActionId",
-				actionDefinitions,
-				errors
-			);
-			bank.SkillSlot1Id = ParseMappedActionId(
-				bankConfig.SkillSlot1Id,
-				location + ".SkillSlot1Id",
-				actionDefinitions,
-				errors
-			);
-			bank.SkillSlot2Id = ParseMappedActionId(
-				bankConfig.SkillSlot2Id,
-				location + ".SkillSlot2Id",
-				actionDefinitions,
-				errors
-			);
-			bank.SkillSlot3Id = ParseMappedActionId(
-				bankConfig.SkillSlot3Id,
-				location + ".SkillSlot3Id",
 				actionDefinitions,
 				errors
 			);
@@ -371,7 +349,6 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Loadout.Config
 				BaseBank = CreateBankConfig(actionSet.BaseBank),
 				PrimaryModifierBank = CreateBankConfig(actionSet.PrimaryModifierBank),
 				SecondaryModifierBank = CreateBankConfig(actionSet.SecondaryModifierBank),
-				DualModifierBank = CreateBankConfig(actionSet.DualModifierBank),
 			};
 		}
 
@@ -379,12 +356,10 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Loadout.Config
 		{
 			return new PlayerActionBankConfig
 			{
-				LightAttackId = bank.LightAttackId.ToString(),
-				HeavyAttackId = bank.HeavyAttackId.ToString(),
+				PrimaryFaceActionId = bank.PrimaryFaceActionId.ToString(),
+				SecondaryFaceActionId = bank.SecondaryFaceActionId.ToString(),
+				TertiaryFaceActionId = bank.TertiaryFaceActionId.ToString(),
 				RightActionId = bank.RightActionId.ToString(),
-				SkillSlot1Id = bank.SkillSlot1Id.ToString(),
-				SkillSlot2Id = bank.SkillSlot2Id.ToString(),
-				SkillSlot3Id = bank.SkillSlot3Id.ToString(),
 			};
 		}
 	}

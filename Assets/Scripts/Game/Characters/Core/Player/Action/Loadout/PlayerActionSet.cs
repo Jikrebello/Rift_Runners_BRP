@@ -5,7 +5,6 @@
 		public PlayerActionBank BaseBank { get; } = new();
 		public PlayerActionBank PrimaryModifierBank { get; } = new();
 		public PlayerActionBank SecondaryModifierBank { get; } = new();
-		public PlayerActionBank DualModifierBank { get; } = new();
 
 		public PlayerActionBank GetBank(PlayerActionBankSelector selector)
 		{
@@ -13,7 +12,6 @@
 			{
 				PlayerActionBankSelector.PrimaryModifier => PrimaryModifierBank,
 				PlayerActionBankSelector.SecondaryModifier => SecondaryModifierBank,
-				PlayerActionBankSelector.DualModifier => DualModifierBank,
 				_ => BaseBank,
 			};
 		}

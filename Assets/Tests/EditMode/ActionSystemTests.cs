@@ -167,7 +167,10 @@ namespace Assets.Tests.EditMode
 		public void BufferedAction_DoesNotGetOverwritten_WhenBufferAlreadyOccupied()
 		{
 			var system = NewSystem();
-			var model = new PlayerModel();
+			var model = new PlayerModel
+			{
+				PrimaryMode = PrimaryModifierMode.Active,
+			};
 			var outputs = new PlayerOutputs();
 
 			system.Step(
@@ -197,7 +200,7 @@ namespace Assets.Tests.EditMode
 			system.Step(
 				model,
 				outputs,
-				new List<IPlayerIntent> { new UseSkillIntent(SkillBank.Primary, 1) },
+				new List<IPlayerIntent> { new PrimaryPressedIntent() },
 				dt: 0f
 			);
 
@@ -483,19 +486,24 @@ namespace Assets.Tests.EditMode
 		public void SkillAction_WhileBusy_DoesNotBuffer_WhenCurrentActionCannotBuffer()
 		{
 			var system = NewSystem();
-			var model = new PlayerModel { TraversalMode = PlayerTraversalMode.Grounded };
+			var model = new PlayerModel
+			{
+				TraversalMode = PlayerTraversalMode.Grounded,
+				PrimaryMode = PrimaryModifierMode.Active,
+			};
 			var outputs = new PlayerOutputs();
-
-			model.CombatLoadout.ActionSet.BaseBank.SkillSlot1Id = PlayerActionId.Skill1;
 
 			system.Step(
 				model,
 				outputs,
-				new List<IPlayerIntent> { new UseSkillIntent(SkillBank.Primary, 1) },
+				new List<IPlayerIntent> { new PrimaryPressedIntent() },
 				dt: 0f
 			);
 
-			Assert.That(model.ActionRuntime.CurrentActionId, Is.EqualTo(PlayerActionId.Skill1));
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.SwordSkillPrimary)
+			);
 			Assert.That(
 				model.ActionRuntime.BufferedRequestedActionId,
 				Is.EqualTo(PlayerActionId.None)
@@ -509,7 +517,10 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			Assert.That(model.ActionRuntime.CurrentActionId, Is.EqualTo(PlayerActionId.Skill1));
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.SwordSkillPrimary)
+			);
 			Assert.That(
 				model.ActionRuntime.BufferedRequestedActionId,
 				Is.EqualTo(PlayerActionId.None)

@@ -20,6 +20,12 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Intent
 		public MoveIntent(Vector2 dir) => Direction = dir;
 	}
 
+	public sealed class PrimaryPressedIntent : IPlayerIntent { }
+
+	public sealed class SecondaryPressedIntent : IPlayerIntent { }
+
+	public sealed class CombatTertiaryPressedIntent : IPlayerIntent { }
+
 	public sealed class ToggleCrouchIntent : IPlayerIntent { }
 
 	public sealed class ToggleSprintIntent : IPlayerIntent { }

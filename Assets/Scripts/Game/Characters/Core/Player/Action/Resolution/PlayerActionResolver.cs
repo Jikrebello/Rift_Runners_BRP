@@ -31,20 +31,26 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Resolution
 			{
 				var intent = intents[i];
 
+				if (intent is PrimaryPressedIntent)
+					return TryResolveById(bank.PrimaryFaceActionId, out request);
+
+				if (intent is SecondaryPressedIntent)
+					return TryResolveById(bank.SecondaryFaceActionId, out request);
+
+				if (intent is CombatTertiaryPressedIntent)
+					return TryResolveById(bank.TertiaryFaceActionId, out request);
+
 				if (intent is LightAttackIntent)
-					return TryResolveById(bank.LightAttackId, out request);
+					return TryResolveById(PlayerActionId.LightAttack, out request);
 
 				if (intent is HeavyAttackIntent)
-					return TryResolveById(bank.HeavyAttackId, out request);
+					return TryResolveById(PlayerActionId.HeavyAttack, out request);
 
 				if (intent is ContextInteractIntent)
 					return TryResolveById(PlayerActionId.ContextInteract, out request);
 
 				if (intent is RightActionIntent)
 					return TryResolveById(bank.RightActionId, out request);
-
-				if (intent is UseSkillIntent skill)
-					return TryResolveSkill(bank, skill.Slot, out request);
 			}
 
 			request = default;
@@ -56,33 +62,13 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Resolution
 			bool primary = model.IsPrimaryModifierActive;
 			bool secondary = model.IsSecondaryModifierActive;
 
-			if (primary && secondary)
-				return PlayerActionBankSelector.DualModifier;
+			if (secondary)
+				return PlayerActionBankSelector.SecondaryModifier;
 
 			if (primary)
 				return PlayerActionBankSelector.PrimaryModifier;
 
-			if (secondary)
-				return PlayerActionBankSelector.SecondaryModifier;
-
 			return PlayerActionBankSelector.Base;
-		}
-
-		private bool TryResolveSkill(
-			PlayerActionBank bank,
-			int slot,
-			out ResolvedPlayerActionRequest request
-		)
-		{
-			var id = slot switch
-			{
-				1 => bank.SkillSlot1Id,
-				2 => bank.SkillSlot2Id,
-				3 => bank.SkillSlot3Id,
-				_ => PlayerActionId.None,
-			};
-
-			return TryResolveById(id, out request);
 		}
 
 		private bool TryResolveById(PlayerActionId id, out ResolvedPlayerActionRequest request)

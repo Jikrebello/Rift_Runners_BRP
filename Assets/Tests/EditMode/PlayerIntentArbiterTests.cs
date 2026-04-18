@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Assets.Scripts.Game.Characters.Core.Player.Intent;
@@ -24,172 +24,101 @@ namespace Assets.Tests.EditMode
 		}
 
 		[Test]
-		public void GroundedStanding_TertiaryPressed_DoesNotDropContextInteract()
+		public void GroundedStanding_CombatTertiary_DropsTraversalTertiaryAndKeepsCombatMeaning()
 		{
-			var model = new PlayerModel
-			{
-				TraversalMode = PlayerTraversalMode.Grounded,
-				GroundedSubMode = PlayerGroundedSubMode.Standing,
-			};
-
+			var model = NewGroundedStandingModel();
 			var world = new PlayerWorldSnapshot { IsGrounded = true };
 
 			var raw = new List<IPlayerIntent>
 			{
 				new MoveIntent(Vector2.One),
-				new ContextInteractIntent(),
+				new CombatTertiaryPressedIntent(),
 				new TertiaryPressedIntent(),
 			};
 
 			var result = PlayerIntentArbiter.Arbitrate(model, world, raw);
 
-			Assert.That(result.Any(x => x is MoveIntent), Is.True);
-			Assert.That(result.Any(x => x is ContextInteractIntent), Is.True);
-			Assert.That(result.Any(x => x is TertiaryPressedIntent), Is.True);
+			Assert.That(result.Any(x => x is CombatTertiaryPressedIntent), Is.True);
+			Assert.That(result.Any(x => x is TertiaryPressedIntent), Is.False);
 		}
 
 		[Test]
-		public void Sprinting_TertiaryPressed_DropsContextInteract_AndKeepsTraversalIntent()
+		public void Sprinting_TertiaryPressed_DropsCombatTertiaryAndKeepsTraversalMeaning()
 		{
 			var model = new PlayerModel
 			{
 				TraversalMode = PlayerTraversalMode.Grounded,
 				GroundedSubMode = PlayerGroundedSubMode.Sprinting,
 			};
-
 			var world = new PlayerWorldSnapshot { IsGrounded = true };
 
 			var raw = new List<IPlayerIntent>
 			{
 				new MoveIntent(Vector2.One),
-				new ContextInteractIntent(),
+				new CombatTertiaryPressedIntent(),
 				new TertiaryPressedIntent(),
+				new ContextInteractIntent(),
 			};
 
 			var result = PlayerIntentArbiter.Arbitrate(model, world, raw);
 
-			Assert.That(result.Any(x => x is MoveIntent), Is.True);
+			Assert.That(result.Any(x => x is CombatTertiaryPressedIntent), Is.False);
 			Assert.That(result.Any(x => x is TertiaryPressedIntent), Is.True);
 			Assert.That(result.Any(x => x is ContextInteractIntent), Is.False);
 		}
 
 		[Test]
-		public void Airborne_TertiaryPressed_DropsContextInteract_AndKeepsTraversalIntent()
+		public void Airborne_TertiaryPressed_DropsCombatTertiaryAndKeepsTraversalMeaning()
 		{
 			var model = new PlayerModel
 			{
 				TraversalMode = PlayerTraversalMode.Airborne,
 				GroundedSubMode = PlayerGroundedSubMode.Standing,
 			};
-
 			var world = new PlayerWorldSnapshot { IsGrounded = false };
 
 			var raw = new List<IPlayerIntent>
 			{
 				new MoveIntent(Vector2.One),
-				new ContextInteractIntent(),
+				new CombatTertiaryPressedIntent(),
 				new TertiaryPressedIntent(),
 			};
 
 			var result = PlayerIntentArbiter.Arbitrate(model, world, raw);
 
-			Assert.That(result.Any(x => x is MoveIntent), Is.True);
+			Assert.That(result.Any(x => x is CombatTertiaryPressedIntent), Is.False);
 			Assert.That(result.Any(x => x is TertiaryPressedIntent), Is.True);
-			Assert.That(result.Any(x => x is ContextInteractIntent), Is.False);
 		}
 
 		[Test]
-		public void UseSkillPresent_DropsTertiaryPressed_AndDropsContextInteract()
+		public void GroundedStanding_DirectContextInteractIntent_IsPreserved()
 		{
-			var model = new PlayerModel
-			{
-				TraversalMode = PlayerTraversalMode.Grounded,
-				GroundedSubMode = PlayerGroundedSubMode.Sprinting,
-			};
-
+			var model = NewGroundedStandingModel();
 			var world = new PlayerWorldSnapshot { IsGrounded = true };
 
 			var raw = new List<IPlayerIntent>
 			{
 				new MoveIntent(Vector2.One),
-				new TertiaryPressedIntent(),
 				new ContextInteractIntent(),
-				new UseSkillIntent(SkillBank.Secondary, 3),
-			};
-
-			var result = PlayerIntentArbiter.Arbitrate(model, world, raw);
-
-			Assert.That(result.Any(x => x is MoveIntent), Is.True);
-			Assert.That(result.Any(x => x is UseSkillIntent), Is.True);
-			Assert.That(result.Any(x => x is TertiaryPressedIntent), Is.False);
-			Assert.That(result.Any(x => x is ContextInteractIntent), Is.False);
-		}
-
-		[Test]
-		public void UseSkillPresent_DropsTertiaryPressed_AndContextInteract_EvenWhenNotSprinting()
-		{
-			var model = new PlayerModel
-			{
-				TraversalMode = PlayerTraversalMode.Grounded,
-				GroundedSubMode = PlayerGroundedSubMode.Standing,
-			};
-
-			var world = new PlayerWorldSnapshot { IsGrounded = true };
-
-			var raw = new List<IPlayerIntent>
-			{
-				new MoveIntent(Vector2.One),
-				new TertiaryPressedIntent(),
-				new ContextInteractIntent(),
-				new UseSkillIntent(SkillBank.Primary, 1),
-			};
-
-			var result = PlayerIntentArbiter.Arbitrate(model, world, raw);
-
-			Assert.That(result.Any(x => x is MoveIntent), Is.True);
-			Assert.That(result.Any(x => x is UseSkillIntent), Is.True);
-			Assert.That(result.Any(x => x is TertiaryPressedIntent), Is.False);
-			Assert.That(result.Any(x => x is ContextInteractIntent), Is.False);
-		}
-
-		[Test]
-		public void TertiaryPressed_WithoutConflict_IsPreserved()
-		{
-			var model = new PlayerModel
-			{
-				TraversalMode = PlayerTraversalMode.Grounded,
-				GroundedSubMode = PlayerGroundedSubMode.Standing,
-			};
-
-			var world = new PlayerWorldSnapshot { IsGrounded = true };
-
-			var raw = new List<IPlayerIntent>
-			{
-				new MoveIntent(Vector2.One),
 				new TertiaryPressedIntent(),
 			};
 
 			var result = PlayerIntentArbiter.Arbitrate(model, world, raw);
 
-			Assert.That(result.Any(x => x is MoveIntent), Is.True);
+			Assert.That(result.Any(x => x is ContextInteractIntent), Is.True);
 			Assert.That(result.Any(x => x is TertiaryPressedIntent), Is.True);
 		}
 
 		[Test]
 		public void Ordering_PutsCombatTraversalActionsBeforeMovement()
 		{
-			var model = new PlayerModel
-			{
-				TraversalMode = PlayerTraversalMode.Grounded,
-				GroundedSubMode = PlayerGroundedSubMode.Standing,
-			};
-
+			var model = NewGroundedStandingModel();
 			var world = new PlayerWorldSnapshot { IsGrounded = true };
 
 			var raw = new List<IPlayerIntent>
 			{
 				new MoveIntent(Vector2.One),
-				new LightAttackIntent(),
+				new PrimaryPressedIntent(),
 				new JumpPressedIntent(),
 				new ToggleWeaponStanceIntent(),
 			};
@@ -199,23 +128,17 @@ namespace Assets.Tests.EditMode
 			Assert.That(result.Count, Is.EqualTo(4));
 			Assert.That(result[0] is ToggleWeaponStanceIntent, Is.True);
 			Assert.That(result[1] is JumpPressedIntent, Is.True);
-			Assert.That(result[2] is LightAttackIntent, Is.True);
+			Assert.That(result[2] is PrimaryPressedIntent, Is.True);
 			Assert.That(result[3] is MoveIntent, Is.True);
 		}
 
 		[Test]
 		public void UnknownIntent_IsPreserved_ByAppendUnknown()
 		{
-			var model = new PlayerModel
-			{
-				TraversalMode = PlayerTraversalMode.Grounded,
-				GroundedSubMode = PlayerGroundedSubMode.Standing,
-			};
-
+			var model = NewGroundedStandingModel();
 			var world = new PlayerWorldSnapshot { IsGrounded = true };
 
 			var unknown = new UnknownIntent();
-
 			var raw = new List<IPlayerIntent> { new MoveIntent(Vector2.One), unknown };
 
 			var result = PlayerIntentArbiter.Arbitrate(model, world, raw);
@@ -224,31 +147,13 @@ namespace Assets.Tests.EditMode
 			Assert.That(result.Last(), Is.SameAs(unknown));
 		}
 
-		[Test]
-		public void MoveIntent_IsKept_EvenWhenOtherConflictingIntentsAreDropped()
+		private static PlayerModel NewGroundedStandingModel()
 		{
-			var model = new PlayerModel
+			return new PlayerModel
 			{
-				TraversalMode = PlayerTraversalMode.Airborne,
+				TraversalMode = PlayerTraversalMode.Grounded,
 				GroundedSubMode = PlayerGroundedSubMode.Standing,
 			};
-
-			var world = new PlayerWorldSnapshot { IsGrounded = false };
-
-			var raw = new List<IPlayerIntent>
-			{
-				new MoveIntent(Vector2.One),
-				new ContextInteractIntent(),
-				new TertiaryPressedIntent(),
-				new UseSkillIntent(SkillBank.Secondary, 2),
-			};
-
-			var result = PlayerIntentArbiter.Arbitrate(model, world, raw);
-
-			Assert.That(result.Any(x => x is MoveIntent), Is.True);
-			Assert.That(result.Any(x => x is UseSkillIntent), Is.True);
-			Assert.That(result.Any(x => x is TertiaryPressedIntent), Is.False);
-			Assert.That(result.Any(x => x is ContextInteractIntent), Is.False);
 		}
 
 		private sealed class UnknownIntent : IPlayerIntent { }

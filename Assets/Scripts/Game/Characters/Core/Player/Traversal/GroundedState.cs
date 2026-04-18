@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Numerics;
 using Assets.Scripts.Game.Characters.Core.Player.Intent;
 using Assets.Scripts.Game.Characters.Core.Player.Model;
 using Assets.Scripts.Game.Characters.Core.Player.Outputs;
@@ -69,9 +70,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 				}
 
 				if (intent is JumpPressedIntent)
-				{
 					HandleJumpPressed(model);
-				}
 			}
 		}
 
@@ -103,7 +102,9 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 
 			if (model.WantsJumpThisFrame)
 			{
-				outputs.Motor.RequestJump = true;
+				if (!TryRequestBlockDash(model, outputs))
+					outputs.Motor.RequestJump = true;
+
 				model.WantsJumpThisFrame = false;
 			}
 		}
@@ -114,6 +115,28 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 				return;
 
 			model.WantsJumpThisFrame = true;
+		}
+
+		private bool TryRequestBlockDash(PlayerModel model, PlayerOutputs outputs)
+		{
+			if (model.CombatPosture != PlayerCombatPosture.Block)
+				return false;
+
+			if (!model.IsSecondaryModifierActive)
+				return false;
+
+			if (_config.BlockDashRequiresMoveInput && model.MoveInput.LengthSquared() <= 0f)
+				return false;
+
+			if (model.MoveInput.LengthSquared() <= 0f)
+				return false;
+
+			outputs.Motor.RequestBlockDashThisFrame = true;
+			outputs.Motor.BlockDashDirection = Vector2.Normalize(model.MoveInput);
+			outputs.Animation.AddTrigger(AnimTrigger.BlockDash);
+			model.WantsJumpThisFrame = false;
+
+			return true;
 		}
 
 		private static void HandleMove(PlayerModel model, MoveIntent intent)

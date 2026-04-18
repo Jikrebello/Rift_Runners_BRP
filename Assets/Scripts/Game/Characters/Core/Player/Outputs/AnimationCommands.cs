@@ -27,13 +27,17 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Outputs
 		Roll,
 		LightAttack,
 		HeavyAttack,
-		Skill1,
-		Skill2,
-		Skill3,
+		SwordSkillPrimary,
+		SwordSkillSecondary,
+		SwordSkillTertiary,
+		ShieldSkillPrimary,
+		ShieldSkillSecondary,
+		ShieldSkillTertiary,
 		ContextInteract,
 		ContextGrabOrFire,
 		FundamentalBlockPrimary,
 		KickOffJump,
+		BlockDash,
 	}
 
 	public struct SetBoolCmd

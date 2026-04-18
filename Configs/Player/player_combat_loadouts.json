@@ -13,36 +13,22 @@
       },
       "ActionSet": {
         "BaseBank": {
-          "LightAttackId": "LightAttack",
-          "HeavyAttackId": "HeavyAttack",
+          "PrimaryFaceActionId": "LightAttack",
+          "SecondaryFaceActionId": "HeavyAttack",
+          "TertiaryFaceActionId": "ContextInteract",
           "RightActionId": "ContextGrab",
-          "SkillSlot1Id": "None",
-          "SkillSlot2Id": "None",
-          "SkillSlot3Id": "None"
         },
         "PrimaryModifierBank": {
-          "LightAttackId": "Skill1",
-          "HeavyAttackId": "Skill2",
-          "RightActionId": "Skill3",
-          "SkillSlot1Id": "Skill1",
-          "SkillSlot2Id": "Skill2",
-          "SkillSlot3Id": "Skill3"
+          "PrimaryFaceActionId": "SwordSkillPrimary",
+          "SecondaryFaceActionId": "SwordSkillSecondary",
+          "TertiaryFaceActionId": "SwordSkillTertiary",
+          "RightActionId": "ContextGrab"
         },
         "SecondaryModifierBank": {
-          "LightAttackId": "LightAttack",
-          "HeavyAttackId": "HeavyAttack",
+          "PrimaryFaceActionId": "ShieldSkillPrimary",
+          "SecondaryFaceActionId": "ShieldSkillSecondary",
+          "TertiaryFaceActionId": "ShieldSkillTertiary",
           "RightActionId": "FundamentalBlockPrimary",
-          "SkillSlot1Id": "None",
-          "SkillSlot2Id": "None",
-          "SkillSlot3Id": "None"
-        },
-        "DualModifierBank": {
-          "LightAttackId": "Skill1",
-          "HeavyAttackId": "Skill2",
-          "RightActionId": "FundamentalBlockPrimary",
-          "SkillSlot1Id": "Skill1",
-          "SkillSlot2Id": "Skill2",
-          "SkillSlot3Id": "Skill3"
         }
       }
     }

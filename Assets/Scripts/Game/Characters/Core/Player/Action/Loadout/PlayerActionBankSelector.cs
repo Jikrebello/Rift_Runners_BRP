@@ -5,6 +5,5 @@
 		Base = 0,
 		PrimaryModifier = 1,
 		SecondaryModifier = 2,
-		DualModifier = 3,
 	}
 }

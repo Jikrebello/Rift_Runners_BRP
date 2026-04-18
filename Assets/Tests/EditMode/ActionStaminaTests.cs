@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Game.Characters.Core.Player.Action.Definitions;
+using System.Linq;
+using Assets.Scripts.Game.Characters.Core.Player.Action.Definitions;
 using Assets.Scripts.Game.Characters.Core.Player.Action.Resolution;
 using Assets.Scripts.Game.Characters.Core.Player.Intent;
 using Assets.Scripts.Game.Characters.Core.Player.Model;
@@ -15,12 +16,7 @@ namespace Assets.Tests.EditMode
 		{
 			var resolver = new PlayerActionResolver();
 			var stamina = new StaminaSystem(NewStaminaConfig());
-			var model = new PlayerModel
-			{
-				TraversalMode = PlayerTraversalMode.Grounded,
-				Stamina = 25f,
-				MaxStamina = 100f,
-			};
+			var model = NewModel(25f);
 			var outputs = new PlayerOutputs();
 
 			Assert.That(
@@ -33,9 +29,10 @@ namespace Assets.Tests.EditMode
 			);
 
 			var approved = stamina.FilterAndApplyResolvedAction(model, outputs, request);
+			var resolved = approved.GetValueOrDefault();
 
 			Assert.That(approved.HasValue, Is.True);
-			Assert.That(approved.Value.Action.Id, Is.EqualTo(PlayerActionId.HeavyAttack));
+			Assert.That(resolved.Action.Id, Is.EqualTo(PlayerActionId.HeavyAttack));
 			Assert.That(model.Stamina, Is.EqualTo(25f));
 		}
 
@@ -44,12 +41,7 @@ namespace Assets.Tests.EditMode
 		{
 			var resolver = new PlayerActionResolver();
 			var stamina = new StaminaSystem(NewStaminaConfig());
-			var model = new PlayerModel
-			{
-				TraversalMode = PlayerTraversalMode.Grounded,
-				Stamina = 0f,
-				MaxStamina = 100f,
-			};
+			var model = NewModel(0f);
 			var outputs = new PlayerOutputs();
 
 			Assert.That(
@@ -68,121 +60,108 @@ namespace Assets.Tests.EditMode
 		}
 
 		[Test]
-		public void LightAttack_WhenStaminaAboveZero_IsApproved_AndDoesNotConsumeStamina()
+		public void SwordBankedSkill_WhenStaminaIsSufficient_IsApproved_AndConsumesStaminaOnce()
 		{
 			var resolver = new PlayerActionResolver();
 			var stamina = new StaminaSystem(NewStaminaConfig());
-			var model = new PlayerModel
-			{
-				TraversalMode = PlayerTraversalMode.Grounded,
-				Stamina = 25f,
-				MaxStamina = 100f,
-			};
+			var model = NewModel(25f);
+			model.PrimaryMode = PrimaryModifierMode.Active;
 			var outputs = new PlayerOutputs();
 
+			var filteredIntents = stamina.FilterAndApply(
+				model,
+				outputs,
+				new[] { new PrimaryPressedIntent() as IPlayerIntent },
+				dt: 0f
+			);
+
+			Assert.That(filteredIntents.Count, Is.EqualTo(1));
+			Assert.That(filteredIntents.Single() is PrimaryPressedIntent, Is.True);
 			Assert.That(
-				resolver.TryResolve(
-					model,
-					new[] { new LightAttackIntent() as IPlayerIntent },
-					out var request
-				),
+				resolver.TryResolve(model, filteredIntents, out var request),
 				Is.True
 			);
 
 			var approved = stamina.FilterAndApplyResolvedAction(model, outputs, request);
+			var resolved = approved.GetValueOrDefault();
 
 			Assert.That(approved.HasValue, Is.True);
-			Assert.That(approved.Value.Action.Id, Is.EqualTo(PlayerActionId.LightAttack));
-			Assert.That(model.Stamina, Is.EqualTo(25f));
+			Assert.That(
+				resolved.Action.Id,
+				Is.EqualTo(PlayerActionId.SwordSkillPrimary)
+			);
+			Assert.That(model.Stamina, Is.EqualTo(5f));
 		}
 
 		[Test]
-		public void LightAttack_WhenStaminaIsZero_IsDenied()
+		public void SwordBankedSkill_WhenStaminaTooLow_IsDenied_WithoutPartialSpend()
 		{
 			var resolver = new PlayerActionResolver();
 			var stamina = new StaminaSystem(NewStaminaConfig());
-			var model = new PlayerModel
-			{
-				TraversalMode = PlayerTraversalMode.Grounded,
-				Stamina = 0f,
-				MaxStamina = 100f,
-			};
+			var model = NewModel(5f);
+			model.PrimaryMode = PrimaryModifierMode.Active;
 			var outputs = new PlayerOutputs();
 
+			var filteredIntents = stamina.FilterAndApply(
+				model,
+				outputs,
+				new[] { new PrimaryPressedIntent() as IPlayerIntent },
+				dt: 0f
+			);
+
+			Assert.That(filteredIntents.Count, Is.EqualTo(1));
 			Assert.That(
-				resolver.TryResolve(
-					model,
-					new[] { new LightAttackIntent() as IPlayerIntent },
-					out var request
-				),
+				resolver.TryResolve(model, filteredIntents, out var request),
 				Is.True
 			);
 
 			var approved = stamina.FilterAndApplyResolvedAction(model, outputs, request);
 
 			Assert.That(approved.HasValue, Is.False);
+			Assert.That(model.Stamina, Is.EqualTo(5f));
+		}
+
+		[Test]
+		public void ShieldBankedSkill_WhenStaminaIsSufficient_IsApproved_AndConsumesStaminaOnce()
+		{
+			var resolver = new PlayerActionResolver();
+			var stamina = new StaminaSystem(NewStaminaConfig());
+			var model = NewModel(30f);
+			model.SecondaryMode = SecondaryModifierMode.Active;
+			var outputs = new PlayerOutputs();
+
+			var filteredIntents = stamina.FilterAndApply(
+				model,
+				outputs,
+				new[] { new CombatTertiaryPressedIntent() as IPlayerIntent },
+				dt: 0f
+			);
+
+			Assert.That(filteredIntents.Count, Is.EqualTo(1));
+			Assert.That(
+				resolver.TryResolve(model, filteredIntents, out var request),
+				Is.True
+			);
+
+			var approved = stamina.FilterAndApplyResolvedAction(model, outputs, request);
+			var resolved = approved.GetValueOrDefault();
+
+			Assert.That(approved.HasValue, Is.True);
+			Assert.That(
+				resolved.Action.Id,
+				Is.EqualTo(PlayerActionId.ShieldSkillTertiary)
+			);
 			Assert.That(model.Stamina, Is.EqualTo(0f));
 		}
 
-		[Test]
-		public void SkillAction_WhenStaminaIsSufficient_IsApproved_AndConsumesStamina()
+		private static PlayerModel NewModel(float stamina)
 		{
-			var resolver = new PlayerActionResolver();
-			var stamina = new StaminaSystem(NewStaminaConfig());
-			var model = new PlayerModel
+			return new PlayerModel
 			{
 				TraversalMode = PlayerTraversalMode.Grounded,
-				Stamina = 25f,
+				Stamina = stamina,
 				MaxStamina = 100f,
 			};
-			var outputs = new PlayerOutputs();
-
-			model.CombatLoadout.ActionSet.BaseBank.SkillSlot1Id = PlayerActionId.Skill1;
-
-			Assert.That(
-				resolver.TryResolve(
-					model,
-					new[] { new UseSkillIntent(SkillBank.Primary, 1) as IPlayerIntent },
-					out var request
-				),
-				Is.True
-			);
-
-			var approved = stamina.FilterAndApplyResolvedAction(model, outputs, request);
-
-			Assert.That(approved.HasValue, Is.True);
-			Assert.That(approved.Value.Action.Id, Is.EqualTo(PlayerActionId.Skill1));
-			Assert.That(model.Stamina, Is.EqualTo(5f));
-		}
-
-		[Test]
-		public void SkillAction_WhenStaminaTooLow_IsDenied()
-		{
-			var resolver = new PlayerActionResolver();
-			var stamina = new StaminaSystem(NewStaminaConfig());
-			var model = new PlayerModel
-			{
-				TraversalMode = PlayerTraversalMode.Grounded,
-				Stamina = 5f,
-				MaxStamina = 100f,
-			};
-			var outputs = new PlayerOutputs();
-
-			model.CombatLoadout.ActionSet.BaseBank.SkillSlot1Id = PlayerActionId.Skill1;
-
-			Assert.That(
-				resolver.TryResolve(
-					model,
-					new[] { new UseSkillIntent(SkillBank.Primary, 1) as IPlayerIntent },
-					out var request
-				),
-				Is.True
-			);
-
-			var approved = stamina.FilterAndApplyResolvedAction(model, outputs, request);
-
-			Assert.That(approved.HasValue, Is.False);
-			Assert.That(model.Stamina, Is.EqualTo(5f));
 		}
 
 		private static StaminaConfig NewStaminaConfig()

@@ -7,12 +7,15 @@
 		LightAttack2 = 2,
 		LightAttack3 = 3,
 		HeavyAttack = 4,
-		Skill1 = 5,
-		Skill2 = 6,
-		Skill3 = 7,
+		SwordSkillPrimary = 5,
+		SwordSkillSecondary = 6,
+		SwordSkillTertiary = 7,
 		ContextInteract = 8,
 		ContextGrab = 9,
 		FundamentalRangedPrimary = 10,
 		FundamentalBlockPrimary = 11,
+		ShieldSkillPrimary = 12,
+		ShieldSkillSecondary = 13,
+		ShieldSkillTertiary = 14,
 	}
 }

@@ -41,8 +41,19 @@ namespace Assets.Tests.EditMode
 				Is.EqualTo(PlayerActionBufferWindow.RecoveryOnly)
 			);
 
-			var skill1 = registry.Get(PlayerActionId.Skill1);
-			Assert.That(skill1.Execution.StaminaCost, Is.EqualTo(20f));
+			var swordPrimary = registry.Get(PlayerActionId.SwordSkillPrimary);
+			Assert.That(swordPrimary.Execution.StaminaCost, Is.EqualTo(20f));
+			Assert.That(
+				swordPrimary.AnimationTrigger,
+				Is.EqualTo(AnimTrigger.SwordSkillPrimary)
+			);
+
+			var shieldTertiary = registry.Get(PlayerActionId.ShieldSkillTertiary);
+			Assert.That(shieldTertiary.Execution.StaminaCost, Is.EqualTo(30f));
+			Assert.That(
+				shieldTertiary.AnimationTrigger,
+				Is.EqualTo(AnimTrigger.ShieldSkillTertiary)
+			);
 
 			var contextInteract = registry.Get(PlayerActionId.ContextInteract);
 			Assert.That(contextInteract.Source, Is.EqualTo(PlayerActionSource.Context));
