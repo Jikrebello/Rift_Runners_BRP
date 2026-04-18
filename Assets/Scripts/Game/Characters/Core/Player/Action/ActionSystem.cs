@@ -1,3 +1,4 @@
+using System.Numerics;
 using Assets.Scripts.Game.Characters.Core.Player.Action.Definitions;
 using Assets.Scripts.Game.Characters.Core.Player.Action.Resolution;
 using Assets.Scripts.Game.Characters.Core.Player.Action.Runtime;
@@ -178,6 +179,15 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action
 					}
 					break;
 			}
+
+			if (!model.ActionRuntime.HasActiveAction)
+				return;
+
+			ApplyMotorProfile(
+				model,
+				outputs,
+				_definitions.Get(model.ActionRuntime.CurrentActionId)
+			);
 		}
 
 		private static void AdvanceToPhase(
@@ -211,6 +221,27 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action
 				return;
 
 			StartAction(model, outputs, nextAction);
+		}
+
+		private static void ApplyMotorProfile(
+			PlayerModel model,
+			PlayerOutputs outputs,
+			PlayerActionDefinition action
+		)
+		{
+			if (!action.Motor.IsActiveDuring(model.ActionRuntime.CurrentPhase))
+				return;
+
+			switch (action.Motor.Mode)
+			{
+				case PlayerActionMotorMode.MoveInputAdvance:
+					if (model.MoveInput.LengthSquared() <= 0f)
+						return;
+
+					outputs.Motor.ActionMove =
+						Vector2.Normalize(model.MoveInput) * action.Motor.MoveMultiplier;
+					break;
+			}
 		}
 	}
 }

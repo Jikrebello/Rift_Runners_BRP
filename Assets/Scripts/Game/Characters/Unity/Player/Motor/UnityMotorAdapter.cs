@@ -28,7 +28,7 @@ namespace Assets.Scripts.Game.Characters.Unity.Player.Motor
 
 		public void Apply(MotorCommands motor, float dt)
 		{
-			var planar = motor.DesiredMove.ToUnity();
+			var planar = motor.ResolvePlanarMove().ToUnity();
 			var moveWorld = _transform.forward * planar.y + _transform.right * planar.x;
 			moveWorld *= _cfg.MoveSpeed;
 

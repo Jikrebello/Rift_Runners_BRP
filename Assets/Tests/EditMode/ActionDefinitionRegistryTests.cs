@@ -41,12 +41,14 @@ namespace Assets.Tests.EditMode
 				Is.EqualTo(PlayerActionBufferWindow.RecoveryOnly)
 			);
 
-			var swordPrimary = registry.Get(PlayerActionId.SwordSkillPrimary);
-			Assert.That(swordPrimary.Execution.StaminaCost, Is.EqualTo(20f));
+			var swordPrimary = registry.Get(PlayerActionId.SwordAdvanceSlash);
+			Assert.That(swordPrimary.Execution.StaminaCost, Is.EqualTo(25f));
+			Assert.That(swordPrimary.AnimationTrigger, Is.EqualTo(AnimTrigger.SwordAdvanceSlash));
 			Assert.That(
-				swordPrimary.AnimationTrigger,
-				Is.EqualTo(AnimTrigger.SwordSkillPrimary)
+				swordPrimary.Motor.Mode,
+				Is.EqualTo(PlayerActionMotorMode.MoveInputAdvance)
 			);
+			Assert.That(swordPrimary.Motor.Phase, Is.EqualTo(PlayerActionPhase.Active));
 
 			var shieldTertiary = registry.Get(PlayerActionId.ShieldSkillTertiary);
 			Assert.That(shieldTertiary.Execution.StaminaCost, Is.EqualTo(30f));
@@ -65,6 +67,16 @@ namespace Assets.Tests.EditMode
 			Assert.That(
 				blockPrimary.AnimationTrigger,
 				Is.EqualTo(AnimTrigger.FundamentalBlockPrimary)
+			);
+
+			var shieldGuardBash = registry.Get(PlayerActionId.ShieldGuardBash);
+			Assert.That(shieldGuardBash.Execution.StaminaCost, Is.EqualTo(15f));
+			Assert.That(
+				shieldGuardBash.CancelPolicy.AllowsCancelTo(
+					PlayerActionId.FundamentalBlockPrimary,
+					PlayerActionPhase.Recovery
+				),
+				Is.True
 			);
 		}
 
@@ -181,6 +193,34 @@ namespace Assets.Tests.EditMode
 			Assert.That(
 				GetBuildErrors(missingBufferWindow),
 				Has.Some.Contains("must specify a non-None buffer window when CanBuffer is true")
+			);
+		}
+
+		[Test]
+		public void CatalogBuilder_RejectsInvalidMotorProfile()
+		{
+			var invalidMode = PlayerActionDefinitionCatalogLoader.CreateDefaultCatalog();
+			invalidMode.Actions[4].Motor = new PlayerActionMotorProfileConfig
+			{
+				Mode = "DashForward",
+				Phase = "Active",
+				MoveMultiplier = 1.25f,
+			};
+			Assert.That(
+				GetBuildErrors(invalidMode),
+				Has.Some.Contains("Motor.Mode value 'DashForward' is not recognized.")
+			);
+
+			var invalidMultiplier = PlayerActionDefinitionCatalogLoader.CreateDefaultCatalog();
+			invalidMultiplier.Actions[4].Motor = new PlayerActionMotorProfileConfig
+			{
+				Mode = "MoveInputAdvance",
+				Phase = "Active",
+				MoveMultiplier = 0f,
+			};
+			Assert.That(
+				GetBuildErrors(invalidMultiplier),
+				Has.Some.Contains("Motor.MoveMultiplier must be > 0.")
 			);
 		}
 

@@ -19,13 +19,13 @@
           "RightActionId": "ContextGrab",
         },
         "PrimaryModifierBank": {
-          "PrimaryFaceActionId": "SwordSkillPrimary",
+          "PrimaryFaceActionId": "SwordAdvanceSlash",
           "SecondaryFaceActionId": "SwordSkillSecondary",
           "TertiaryFaceActionId": "SwordSkillTertiary",
           "RightActionId": "ContextGrab"
         },
         "SecondaryModifierBank": {
-          "PrimaryFaceActionId": "ShieldSkillPrimary",
+          "PrimaryFaceActionId": "ShieldGuardBash",
           "SecondaryFaceActionId": "ShieldSkillSecondary",
           "TertiaryFaceActionId": "ShieldSkillTertiary",
           "RightActionId": "FundamentalBlockPrimary",

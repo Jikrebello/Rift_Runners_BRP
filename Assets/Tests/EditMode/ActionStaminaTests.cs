@@ -77,20 +77,14 @@ namespace Assets.Tests.EditMode
 
 			Assert.That(filteredIntents.Count, Is.EqualTo(1));
 			Assert.That(filteredIntents.Single() is PrimaryPressedIntent, Is.True);
-			Assert.That(
-				resolver.TryResolve(model, filteredIntents, out var request),
-				Is.True
-			);
+			Assert.That(resolver.TryResolve(model, filteredIntents, out var request), Is.True);
 
 			var approved = stamina.FilterAndApplyResolvedAction(model, outputs, request);
 			var resolved = approved.GetValueOrDefault();
 
 			Assert.That(approved.HasValue, Is.True);
-			Assert.That(
-				resolved.Action.Id,
-				Is.EqualTo(PlayerActionId.SwordSkillPrimary)
-			);
-			Assert.That(model.Stamina, Is.EqualTo(5f));
+			Assert.That(resolved.Action.Id, Is.EqualTo(PlayerActionId.SwordAdvanceSlash));
+			Assert.That(model.Stamina, Is.EqualTo(0f));
 		}
 
 		[Test]
@@ -110,10 +104,7 @@ namespace Assets.Tests.EditMode
 			);
 
 			Assert.That(filteredIntents.Count, Is.EqualTo(1));
-			Assert.That(
-				resolver.TryResolve(model, filteredIntents, out var request),
-				Is.True
-			);
+			Assert.That(resolver.TryResolve(model, filteredIntents, out var request), Is.True);
 
 			var approved = stamina.FilterAndApplyResolvedAction(model, outputs, request);
 
@@ -122,35 +113,29 @@ namespace Assets.Tests.EditMode
 		}
 
 		[Test]
-		public void ShieldBankedSkill_WhenStaminaIsSufficient_IsApproved_AndConsumesStaminaOnce()
+		public void ShieldGuardBash_WhenStaminaIsSufficient_IsApproved_AndConsumesStaminaOnce()
 		{
 			var resolver = new PlayerActionResolver();
 			var stamina = new StaminaSystem(NewStaminaConfig());
-			var model = NewModel(30f);
+			var model = NewModel(15f);
 			model.SecondaryMode = SecondaryModifierMode.Active;
 			var outputs = new PlayerOutputs();
 
 			var filteredIntents = stamina.FilterAndApply(
 				model,
 				outputs,
-				new[] { new CombatTertiaryPressedIntent() as IPlayerIntent },
+				new[] { new PrimaryPressedIntent() as IPlayerIntent },
 				dt: 0f
 			);
 
 			Assert.That(filteredIntents.Count, Is.EqualTo(1));
-			Assert.That(
-				resolver.TryResolve(model, filteredIntents, out var request),
-				Is.True
-			);
+			Assert.That(resolver.TryResolve(model, filteredIntents, out var request), Is.True);
 
 			var approved = stamina.FilterAndApplyResolvedAction(model, outputs, request);
 			var resolved = approved.GetValueOrDefault();
 
 			Assert.That(approved.HasValue, Is.True);
-			Assert.That(
-				resolved.Action.Id,
-				Is.EqualTo(PlayerActionId.ShieldSkillTertiary)
-			);
+			Assert.That(resolved.Action.Id, Is.EqualTo(PlayerActionId.ShieldGuardBash));
 			Assert.That(model.Stamina, Is.EqualTo(0f));
 		}
 

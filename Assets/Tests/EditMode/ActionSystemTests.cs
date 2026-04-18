@@ -11,6 +11,8 @@ namespace Assets.Tests.EditMode
 {
 	public sealed class ActionSystemTests
 	{
+		private static readonly System.Numerics.Vector2 FullMoveInput = new(1f, 0f);
+
 		[Test]
 		public void LightAttack_WhenIdle_StartsImmediately()
 		{
@@ -167,10 +169,7 @@ namespace Assets.Tests.EditMode
 		public void BufferedAction_DoesNotGetOverwritten_WhenBufferAlreadyOccupied()
 		{
 			var system = NewSystem();
-			var model = new PlayerModel
-			{
-				PrimaryMode = PrimaryModifierMode.Active,
-			};
+			var model = new PlayerModel { PrimaryMode = PrimaryModifierMode.Active };
 			var outputs = new PlayerOutputs();
 
 			system.Step(
@@ -502,7 +501,7 @@ namespace Assets.Tests.EditMode
 
 			Assert.That(
 				model.ActionRuntime.CurrentActionId,
-				Is.EqualTo(PlayerActionId.SwordSkillPrimary)
+				Is.EqualTo(PlayerActionId.SwordAdvanceSlash)
 			);
 			Assert.That(
 				model.ActionRuntime.BufferedRequestedActionId,
@@ -519,7 +518,7 @@ namespace Assets.Tests.EditMode
 
 			Assert.That(
 				model.ActionRuntime.CurrentActionId,
-				Is.EqualTo(PlayerActionId.SwordSkillPrimary)
+				Is.EqualTo(PlayerActionId.SwordAdvanceSlash)
 			);
 			Assert.That(
 				model.ActionRuntime.BufferedRequestedActionId,
@@ -778,9 +777,7 @@ namespace Assets.Tests.EditMode
 				Is.EqualTo(PlayerActionId.FundamentalBlockPrimary)
 			);
 			Assert.That(
-				outputs.Animation.Triggers.Any(x =>
-					x.Param == AnimTrigger.FundamentalBlockPrimary
-				),
+				outputs.Animation.Triggers.Any(x => x.Param == AnimTrigger.FundamentalBlockPrimary),
 				Is.True
 			);
 
@@ -790,14 +787,102 @@ namespace Assets.Tests.EditMode
 
 			outputs.Clear();
 			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.11f);
-			Assert.That(
-				model.ActionRuntime.CurrentPhase,
-				Is.EqualTo(PlayerActionPhase.Recovery)
-			);
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Recovery));
 
 			outputs.Clear();
 			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.19f);
 			Assert.That(model.ActionRuntime.HasActiveAction, Is.False);
+		}
+
+		[Test]
+		public void SwordAdvanceSlash_ActivePhase_WithMoveInput_RequestsActionMove()
+		{
+			var system = NewSystem();
+			var model = new PlayerModel
+			{
+				TraversalMode = PlayerTraversalMode.Grounded,
+				PrimaryMode = PrimaryModifierMode.Active,
+				MoveInput = FullMoveInput,
+			};
+			var outputs = new PlayerOutputs();
+
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new PrimaryPressedIntent() },
+				dt: 0f
+			);
+
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.17f);
+
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.SwordAdvanceSlash)
+			);
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Active));
+			Assert.That(
+				outputs.Motor.ActionMove,
+				Is.EqualTo(
+					System.Numerics.Vector2.Normalize(FullMoveInput)
+						* PlayerActionDefinitions.SwordAdvanceSlash.Motor.MoveMultiplier
+				)
+			);
+		}
+
+		[Test]
+		public void SwordAdvanceSlash_StartupAndRecovery_DoNotRequestActionMove()
+		{
+			var system = NewSystem();
+			var model = new PlayerModel
+			{
+				TraversalMode = PlayerTraversalMode.Grounded,
+				PrimaryMode = PrimaryModifierMode.Active,
+				MoveInput = FullMoveInput,
+			};
+			var outputs = new PlayerOutputs();
+
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new PrimaryPressedIntent() },
+				dt: 0f
+			);
+
+			Assert.That(outputs.Motor.ActionMove, Is.EqualTo(System.Numerics.Vector2.Zero));
+
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.17f);
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.11f);
+
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Recovery));
+			Assert.That(outputs.Motor.ActionMove, Is.EqualTo(System.Numerics.Vector2.Zero));
+		}
+
+		[Test]
+		public void SwordAdvanceSlash_ActivePhase_WithoutMoveInput_DoesNotRequestActionMove()
+		{
+			var system = NewSystem();
+			var model = new PlayerModel
+			{
+				TraversalMode = PlayerTraversalMode.Grounded,
+				PrimaryMode = PrimaryModifierMode.Active,
+			};
+			var outputs = new PlayerOutputs();
+
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new PrimaryPressedIntent() },
+				dt: 0f
+			);
+
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.17f);
+
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Active));
+			Assert.That(outputs.Motor.ActionMove, Is.EqualTo(System.Numerics.Vector2.Zero));
 		}
 
 		[Test]

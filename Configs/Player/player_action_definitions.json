@@ -90,14 +90,14 @@
       "CancelPolicy": null
     },
     {
-      "Id": "SwordSkillPrimary",
+      "Id": "SwordAdvanceSlash",
       "Source": "Skill",
       "Category": "Skill",
-      "AnimationTrigger": "SwordSkillPrimary",
+      "AnimationTrigger": "SwordAdvanceSlash",
       "Timing": {
-        "StartupSeconds": 0.15,
-        "ActiveSeconds": 0.12,
-        "RecoverySeconds": 0.3
+        "StartupSeconds": 0.16,
+        "ActiveSeconds": 0.1,
+        "RecoverySeconds": 0.32
       },
       "Availability": {
         "RequiresGrounded": true,
@@ -105,8 +105,13 @@
       },
       "Execution": {
         "CanBuffer": false,
-        "StaminaCost": 20.0,
+        "StaminaCost": 25.0,
         "BufferWindow": "None"
+      },
+      "Motor": {
+        "Mode": "MoveInputAdvance",
+        "Phase": "Active",
+        "MoveMultiplier": 1.25
       },
       "CancelPolicy": null
     },
@@ -237,14 +242,14 @@
       "CancelPolicy": null
     },
     {
-      "Id": "ShieldSkillPrimary",
+      "Id": "ShieldGuardBash",
       "Source": "Skill",
       "Category": "Skill",
-      "AnimationTrigger": "ShieldSkillPrimary",
+      "AnimationTrigger": "ShieldGuardBash",
       "Timing": {
-        "StartupSeconds": 0.12,
-        "ActiveSeconds": 0.1,
-        "RecoverySeconds": 0.24
+        "StartupSeconds": 0.1,
+        "ActiveSeconds": 0.08,
+        "RecoverySeconds": 0.2
       },
       "Availability": {
         "RequiresGrounded": true,
@@ -252,10 +257,15 @@
       },
       "Execution": {
         "CanBuffer": false,
-        "StaminaCost": 20.0,
+        "StaminaCost": 15.0,
         "BufferWindow": "None"
       },
-      "CancelPolicy": null
+      "CancelPolicy": {
+        "Window": "RecoveryOnly",
+        "AllowedTargetIds": [
+          "FundamentalBlockPrimary"
+        ]
+      }
     },
     {
       "Id": "ShieldSkillSecondary",

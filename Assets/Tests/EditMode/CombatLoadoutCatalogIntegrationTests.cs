@@ -73,9 +73,7 @@ namespace Assets.Tests.EditMode
 			);
 			Assert.That(
 				outputs.Animation.Triggers,
-				Has.Some.Matches<TriggerCmd>(x =>
-					x.Param == AnimTrigger.ShieldSkillTertiary
-				)
+				Has.Some.Matches<TriggerCmd>(x => x.Param == AnimTrigger.ShieldSkillTertiary)
 			);
 		}
 
@@ -112,9 +110,7 @@ namespace Assets.Tests.EditMode
 			);
 			Assert.That(
 				outputs.Animation.Triggers,
-				Has.Some.Matches<TriggerCmd>(x =>
-					x.Param == AnimTrigger.FundamentalBlockPrimary
-				)
+				Has.Some.Matches<TriggerCmd>(x => x.Param == AnimTrigger.FundamentalBlockPrimary)
 			);
 		}
 

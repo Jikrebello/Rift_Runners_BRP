@@ -133,6 +133,8 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Traversal
 
 			outputs.Motor.RequestBlockDashThisFrame = true;
 			outputs.Motor.BlockDashDirection = Vector2.Normalize(model.MoveInput);
+			outputs.Motor.BlockDashMove =
+				outputs.Motor.BlockDashDirection * _config.BlockDashMoveMultiplier;
 			outputs.Animation.AddTrigger(AnimTrigger.BlockDash);
 			model.WantsJumpThisFrame = false;
 

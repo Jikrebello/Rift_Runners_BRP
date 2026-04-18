@@ -12,11 +12,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Intent
 			IReadOnlyList<IPlayerIntent> rawIntents
 		)
 		{
-			ScanFrame(
-				rawIntents,
-				out bool hasCombatTertiaryPressed,
-				out bool hasTertiaryPressed
-			);
+			ScanFrame(rawIntents, out bool hasCombatTertiaryPressed, out bool hasTertiaryPressed);
 
 			bool circleIsTraversal = ComputeCircleIsTraversal(model, hasTertiaryPressed);
 
@@ -155,11 +151,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Intent
 			)
 				return true;
 
-			if (
-				!circleIsTraversal
-				&& hasCombatTertiaryPressed
-				&& intent is TertiaryPressedIntent
-			)
+			if (!circleIsTraversal && hasCombatTertiaryPressed && intent is TertiaryPressedIntent)
 				return true;
 
 			return false;

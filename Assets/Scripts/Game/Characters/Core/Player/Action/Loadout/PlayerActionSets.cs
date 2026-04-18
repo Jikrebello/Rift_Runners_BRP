@@ -39,7 +39,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Loadout
 
 		private static void ConfigurePrimaryModifierBank(PlayerActionBank bank)
 		{
-			bank.PrimaryFaceActionId = PlayerActionId.SwordSkillPrimary;
+			bank.PrimaryFaceActionId = PlayerActionId.SwordAdvanceSlash;
 			bank.SecondaryFaceActionId = PlayerActionId.SwordSkillSecondary;
 			bank.TertiaryFaceActionId = PlayerActionId.SwordSkillTertiary;
 			bank.RightActionId = PlayerActionId.ContextGrab;
@@ -47,7 +47,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Loadout
 
 		private static void ConfigureSecondaryModifierBank(PlayerActionBank bank)
 		{
-			bank.PrimaryFaceActionId = PlayerActionId.ShieldSkillPrimary;
+			bank.PrimaryFaceActionId = PlayerActionId.ShieldGuardBash;
 			bank.SecondaryFaceActionId = PlayerActionId.ShieldSkillSecondary;
 			bank.TertiaryFaceActionId = PlayerActionId.ShieldSkillTertiary;
 			bank.RightActionId = PlayerActionId.FundamentalBlockPrimary;

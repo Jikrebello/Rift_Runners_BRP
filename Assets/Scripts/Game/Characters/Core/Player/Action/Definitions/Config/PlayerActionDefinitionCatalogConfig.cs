@@ -20,6 +20,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions.Config
 			new PlayerActionAvailabilityConfig();
 		public PlayerActionExecutionPolicyConfig Execution { get; set; } =
 			new PlayerActionExecutionPolicyConfig();
+		public PlayerActionMotorProfileConfig Motor { get; set; }
 		public PlayerActionCancelPolicyConfig CancelPolicy { get; set; }
 	}
 
@@ -47,5 +48,12 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions.Config
 	{
 		public string Window { get; set; } = string.Empty;
 		public List<string> AllowedTargetIds { get; set; } = new List<string>();
+	}
+
+	public sealed class PlayerActionMotorProfileConfig
+	{
+		public string Mode { get; set; } = string.Empty;
+		public string Phase { get; set; } = string.Empty;
+		public float MoveMultiplier { get; set; }
 	}
 }

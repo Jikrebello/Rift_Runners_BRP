@@ -1,6 +1,7 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.Game.Characters.Core.Player.Action.Runtime;
 using Assets.Scripts.Game.Characters.Core.Player.Outputs;
 
 namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions.Config
@@ -155,6 +156,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions.Config
 						parsed.Execution.StaminaCost,
 						parsed.Execution.BufferWindow
 					),
+					BuildMotorProfile(parsed.Motor),
 					BuildCancelPolicy(parsed.Cancel)
 				);
 			}
@@ -168,6 +170,14 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions.Config
 				return PlayerActionCancelPolicy.None;
 
 			return new PlayerActionCancelPolicy(cancel.Window, cancel.AllowedTargetIds);
+		}
+
+		private static PlayerActionMotorProfile BuildMotorProfile(ParsedMotor motor)
+		{
+			if (motor.Mode == PlayerActionMotorMode.None)
+				return PlayerActionMotorProfile.None;
+
+			return new PlayerActionMotorProfile(motor.Mode, motor.Phase, motor.MoveMultiplier);
 		}
 
 		private static PlayerActionDefinitionConfig CreateActionConfig(
@@ -197,7 +207,23 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions.Config
 					StaminaCost = definition.Execution.StaminaCost,
 					BufferWindow = definition.Execution.BufferWindow.ToString(),
 				},
+				Motor = CreateMotorConfig(definition.Motor),
 				CancelPolicy = CreateCancelPolicyConfig(definition.CancelPolicy),
+			};
+		}
+
+		private static PlayerActionMotorProfileConfig CreateMotorConfig(
+			PlayerActionMotorProfile motor
+		)
+		{
+			if (motor.Mode == PlayerActionMotorMode.None)
+				return null;
+
+			return new PlayerActionMotorProfileConfig
+			{
+				Mode = motor.Mode.ToString(),
+				Phase = motor.Phase.ToString(),
+				MoveMultiplier = motor.MoveMultiplier,
 			};
 		}
 
@@ -262,6 +288,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions.Config
 
 			var timing = ParseTiming(actionConfig.Timing, location, errors);
 			var execution = ParseExecution(actionConfig.Execution, location, errors);
+			var motor = ParseMotorProfile(actionConfig.Motor, location, errors);
 			var cancel = ParseCancelPolicy(actionConfig.CancelPolicy, location, errors);
 
 			if (errors.Count > startErrorCount)
@@ -280,6 +307,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions.Config
 					AllowWhileAirborne = actionConfig.Availability.AllowWhileAirborne,
 				},
 				Execution = execution,
+				Motor = motor,
 				Cancel = cancel,
 			};
 
@@ -493,6 +521,58 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions.Config
 			return cancel;
 		}
 
+		private static ParsedMotor ParseMotorProfile(
+			PlayerActionMotorProfileConfig motorConfig,
+			string location,
+			List<string> errors
+		)
+		{
+			var motor = new ParsedMotor
+			{
+				Mode = PlayerActionMotorMode.None,
+				Phase = PlayerActionPhase.None,
+				MoveMultiplier = 0f,
+			};
+
+			if (motorConfig == null)
+				return motor;
+
+			TryParseRequiredEnum(
+				motorConfig.Mode,
+				location + " Motor.Mode",
+				delegate(PlayerActionMotorMode value)
+				{
+					return value != PlayerActionMotorMode.None;
+				},
+				"'None' is not a valid motor mode.",
+				out motor.Mode,
+				errors
+			);
+
+			TryParseRequiredEnum(
+				motorConfig.Phase,
+				location + " Motor.Phase",
+				delegate(PlayerActionPhase value)
+				{
+					return value != PlayerActionPhase.None;
+				},
+				"'None' is not a valid motor phase.",
+				out motor.Phase,
+				errors
+			);
+
+			if (motorConfig.MoveMultiplier <= 0f)
+			{
+				errors.Add(location + " Motor.MoveMultiplier must be > 0.");
+			}
+			else
+			{
+				motor.MoveMultiplier = motorConfig.MoveMultiplier;
+			}
+
+			return motor;
+		}
+
 		private static PlayerActionId[] ParseCancelTargets(
 			List<string> targetIds,
 			string location,
@@ -572,6 +652,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions.Config
 			public ParsedTiming Timing;
 			public ParsedAvailability Availability;
 			public ParsedExecution Execution;
+			public ParsedMotor Motor;
 			public ParsedCancelPolicy Cancel;
 		}
 
@@ -601,6 +682,13 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions.Config
 			public bool CanBuffer;
 			public float StaminaCost;
 			public PlayerActionBufferWindow BufferWindow;
+		}
+
+		private struct ParsedMotor
+		{
+			public PlayerActionMotorMode Mode;
+			public PlayerActionPhase Phase;
+			public float MoveMultiplier;
 		}
 
 		private struct ParsedCancelPolicy

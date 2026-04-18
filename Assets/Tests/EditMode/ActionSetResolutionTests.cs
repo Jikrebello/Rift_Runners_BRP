@@ -96,7 +96,7 @@ namespace Assets.Tests.EditMode
 				new List<IPlayerIntent> { new PrimaryPressedIntent() },
 				dt: 0f
 			);
-			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.SwordSkillPrimary);
+			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.SwordAdvanceSlash);
 
 			model.ActionRuntime.ClearCurrent();
 			outputs.Clear();
@@ -133,7 +133,7 @@ namespace Assets.Tests.EditMode
 				new List<IPlayerIntent> { new PrimaryPressedIntent() },
 				dt: 0f
 			);
-			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.ShieldSkillPrimary);
+			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.ShieldGuardBash);
 
 			model.ActionRuntime.ClearCurrent();
 			outputs.Clear();
@@ -172,7 +172,7 @@ namespace Assets.Tests.EditMode
 				dt: 0f
 			);
 
-			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.ShieldSkillPrimary);
+			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.ShieldGuardBash);
 		}
 
 		[Test]
@@ -228,8 +228,8 @@ namespace Assets.Tests.EditMode
 			);
 
 			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.FundamentalBlockPrimary);
-			outputs.Animation.Triggers.ShouldContain(
-				x => x.Param == AnimTrigger.FundamentalBlockPrimary
+			outputs.Animation.Triggers.ShouldContain(x =>
+				x.Param == AnimTrigger.FundamentalBlockPrimary
 			);
 		}
 

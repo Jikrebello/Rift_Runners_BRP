@@ -178,6 +178,94 @@ namespace Assets.Tests.EditMode
 			);
 		}
 
+		[Test]
+		public void ShieldGuardBash_RecoveryRightActionRequest_CancelsImmediatelyIntoFundamentalBlockPrimary()
+		{
+			var system = NewSystem();
+			var model = new PlayerModel
+			{
+				TraversalMode = PlayerTraversalMode.Grounded,
+				SecondaryMode = SecondaryModifierMode.Active,
+			};
+			var outputs = new PlayerOutputs();
+
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new PrimaryPressedIntent() },
+				dt: 0f
+			);
+
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.11f);
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.09f);
+
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Recovery));
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.ShieldGuardBash)
+			);
+
+			outputs.Clear();
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new RightActionIntent() },
+				dt: 0f
+			);
+
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.FundamentalBlockPrimary)
+			);
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Startup));
+			Assert.That(model.ActionRuntime.HasBufferedAction, Is.False);
+			Assert.That(
+				outputs.Animation.Triggers.Any(x => x.Param == AnimTrigger.FundamentalBlockPrimary),
+				Is.True
+			);
+		}
+
+		[Test]
+		public void ShieldGuardBash_ActiveRightActionRequest_DoesNotCancelBeforeRecovery()
+		{
+			var system = NewSystem();
+			var model = new PlayerModel
+			{
+				TraversalMode = PlayerTraversalMode.Grounded,
+				SecondaryMode = SecondaryModifierMode.Active,
+			};
+			var outputs = new PlayerOutputs();
+
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new PrimaryPressedIntent() },
+				dt: 0f
+			);
+
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.11f);
+
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Active));
+
+			outputs.Clear();
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new RightActionIntent() },
+				dt: 0f
+			);
+
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.ShieldGuardBash)
+			);
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Active));
+			Assert.That(model.ActionRuntime.HasBufferedAction, Is.False);
+		}
+
 		private static ActionTestDriver NewSystem() => new();
 	}
 }

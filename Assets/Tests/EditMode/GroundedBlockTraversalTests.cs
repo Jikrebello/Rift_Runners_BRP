@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Assets.Scripts.Game.Characters.Core.Player;
+using Assets.Scripts.Game.Characters.Core.Player.Action.Definitions;
 using Assets.Scripts.Game.Characters.Core.Player.Input;
 using Assets.Scripts.Game.Characters.Core.Player.Intent;
 using Assets.Scripts.Game.Characters.Core.Player.Model;
@@ -16,13 +17,18 @@ namespace Assets.Tests.EditMode
 	public sealed class GroundedBlockTraversalTests
 	{
 		private static readonly Vector2 FullMoveInput = new(1f, 0f);
-		private static readonly Vector2 DefaultExpectedMove = FullMoveInput
-			* GroundedTraversalConfig.DefaultMoveInputMultiplier;
-		private static readonly Vector2 BlockExpectedMove = FullMoveInput
-			* GroundedTraversalConfig.DefaultBlockedMoveInputMultiplier;
+		private static readonly Vector2 DefaultExpectedMove =
+			FullMoveInput * GroundedTraversalConfig.DefaultMoveInputMultiplier;
+		private static readonly Vector2 BlockExpectedMove =
+			FullMoveInput * GroundedTraversalConfig.DefaultBlockedMoveInputMultiplier;
 		private static readonly Vector2 ExpectedBlockDashDirection = Vector2.Normalize(
 			FullMoveInput
 		);
+		private static readonly Vector2 ExpectedBlockDashMove =
+			ExpectedBlockDashDirection * GroundedTraversalConfig.DefaultBlockDashMoveMultiplier;
+		private static readonly Vector2 ExpectedActionMove =
+			ExpectedBlockDashDirection
+			* PlayerActionDefinitions.SwordAdvanceSlash.Motor.MoveMultiplier;
 
 		[Test]
 		public void GroundedState_BlockPosture_UsesBlockedMovementProfile()
@@ -196,11 +202,7 @@ namespace Assets.Tests.EditMode
 			fx.Grounded.HandleIntents(
 				model,
 				outputs,
-				new List<IPlayerIntent>
-				{
-					new MoveIntent(FullMoveInput),
-					new JumpPressedIntent(),
-				}
+				new List<IPlayerIntent> { new MoveIntent(FullMoveInput), new JumpPressedIntent() }
 			);
 			fx.Grounded.Tick(
 				model,
@@ -211,6 +213,7 @@ namespace Assets.Tests.EditMode
 
 			Assert.That(outputs.Motor.RequestBlockDashThisFrame, Is.True);
 			Assert.That(outputs.Motor.BlockDashDirection, Is.EqualTo(ExpectedBlockDashDirection));
+			Assert.That(outputs.Motor.BlockDashMove, Is.EqualTo(ExpectedBlockDashMove));
 			Assert.That(outputs.Motor.RequestJump, Is.False);
 			Assert.That(
 				outputs.Animation.Triggers.Last(x => x.Param == AnimTrigger.BlockDash).Param,
@@ -251,11 +254,7 @@ namespace Assets.Tests.EditMode
 				new PlayerInputSnapshot
 				{
 					Move = FullMoveInput,
-					Jump = new ButtonState
-					{
-						Held = true,
-						PressedThisFrame = true,
-					},
+					Jump = new ButtonState { Held = true, PressedThisFrame = true },
 					SecondarySkillModifier = new ButtonState
 					{
 						Held = true,
@@ -268,11 +267,32 @@ namespace Assets.Tests.EditMode
 
 			Assert.That(outputs.Motor.RequestBlockDashThisFrame, Is.True);
 			Assert.That(outputs.Motor.BlockDashDirection, Is.EqualTo(ExpectedBlockDashDirection));
+			Assert.That(outputs.Motor.BlockDashMove, Is.EqualTo(ExpectedBlockDashMove));
 			Assert.That(outputs.Motor.RequestJump, Is.False);
 			Assert.That(
 				outputs.Animation.Triggers.Any(x => x.Param == AnimTrigger.BlockDash),
 				Is.True
 			);
+		}
+
+		[Test]
+		public void MotorCommands_ResolvePlanarMove_UsesBlockDashThenActionMoveThenDesiredMove()
+		{
+			var commands = new MotorCommands
+			{
+				DesiredMove = DefaultExpectedMove,
+				ActionMove = ExpectedActionMove,
+				RequestBlockDashThisFrame = true,
+				BlockDashMove = ExpectedBlockDashMove,
+			};
+
+			Assert.That(commands.ResolvePlanarMove(), Is.EqualTo(ExpectedBlockDashMove));
+
+			commands.RequestBlockDashThisFrame = false;
+			Assert.That(commands.ResolvePlanarMove(), Is.EqualTo(ExpectedActionMove));
+
+			commands.ActionMove = Vector2.Zero;
+			Assert.That(commands.ResolvePlanarMove(), Is.EqualTo(DefaultExpectedMove));
 		}
 
 		private static TraversalFixture NewFixture()

@@ -49,7 +49,7 @@ namespace Assets.Tests.EditMode
 			);
 			Assert.That(
 				loadout.ActionSet.PrimaryModifierBank.PrimaryFaceActionId,
-				Is.EqualTo(PlayerActionId.SwordSkillPrimary)
+				Is.EqualTo(PlayerActionId.SwordAdvanceSlash)
 			);
 			Assert.That(
 				loadout.ActionSet.SecondaryModifierBank.TertiaryFaceActionId,
@@ -149,7 +149,9 @@ namespace Assets.Tests.EditMode
 		public void CatalogBuilder_RejectsMissingActionDefinitionReferences()
 		{
 			var config = PlayerCombatLoadoutCatalogLoader.CreateDefaultCatalog();
-			var limitedDefinitions = CreateDefinitionRegistryWithout(PlayerActionId.ShieldSkillTertiary);
+			var limitedDefinitions = CreateDefinitionRegistryWithout(
+				PlayerActionId.ShieldSkillTertiary
+			);
 
 			var success = PlayerCombatLoadoutCatalogBuilder.TryBuild(
 				config,
