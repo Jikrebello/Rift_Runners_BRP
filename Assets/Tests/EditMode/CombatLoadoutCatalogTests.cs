@@ -30,9 +30,10 @@ namespace Assets.Tests.EditMode
 				Is.EqualTo(PlayerCombatLoadouts.DefaultLoadoutId)
 			);
 			Assert.That(loadout.PrimarySlot.SlotKind, Is.EqualTo(PlayerCombatSlotKind.Sword));
+			Assert.That(loadout.SecondarySlot.SlotKind, Is.EqualTo(PlayerCombatSlotKind.Shield));
 			Assert.That(
 				loadout.SecondarySlot.ModifierPostureEffect,
-				Is.EqualTo(PlayerModifierPostureEffect.Aim)
+				Is.EqualTo(PlayerModifierPostureEffect.Block)
 			);
 			Assert.That(
 				loadout.ActionSet.BaseBank.LightAttackId,
@@ -40,7 +41,11 @@ namespace Assets.Tests.EditMode
 			);
 			Assert.That(
 				loadout.ActionSet.SecondaryModifierBank.RightActionId,
-				Is.EqualTo(PlayerActionId.FundamentalRangedPrimary)
+				Is.EqualTo(PlayerActionId.FundamentalBlockPrimary)
+			);
+			Assert.That(
+				loadout.ActionSet.SecondaryModifierBank.SkillSlot1Id,
+				Is.EqualTo(PlayerActionId.None)
 			);
 		}
 

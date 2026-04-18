@@ -32,6 +32,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Outputs
 		Skill3,
 		ContextInteract,
 		ContextGrabOrFire,
+		FundamentalBlockPrimary,
 		KickOffJump,
 	}
 

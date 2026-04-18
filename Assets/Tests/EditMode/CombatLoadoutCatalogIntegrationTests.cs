@@ -66,8 +66,45 @@ namespace Assets.Tests.EditMode
 			);
 			Assert.That(
 				model.ActionRuntime.CurrentActionId,
-				Is.EqualTo(PlayerActionId.FundamentalRangedPrimary)
+				Is.EqualTo(PlayerActionId.FundamentalBlockPrimary)
 			);
+			Assert.That(
+				outputs.Animation.Triggers,
+				Has.Some.Matches<TriggerCmd>(x =>
+					x.Param == AnimTrigger.FundamentalBlockPrimary
+				)
+			);
+		}
+
+		[Test]
+		public void ExplicitlyLoadedDefaultLoadout_SecondaryModifierSkillSlot1_DoesNotStartAction()
+		{
+			var definitions = PlayerActionDefinitionCatalogLoader.LoadExisting(
+				GetCommittedActionCatalogPath()
+			);
+			var loadoutCatalog = PlayerCombatLoadoutCatalogLoader.LoadExisting(
+				definitions,
+				GetCommittedCombatLoadoutCatalogPath()
+			);
+			var system = new ActionTestDriver(definitions);
+			var model = new PlayerModel
+			{
+				TraversalMode = PlayerTraversalMode.Grounded,
+				SecondaryMode = SecondaryModifierMode.Active,
+			};
+			var outputs = new PlayerOutputs();
+
+			PlayerCombatLoadouts.CopyInto(loadoutCatalog.GetDefaultLoadout(), model.CombatLoadout);
+
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new UseSkillIntent(SkillBank.Secondary, 1) },
+				dt: 0f
+			);
+
+			Assert.That(model.ActionRuntime.HasActiveAction, Is.False);
+			Assert.That(outputs.Animation.Triggers.Count, Is.EqualTo(0));
 		}
 
 		[Test]

@@ -11,8 +11,8 @@
 			loadout.PrimarySlot.SlotKind = PlayerCombatSlotKind.Sword;
 			loadout.PrimarySlot.ModifierPostureEffect = PlayerModifierPostureEffect.None;
 
-			loadout.SecondarySlot.SlotKind = PlayerCombatSlotKind.Bow;
-			loadout.SecondarySlot.ModifierPostureEffect = PlayerModifierPostureEffect.Aim;
+			loadout.SecondarySlot.SlotKind = PlayerCombatSlotKind.Shield;
+			loadout.SecondarySlot.ModifierPostureEffect = PlayerModifierPostureEffect.Block;
 
 			var defaultSet = PlayerActionSets.CreateDefault();
 			PlayerActionSets.CopyInto(defaultSet, loadout.ActionSet);

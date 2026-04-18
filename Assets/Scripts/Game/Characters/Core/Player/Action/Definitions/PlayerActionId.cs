@@ -13,5 +13,6 @@
 		ContextInteract = 8,
 		ContextGrab = 9,
 		FundamentalRangedPrimary = 10,
+		FundamentalBlockPrimary = 11,
 	}
 }

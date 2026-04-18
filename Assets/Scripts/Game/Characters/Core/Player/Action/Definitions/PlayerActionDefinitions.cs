@@ -198,6 +198,25 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 			PlayerActionCancelPolicy.None
 		);
 
+		public static readonly PlayerActionDefinition FundamentalBlockPrimary = new(
+			PlayerActionId.FundamentalBlockPrimary,
+			PlayerActionSource.Fundamental,
+			PlayerActionCategory.Attack,
+			AnimTrigger.FundamentalBlockPrimary,
+			new PlayerActionTiming(
+				startupSeconds: 0.08f,
+				activeSeconds: 0.10f,
+				recoverySeconds: 0.18f
+			),
+			new PlayerActionAvailability(requiresGrounded: true, allowWhileAirborne: false),
+			new PlayerActionExecutionPolicy(
+				canBuffer: true,
+				staminaCost: 0f,
+				bufferWindow: PlayerActionBufferWindow.RecoveryOnly
+			),
+			PlayerActionCancelPolicy.None
+		);
+
 		private static readonly PlayerActionDefinition[] AllDefinitions =
 		{
 			LightAttack,
@@ -210,6 +229,7 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Definitions
 			ContextInteract,
 			ContextGrab,
 			FundamentalRangedPrimary,
+			FundamentalBlockPrimary,
 		};
 
 		private static readonly PlayerActionDefinitionRegistry DefaultRegistry = new(

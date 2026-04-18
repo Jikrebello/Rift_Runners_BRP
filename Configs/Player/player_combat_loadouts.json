@@ -8,8 +8,8 @@
         "ModifierPostureEffect": "None"
       },
       "SecondarySlot": {
-        "SlotKind": "Bow",
-        "ModifierPostureEffect": "Aim"
+        "SlotKind": "Shield",
+        "ModifierPostureEffect": "Block"
       },
       "ActionSet": {
         "BaseBank": {
@@ -29,17 +29,17 @@
           "SkillSlot3Id": "Skill3"
         },
         "SecondaryModifierBank": {
-          "LightAttackId": "Skill1",
-          "HeavyAttackId": "Skill2",
-          "RightActionId": "FundamentalRangedPrimary",
-          "SkillSlot1Id": "Skill1",
-          "SkillSlot2Id": "Skill2",
-          "SkillSlot3Id": "Skill3"
+          "LightAttackId": "LightAttack",
+          "HeavyAttackId": "HeavyAttack",
+          "RightActionId": "FundamentalBlockPrimary",
+          "SkillSlot1Id": "None",
+          "SkillSlot2Id": "None",
+          "SkillSlot3Id": "None"
         },
         "DualModifierBank": {
           "LightAttackId": "Skill1",
           "HeavyAttackId": "Skill2",
-          "RightActionId": "Skill3",
+          "RightActionId": "FundamentalBlockPrimary",
           "SkillSlot1Id": "Skill1",
           "SkillSlot2Id": "Skill2",
           "SkillSlot3Id": "Skill3"

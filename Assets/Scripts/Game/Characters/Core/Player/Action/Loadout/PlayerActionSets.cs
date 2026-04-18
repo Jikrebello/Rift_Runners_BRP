@@ -55,20 +55,20 @@ namespace Assets.Scripts.Game.Characters.Core.Player.Action.Loadout
 
 		private static void ConfigureSecondaryModifierBank(PlayerActionBank bank)
 		{
-			bank.LightAttackId = PlayerActionId.Skill1;
-			bank.HeavyAttackId = PlayerActionId.Skill2;
-			bank.RightActionId = PlayerActionId.FundamentalRangedPrimary;
+			bank.LightAttackId = PlayerActionId.LightAttack;
+			bank.HeavyAttackId = PlayerActionId.HeavyAttack;
+			bank.RightActionId = PlayerActionId.FundamentalBlockPrimary;
 
-			bank.SkillSlot1Id = PlayerActionId.Skill1;
-			bank.SkillSlot2Id = PlayerActionId.Skill2;
-			bank.SkillSlot3Id = PlayerActionId.Skill3;
+			bank.SkillSlot1Id = PlayerActionId.None;
+			bank.SkillSlot2Id = PlayerActionId.None;
+			bank.SkillSlot3Id = PlayerActionId.None;
 		}
 
 		private static void ConfigureDualModifierBank(PlayerActionBank bank)
 		{
 			bank.LightAttackId = PlayerActionId.Skill1;
 			bank.HeavyAttackId = PlayerActionId.Skill2;
-			bank.RightActionId = PlayerActionId.Skill3;
+			bank.RightActionId = PlayerActionId.FundamentalBlockPrimary;
 
 			bank.SkillSlot1Id = PlayerActionId.Skill1;
 			bank.SkillSlot2Id = PlayerActionId.Skill2;

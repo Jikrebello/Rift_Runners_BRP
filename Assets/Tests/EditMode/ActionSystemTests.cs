@@ -745,6 +745,51 @@ namespace Assets.Tests.EditMode
 		}
 
 		[Test]
+		public void FundamentalBlockPrimary_CompletesUnderExistingRuntimeRules()
+		{
+			var system = NewSystem();
+			var model = new PlayerModel
+			{
+				TraversalMode = PlayerTraversalMode.Grounded,
+				SecondaryMode = SecondaryModifierMode.Active,
+			};
+			var outputs = new PlayerOutputs();
+
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new RightActionIntent() },
+				dt: 0f
+			);
+
+			Assert.That(
+				model.ActionRuntime.CurrentActionId,
+				Is.EqualTo(PlayerActionId.FundamentalBlockPrimary)
+			);
+			Assert.That(
+				outputs.Animation.Triggers.Any(x =>
+					x.Param == AnimTrigger.FundamentalBlockPrimary
+				),
+				Is.True
+			);
+
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.09f);
+			Assert.That(model.ActionRuntime.CurrentPhase, Is.EqualTo(PlayerActionPhase.Active));
+
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.11f);
+			Assert.That(
+				model.ActionRuntime.CurrentPhase,
+				Is.EqualTo(PlayerActionPhase.Recovery)
+			);
+
+			outputs.Clear();
+			system.Step(model, outputs, new List<IPlayerIntent>(), dt: 0.19f);
+			Assert.That(model.ActionRuntime.HasActiveAction, Is.False);
+		}
+
+		[Test]
 		public void CompletingAction_WithNoBufferedFollowUp_LeavesRuntimeIdle()
 		{
 			var system = NewSystem();

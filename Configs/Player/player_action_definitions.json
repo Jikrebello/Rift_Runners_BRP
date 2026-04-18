@@ -214,6 +214,27 @@
         "BufferWindow": "RecoveryOnly"
       },
       "CancelPolicy": null
+    },
+    {
+      "Id": "FundamentalBlockPrimary",
+      "Source": "Fundamental",
+      "Category": "Attack",
+      "AnimationTrigger": "FundamentalBlockPrimary",
+      "Timing": {
+        "StartupSeconds": 0.08,
+        "ActiveSeconds": 0.1,
+        "RecoverySeconds": 0.18
+      },
+      "Availability": {
+        "RequiresGrounded": true,
+        "AllowWhileAirborne": false
+      },
+      "Execution": {
+        "CanBuffer": true,
+        "StaminaCost": 0.0,
+        "BufferWindow": "RecoveryOnly"
+      },
+      "CancelPolicy": null
     }
   ]
 }

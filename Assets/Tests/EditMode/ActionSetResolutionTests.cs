@@ -431,7 +431,7 @@ namespace Assets.Tests.EditMode
 			var outputs = new PlayerOutputs();
 
 			model.CombatLoadout.ActionSet.SecondaryModifierBank.RightActionId =
-				PlayerActionId.FundamentalRangedPrimary;
+				PlayerActionId.FundamentalBlockPrimary;
 
 			system.Step(
 				model,
@@ -442,7 +442,34 @@ namespace Assets.Tests.EditMode
 
 			Assert.That(
 				model.ActionRuntime.CurrentActionId,
-				Is.EqualTo(PlayerActionId.FundamentalRangedPrimary)
+				Is.EqualTo(PlayerActionId.FundamentalBlockPrimary)
+			);
+			outputs.Animation.Triggers.ShouldContain(
+				x => x.Param == AnimTrigger.FundamentalBlockPrimary
+			);
+		}
+
+		[Test]
+		public void RightAction_WithSecondaryModifier_UsesDefaultShieldFundamentalMapping()
+		{
+			var system = NewSystem();
+			var model = new PlayerModel
+			{
+				TraversalMode = PlayerTraversalMode.Grounded,
+				SecondaryMode = SecondaryModifierMode.Active,
+			};
+			var outputs = new PlayerOutputs();
+
+			system.Step(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new RightActionIntent() },
+				dt: 0f
+			);
+
+			model.ActionRuntime.CurrentActionId.ShouldBe(PlayerActionId.FundamentalBlockPrimary);
+			outputs.Animation.Triggers.ShouldContain(
+				x => x.Param == AnimTrigger.FundamentalBlockPrimary
 			);
 		}
 

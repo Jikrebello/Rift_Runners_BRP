@@ -47,6 +47,14 @@ namespace Assets.Tests.EditMode
 			var contextInteract = registry.Get(PlayerActionId.ContextInteract);
 			Assert.That(contextInteract.Source, Is.EqualTo(PlayerActionSource.Context));
 			Assert.That(contextInteract.Category, Is.EqualTo(PlayerActionCategory.Interact));
+
+			var blockPrimary = registry.Get(PlayerActionId.FundamentalBlockPrimary);
+			Assert.That(blockPrimary.Source, Is.EqualTo(PlayerActionSource.Fundamental));
+			Assert.That(blockPrimary.Category, Is.EqualTo(PlayerActionCategory.Attack));
+			Assert.That(
+				blockPrimary.AnimationTrigger,
+				Is.EqualTo(AnimTrigger.FundamentalBlockPrimary)
+			);
 		}
 
 		[Test]

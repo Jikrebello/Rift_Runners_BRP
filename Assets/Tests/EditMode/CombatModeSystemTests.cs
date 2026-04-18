@@ -158,6 +158,28 @@ namespace Assets.Tests.EditMode
 		}
 
 		[Test]
+		public void HoldingSecondaryModifier_WithDefaultLoadout_SetsCombatPostureToBlock()
+		{
+			var model = new PlayerModel
+			{
+				CombatStance = PlayerCombatStance.Holstered,
+				SecondaryMode = SecondaryModifierMode.None,
+			};
+
+			var outputs = new PlayerOutputs();
+			var sys = new CombatModeSystem();
+
+			sys.HandleIntents(
+				model,
+				outputs,
+				new List<IPlayerIntent> { new SecondaryModifierHeldIntent(true) }
+			);
+
+			Assert.That(model.CombatPosture, Is.EqualTo(PlayerCombatPosture.Block));
+			Assert.That(model.EquippedUpperBodyMode, Is.EqualTo(UpperBodyMode.Block));
+		}
+
+		[Test]
 		public void HoldingSecondaryModifier_WithNoPostureEffect_KeepsCombatPostureNone()
 		{
 			var model = new PlayerModel
